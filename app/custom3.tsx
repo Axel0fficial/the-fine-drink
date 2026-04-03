@@ -1,21 +1,25 @@
+import { router } from "expo-router";
 import React, { useMemo, useState } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
-  SafeAreaView,
+  Alert,
   FlatList,
   Modal,
-  TextInput,
-  Switch,
-  Alert,
+  Pressable,
   ScrollView,
+  StyleSheet,
+  Switch,
+  Text,
+  TextInput,
+  View,
 } from "react-native";
-import { router } from "expo-router";
 
+import ScreenContainer from "../src/components/ScreenContainer";
 import { useGameStore } from "../src/state/gameStore";
-import type { ModifierScope, ModifierType, SessionModifier } from "../src/types/game";
+import type {
+  ModifierScope,
+  ModifierType,
+  SessionModifier,
+} from "../src/types/game";
 
 type CustomModifierDuration = "turn" | "round" | "session";
 
@@ -44,11 +48,7 @@ const SCOPE_OPTIONS: ModifierScope[] = [
   "player",
 ];
 
-const DURATION_OPTIONS: CustomModifierDuration[] = [
-  "turn",
-  "round",
-  "session",
-];
+const DURATION_OPTIONS: CustomModifierDuration[] = ["turn", "round", "session"];
 
 export default function Custom3Screen() {
   const { modifiers, setModifiers } = useGameStore();
@@ -57,7 +57,8 @@ export default function Custom3Screen() {
   const [newTitle, setNewTitle] = useState("");
   const [newDescription, setNewDescription] = useState("");
   const [newScope, setNewScope] = useState<ModifierScope>("session");
-  const [newDuration, setNewDuration] = useState<CustomModifierDuration>("session");
+  const [newDuration, setNewDuration] =
+    useState<CustomModifierDuration>("session");
 
   const sortedModifiers = useMemo(() => {
     const builtIn = modifiers.filter((modifier) => !modifier.isCustom);
@@ -70,16 +71,16 @@ export default function Custom3Screen() {
       prev.map((modifier) =>
         modifier.id === modifierId
           ? { ...modifier, enabled: !modifier.enabled }
-          : modifier
-      )
+          : modifier,
+      ),
     );
   };
 
   const deleteCustomModifier = (modifierId: string) => {
     setModifiers((prev) =>
       prev.filter(
-        (modifier) => !(modifier.id === modifierId && modifier.isCustom)
-      )
+        (modifier) => !(modifier.id === modifierId && modifier.isCustom),
+      ),
     );
   };
 
@@ -93,7 +94,10 @@ export default function Custom3Screen() {
     }
 
     if (!cleanDescription) {
-      Alert.alert("Missing description", "Please add a description for the modifier.");
+      Alert.alert(
+        "Missing description",
+        "Please add a description for the modifier.",
+      );
       return;
     }
 
@@ -178,73 +182,74 @@ export default function Custom3Screen() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        <View style={styles.topBar}>
-          <View>
-            <Text style={styles.title}>Custom Mode</Text>
-            <Text style={styles.subtitle}>
-              Add handicaps, catch-up effects, and session rules.
-            </Text>
-          </View>
-
-          <Pressable style={styles.startButton} onPress={() => router.push("/game")}>
-            <Text style={styles.startButtonText}>Start</Text>
-          </Pressable>
-        </View>
-
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Modifiers</Text>
-
-          <Pressable
-            style={styles.addModifierButton}
-            onPress={() => setCreateModalVisible(true)}
-          >
-            <Text style={styles.addModifierButtonText}>Add Modifier</Text>
-          </Pressable>
-        </View>
-
-        <View style={styles.infoBox}>
-          <Text style={styles.infoBoxText}>
-            Use this page to make the session more chaotic, more balanced, or
-            just weirder.
+    <ScreenContainer>
+      <View style={styles.topBar}>
+        <View>
+          <Text style={styles.title}>Custom Mode</Text>
+          <Text style={styles.subtitle}>
+            Add handicaps, catch-up effects, and session rules.
           </Text>
         </View>
 
-        <View style={styles.listWrapper}>
-          {sortedModifiers.length === 0 ? (
-            <View style={styles.emptyState}>
-              <Text style={styles.emptyStateTitle}>No modifiers yet</Text>
-              <Text style={styles.emptyStateText}>
-                Add a custom modifier or enable preset ones.
-              </Text>
-            </View>
-          ) : (
-            <FlatList
-              data={sortedModifiers}
-              keyExtractor={(item) => item.id}
-              renderItem={renderModifierItem}
-              contentContainerStyle={styles.listContent}
-              showsVerticalScrollIndicator={false}
-            />
-          )}
-        </View>
+        <Pressable
+          style={styles.startButton}
+          onPress={() => router.push("/game")}
+        >
+          <Text style={styles.startButtonText}>Start</Text>
+        </Pressable>
+      </View>
 
-        <View style={styles.bottomRow}>
-          <Pressable
-            style={styles.backButton}
-            onPress={() => router.push("/custom2")}
-          >
-            <Text style={styles.backButtonText}>Back</Text>
-          </Pressable>
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>Modifiers</Text>
 
-          <Pressable
-            style={styles.continueButton}
-            onPress={() => router.push("/game")}
-          >
-            <Text style={styles.continueButtonText}>Start Game</Text>
-          </Pressable>
-        </View>
+        <Pressable
+          style={styles.addModifierButton}
+          onPress={() => setCreateModalVisible(true)}
+        >
+          <Text style={styles.addModifierButtonText}>Add Modifier</Text>
+        </Pressable>
+      </View>
+
+      <View style={styles.infoBox}>
+        <Text style={styles.infoBoxText}>
+          Use this page to make the session more chaotic, more balanced, or just
+          weirder.
+        </Text>
+      </View>
+
+      <View style={styles.listWrapper}>
+        {sortedModifiers.length === 0 ? (
+          <View style={styles.emptyState}>
+            <Text style={styles.emptyStateTitle}>No modifiers yet</Text>
+            <Text style={styles.emptyStateText}>
+              Add a custom modifier or enable preset ones.
+            </Text>
+          </View>
+        ) : (
+          <FlatList
+            data={sortedModifiers}
+            keyExtractor={(item) => item.id}
+            renderItem={renderModifierItem}
+            contentContainerStyle={styles.listContent}
+            showsVerticalScrollIndicator={false}
+          />
+        )}
+      </View>
+
+      <View style={styles.bottomRow}>
+        <Pressable
+          style={styles.backButton}
+          onPress={() => router.push("/custom2")}
+        >
+          <Text style={styles.backButtonText}>Back</Text>
+        </Pressable>
+
+        <Pressable
+          style={styles.continueButton}
+          onPress={() => router.push("/game")}
+        >
+          <Text style={styles.continueButtonText}>Start Game</Text>
+        </Pressable>
       </View>
 
       <Modal
@@ -324,28 +329,25 @@ export default function Custom3Screen() {
                 })}
               </View>
 
-              <Pressable style={styles.createButton} onPress={handleCreateModifier}>
+              <Pressable
+                style={styles.createButton}
+                onPress={handleCreateModifier}
+              >
                 <Text style={styles.createButtonText}>Create Modifier</Text>
               </Pressable>
             </ScrollView>
           </View>
         </View>
       </Modal>
-    </SafeAreaView>
+    </ScreenContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: "#111111",
-  },
   container: {
     flex: 1,
     backgroundColor: "#111111",
     paddingHorizontal: 18,
-    paddingTop: 16,
-    paddingBottom: 22,
   },
   topBar: {
     flexDirection: "row",

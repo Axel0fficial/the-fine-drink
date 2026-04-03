@@ -1,13 +1,8 @@
-import React from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
-  SafeAreaView,
-} from "react-native";
 import { router } from "expo-router";
+import React from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
+import ScreenContainer from "../src/components/ScreenContainer";
 import { useGameStore } from "../src/state/gameStore";
 
 type Difficulty = "easy" | "normal" | "hard" | "brutal";
@@ -51,79 +46,71 @@ export default function Custom2Screen() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        <View style={styles.topBar}>
-          <View>
-            <Text style={styles.title}>Custom Mode</Text>
-            <Text style={styles.subtitle}>
-              Choose the overall difficulty for this match.
-            </Text>
-          </View>
-
-          <Pressable style={styles.nextButton} onPress={handleNext}>
-            <Text style={styles.nextButtonText}>Next</Text>
-          </Pressable>
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Difficulty</Text>
-          <Text style={styles.sectionText}>
-            This applies a broad preset to the game. We are keeping it simple for
-            now.
+    <ScreenContainer>
+      <View style={styles.topBar}>
+        <View>
+          <Text style={styles.title}>Custom Mode</Text>
+          <Text style={styles.subtitle}>
+            Choose the overall difficulty for this match.
           </Text>
         </View>
 
-        <View style={styles.difficultyList}>
-          {DIFFICULTY_OPTIONS.map((option) => {
-            const isSelected = selectedDifficulty === option.value;
-
-            return (
-              <Pressable
-                key={option.value}
-                style={[
-                  styles.difficultyCard,
-                  isSelected && styles.difficultyCardActive,
-                ]}
-                onPress={() => handleSelectDifficulty(option.value)}
-              >
-                <Text style={styles.difficultyTitle}>{option.label}</Text>
-                <Text style={styles.difficultyDescription}>
-                  {option.description}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </View>
-
-        <View style={styles.bottomRow}>
-          <Pressable
-            style={styles.backButton}
-            onPress={() => router.push("/custom1")}
-          >
-            <Text style={styles.backButtonText}>Back</Text>
-          </Pressable>
-
-          <Pressable style={styles.continueButton} onPress={handleNext}>
-            <Text style={styles.continueButtonText}>Continue</Text>
-          </Pressable>
-        </View>
+        <Pressable style={styles.nextButton} onPress={handleNext}>
+          <Text style={styles.nextButtonText}>Next</Text>
+        </Pressable>
       </View>
-    </SafeAreaView>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Difficulty</Text>
+        <Text style={styles.sectionText}>
+          This applies a broad preset to the game. We are keeping it simple for
+          now.
+        </Text>
+      </View>
+
+      <View style={styles.difficultyList}>
+        {DIFFICULTY_OPTIONS.map((option) => {
+          const isSelected = selectedDifficulty === option.value;
+
+          return (
+            <Pressable
+              key={option.value}
+              style={[
+                styles.difficultyCard,
+                isSelected && styles.difficultyCardActive,
+              ]}
+              onPress={() => handleSelectDifficulty(option.value)}
+            >
+              <Text style={styles.difficultyTitle}>{option.label}</Text>
+              <Text style={styles.difficultyDescription}>
+                {option.description}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </View>
+
+      <View style={styles.bottomRow}>
+        <Pressable
+          style={styles.backButton}
+          onPress={() => router.push("/custom1")}
+        >
+          <Text style={styles.backButtonText}>Back</Text>
+        </Pressable>
+
+        <Pressable style={styles.continueButton} onPress={handleNext}>
+          <Text style={styles.continueButtonText}>Continue</Text>
+        </Pressable>
+      </View>
+    </ScreenContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: "#111111",
-  },
   container: {
     flex: 1,
     backgroundColor: "#111111",
     paddingHorizontal: 18,
-    paddingTop: 16,
-    paddingBottom: 22,
   },
   topBar: {
     flexDirection: "row",

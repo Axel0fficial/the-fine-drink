@@ -5,7 +5,6 @@ import {
   FlatList,
   Modal,
   Pressable,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Switch,
@@ -14,6 +13,7 @@ import {
   View,
 } from "react-native";
 
+import ScreenContainer from "../src/components/ScreenContainer";
 import { useGameStore } from "../src/state/gameStore";
 import type { Challenge } from "../src/types/game";
 
@@ -185,83 +185,79 @@ export default function Custom1Screen() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        <View style={styles.topBar}>
-          <View>
-            <Text style={styles.title}>Custom Mode</Text>
-            <Text style={styles.subtitle}>
-              Choose categories, enable challenges, and create your own.
-            </Text>
-          </View>
-
-          <Pressable
-            style={styles.nextButton}
-            onPress={() => router.push("/custom2")}
-          >
-            <Text style={styles.nextButtonText}>Next</Text>
-          </Pressable>
+    <ScreenContainer>
+      <View style={styles.topBar}>
+        <View>
+          <Text style={styles.title}>Custom Mode</Text>
+          <Text style={styles.subtitle}>
+            Choose categories, enable challenges, and create your own.
+          </Text>
         </View>
 
-        <ScrollView contentContainerStyle={styles.scrollContent}>
-          <View style={styles.section}>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Categories</Text>
-            </View>
-
-            <View style={styles.categoryWrap}>
-              {ALL_CATEGORIES.map((category) => {
-                const active = enabledCategories.includes(category);
-
-                return (
-                  <Pressable
-                    key={category}
-                    style={[
-                      styles.categoryChip,
-                      active && styles.categoryChipActive,
-                    ]}
-                    onPress={() => toggleCategory(category)}
-                  >
-                    <Text style={styles.categoryChipText}>{category}</Text>
-                  </Pressable>
-                );
-              })}
-            </View>
-          </View>
-
-          <View style={styles.section}>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Challenges</Text>
-
-              <Pressable
-                style={styles.addCustomButton}
-                onPress={() => setCreateModalVisible(true)}
-              >
-                <Text style={styles.addCustomButtonText}>Add Challenge</Text>
-              </Pressable>
-            </View>
-
-            {visibleChallenges.length === 0 ? (
-              <View style={styles.emptyState}>
-                <Text style={styles.emptyStateTitle}>
-                  No visible challenges
-                </Text>
-                <Text style={styles.emptyStateText}>
-                  Enable more categories or create a custom challenge.
-                </Text>
-              </View>
-            ) : (
-              <FlatList
-                data={visibleChallenges}
-                keyExtractor={(item) => item.id}
-                renderItem={renderChallengeItem}
-                scrollEnabled={false}
-                contentContainerStyle={styles.challengeList}
-              />
-            )}
-          </View>
-        </ScrollView>
+        <Pressable
+          style={styles.nextButton}
+          onPress={() => router.push("/custom2")}
+        >
+          <Text style={styles.nextButtonText}>Next</Text>
+        </Pressable>
       </View>
+
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Categories</Text>
+          </View>
+
+          <View style={styles.categoryWrap}>
+            {ALL_CATEGORIES.map((category) => {
+              const active = enabledCategories.includes(category);
+
+              return (
+                <Pressable
+                  key={category}
+                  style={[
+                    styles.categoryChip,
+                    active && styles.categoryChipActive,
+                  ]}
+                  onPress={() => toggleCategory(category)}
+                >
+                  <Text style={styles.categoryChipText}>{category}</Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        </View>
+
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Challenges</Text>
+
+            <Pressable
+              style={styles.addCustomButton}
+              onPress={() => setCreateModalVisible(true)}
+            >
+              <Text style={styles.addCustomButtonText}>Add Challenge</Text>
+            </Pressable>
+          </View>
+
+          {visibleChallenges.length === 0 ? (
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyStateTitle}>No visible challenges</Text>
+              <Text style={styles.emptyStateText}>
+                Enable more categories or create a custom challenge.
+              </Text>
+            </View>
+          ) : (
+            <FlatList
+              data={visibleChallenges}
+              keyExtractor={(item) => item.id}
+              renderItem={renderChallengeItem}
+              scrollEnabled={false}
+              contentContainerStyle={styles.challengeList}
+            />
+          )}
+        </View>
+      </ScrollView>
 
       <Modal
         visible={createModalVisible}
@@ -350,21 +346,15 @@ export default function Custom1Screen() {
           </View>
         </View>
       </Modal>
-    </SafeAreaView>
+    </ScreenContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: "#111111",
-  },
   container: {
     flex: 1,
     backgroundColor: "#111111",
     paddingHorizontal: 18,
-    paddingTop: 16,
-    paddingBottom: 22,
   },
   scrollContent: {
     paddingBottom: 20,

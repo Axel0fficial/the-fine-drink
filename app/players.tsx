@@ -1,21 +1,21 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { router } from "expo-router";
 import React, { useEffect, useMemo, useState } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  Pressable,
+  Alert,
   FlatList,
   Modal,
-  SafeAreaView,
-  Alert,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from "react-native";
-import { router } from "expo-router";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import ScreenContainer from "../src/components/ScreenContainer";
 
-import type { GamePlayer, PlayerProfile, TeamColor } from "../src/types/game";
 import { mockPlayers } from "../src/data/mockPlayers";
 import { useGameStore } from "../src/state/gameStore";
+import type { GamePlayer, PlayerProfile, TeamColor } from "../src/types/game";
 
 const STORAGE_KEYS = {
   selectedPlayers: "thefinedrink:selectedPlayers",
@@ -72,7 +72,8 @@ function shuffleArray<T>(items: T[]): T[] {
 export default function PlayerScreen() {
   const [playerName, setPlayerName] = useState("");
   const [players, setPlayers] = useState<GamePlayer[]>([]);
-  const [existingPlayersModalVisible, setExistingPlayersModalVisible] = useState(false);
+  const [existingPlayersModalVisible, setExistingPlayersModalVisible] =
+    useState(false);
   const [teamModeEnabled, setTeamModeEnabled] = useState(false);
   const [isLoadingSavedPlayers, setIsLoadingSavedPlayers] = useState(true);
   const { setSelectedPlayers } = useGameStore();
@@ -111,7 +112,7 @@ export default function PlayerScreen() {
     try {
       await AsyncStorage.setItem(
         STORAGE_KEYS.selectedPlayers,
-        JSON.stringify(nextPlayers)
+        JSON.stringify(nextPlayers),
       );
     } catch (error) {
       console.error("Failed to save selected players:", error);
@@ -124,7 +125,7 @@ export default function PlayerScreen() {
 
   const availableExistingPlayers = useMemo(() => {
     return mockPlayers.filter(
-      (profile) => !existingPlayerIdsInMatch.has(profile.id)
+      (profile) => !existingPlayerIdsInMatch.has(profile.id),
     );
   }, [existingPlayerIdsInMatch]);
 
@@ -134,20 +135,26 @@ export default function PlayerScreen() {
     if (!cleanName) return;
 
     const alreadyInMatch = players.some(
-      (player) => player.name.toLowerCase() === cleanName.toLowerCase()
+      (player) => player.name.toLowerCase() === cleanName.toLowerCase(),
     );
 
     if (alreadyInMatch) {
-      Alert.alert("Player already added", `"${cleanName}" is already in this match.`);
+      Alert.alert(
+        "Player already added",
+        `"${cleanName}" is already in this match.`,
+      );
       return;
     }
 
     const existingProfile = mockPlayers.find(
-      (profile) => profile.name.toLowerCase() === cleanName.toLowerCase()
+      (profile) => profile.name.toLowerCase() === cleanName.toLowerCase(),
     );
 
     if (existingProfile) {
-      setPlayers((prev) => [...prev, createGamePlayerFromProfile(existingProfile)]);
+      setPlayers((prev) => [
+        ...prev,
+        createGamePlayerFromProfile(existingProfile),
+      ]);
     } else {
       setPlayers((prev) => [...prev, createNewGamePlayer(cleanName)]);
     }
@@ -156,7 +163,9 @@ export default function PlayerScreen() {
   };
 
   const addExistingPlayer = (profile: PlayerProfile) => {
-    const alreadyInMatch = players.some((player) => player.profileId === profile.id);
+    const alreadyInMatch = players.some(
+      (player) => player.profileId === profile.id,
+    );
 
     if (alreadyInMatch) return;
 
@@ -172,8 +181,8 @@ export default function PlayerScreen() {
       prev.map((player) =>
         player.id === playerId
           ? { ...player, team: getNextTeam(player.team) }
-          : player
-      )
+          : player,
+      ),
     );
   };
 
@@ -208,12 +217,20 @@ export default function PlayerScreen() {
       >
         <Text style={styles.existingPlayerName}>{item.name}</Text>
         <Text style={styles.existingPlayerMeta}>Wins: {item.totalWins}</Text>
-        <Text style={styles.existingPlayerMeta}>Points: {item.totalPoints}</Text>
+        <Text style={styles.existingPlayerMeta}>
+          Points: {item.totalPoints}
+        </Text>
       </Pressable>
     );
   };
 
-  const renderPlayerRow = ({ item, index }: { item: GamePlayer; index: number }) => {
+  const renderPlayerRow = ({
+    item,
+    index,
+  }: {
+    item: GamePlayer;
+    index: number;
+  }) => {
     return (
       <View style={styles.playerRow}>
         <Pressable
@@ -251,96 +268,98 @@ export default function PlayerScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        <Text style={styles.title}>Players</Text>
-        <Text style={styles.subtitle}>
-          Add players, recover old profiles, and organize teams.
-        </Text>
+    <ScreenContainer>
+      <Text style={styles.title}>Players</Text>
+      <Text style={styles.subtitle}>
+        Add players, recover old profiles, and organize teams.
+      </Text>
 
-        <View style={styles.topNav}>
-          <Pressable
-            style={styles.topNavButton}
-            onPress={() => setExistingPlayersModalVisible(true)}
-          >
-            <Text style={styles.topNavButtonText}>Add Existing Players</Text>
-          </Pressable>
+      <View style={styles.topNav}>
+        <Pressable
+          style={styles.topNavButton}
+          onPress={() => setExistingPlayersModalVisible(true)}
+        >
+          <Text style={styles.topNavButtonText}>Add Existing Players</Text>
+        </Pressable>
 
-          <Pressable
-            style={[
-              styles.topNavButton,
-              teamModeEnabled && styles.topNavButtonActive,
-            ]}
-            onPress={() => setTeamModeEnabled((prev) => !prev)}
-          >
-            <Text style={styles.topNavButtonText}>
-              {teamModeEnabled ? "Teams: On" : "Teams"}
+        <Pressable
+          style={[
+            styles.topNavButton,
+            teamModeEnabled && styles.topNavButtonActive,
+          ]}
+          onPress={() => setTeamModeEnabled((prev) => !prev)}
+        >
+          <Text style={styles.topNavButtonText}>
+            {teamModeEnabled ? "Teams: On" : "Teams"}
+          </Text>
+        </Pressable>
+      </View>
+
+      <View style={styles.inputRow}>
+        <TextInput
+          value={playerName}
+          onChangeText={setPlayerName}
+          placeholder="Write a player name"
+          placeholderTextColor="#8b8b8b"
+          style={styles.input}
+          onSubmitEditing={addPlayerByName}
+          returnKeyType="done"
+        />
+
+        <Pressable style={styles.addButton} onPress={addPlayerByName}>
+          <Text style={styles.addButtonText}>Add</Text>
+        </Pressable>
+      </View>
+
+      <View style={styles.listHeader}>
+        <Text style={styles.sectionTitle}>Current Players</Text>
+        <Text style={styles.playerCount}>{players.length} added</Text>
+      </View>
+
+      <View style={styles.playersListWrapper}>
+        {players.length === 0 ? (
+          <View style={styles.emptyState}>
+            <Text style={styles.emptyStateTitle}>No players yet</Text>
+            <Text style={styles.emptyStateText}>
+              Add new players with the input or recover existing ones from the
+              modal.
             </Text>
-          </Pressable>
-        </View>
-
-        <View style={styles.inputRow}>
-          <TextInput
-            value={playerName}
-            onChangeText={setPlayerName}
-            placeholder="Write a player name"
-            placeholderTextColor="#8b8b8b"
-            style={styles.input}
-            onSubmitEditing={addPlayerByName}
-            returnKeyType="done"
+          </View>
+        ) : (
+          <FlatList
+            data={players}
+            keyExtractor={(item) => item.id}
+            renderItem={renderPlayerRow}
+            contentContainerStyle={styles.playersListContent}
           />
+        )}
+      </View>
 
-          <Pressable style={styles.addButton} onPress={addPlayerByName}>
-            <Text style={styles.addButtonText}>Add</Text>
-          </Pressable>
-        </View>
+      <View style={styles.bottomActions}>
+        <Pressable
+          style={styles.secondaryButton}
+          onPress={assignRandomTeamsEvenly}
+        >
+          <Text style={styles.secondaryButtonText}>Random Teams</Text>
+        </Pressable>
 
-        <View style={styles.listHeader}>
-          <Text style={styles.sectionTitle}>Current Players</Text>
-          <Text style={styles.playerCount}>{players.length} added</Text>
-        </View>
-
-        <View style={styles.playersListWrapper}>
-          {players.length === 0 ? (
-            <View style={styles.emptyState}>
-              <Text style={styles.emptyStateTitle}>No players yet</Text>
-              <Text style={styles.emptyStateText}>
-                Add new players with the input or recover existing ones from the modal.
-              </Text>
-            </View>
-          ) : (
-            <FlatList
-              data={players}
-              keyExtractor={(item) => item.id}
-              renderItem={renderPlayerRow}
-              contentContainerStyle={styles.playersListContent}
-            />
-          )}
-        </View>
-
-        <View style={styles.bottomActions}>
-          <Pressable style={styles.secondaryButton} onPress={assignRandomTeamsEvenly}>
-            <Text style={styles.secondaryButtonText}>Random Teams</Text>
-          </Pressable>
-
-          <Pressable
+        <Pressable
+          style={[
+            styles.primaryButton,
+            !canContinue && styles.primaryButtonDisabled,
+          ]}
+          onPress={continueToMenu}
+          disabled={!canContinue}
+        >
+          <Text
             style={[
-              styles.primaryButton,
-              !canContinue && styles.primaryButtonDisabled,
+              styles.primaryButtonText,
+              !canContinue && styles.primaryButtonTextDisabled,
             ]}
-            onPress={continueToMenu}
-            disabled={!canContinue}
           >
-            <Text
-              style={[
-                styles.primaryButtonText,
-                !canContinue && styles.primaryButtonTextDisabled,
-              ]}
-            >
-              Continue
-            </Text>
-          </Pressable>
-        </View>
+            Continue
+          </Text>
+        </Pressable>
       </View>
 
       <Modal
@@ -360,7 +379,9 @@ export default function PlayerScreen() {
 
             {availableExistingPlayers.length === 0 ? (
               <View style={styles.modalEmptyState}>
-                <Text style={styles.modalEmptyTitle}>No available profiles</Text>
+                <Text style={styles.modalEmptyTitle}>
+                  No available profiles
+                </Text>
                 <Text style={styles.modalEmptyText}>
                   All saved players are already in the current match.
                 </Text>
@@ -379,21 +400,15 @@ export default function PlayerScreen() {
           </View>
         </View>
       </Modal>
-    </SafeAreaView>
+    </ScreenContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: "#111111",
-  },
   container: {
     flex: 1,
     backgroundColor: "#111111",
     paddingHorizontal: 18,
-    paddingTop: 16,
-    paddingBottom: 22,
   },
   title: {
     fontSize: 30,

@@ -1,17 +1,11 @@
-import React, { useMemo, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
-  SafeAreaView,
-  FlatList,
-} from "react-native";
 import { router } from "expo-router";
+import React, { useMemo, useState } from "react";
+import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 
+import ScreenContainer from "../src/components/ScreenContainer";
+import { mockGameModes } from "../src/data/mockGameModes";
 import { mockLeaderboard } from "../src/data/mockLeaderboard";
 import { mockPlayers } from "../src/data/mockPlayers";
-import { mockGameModes } from "../src/data/mockGameModes";
 import type { LeaderboardEntry } from "../src/types/game";
 
 type LeaderboardView = "solo" | "team";
@@ -54,7 +48,9 @@ export default function LeaderboardScreen() {
     index: number;
   }) => {
     const displayName =
-      item.type === "team" ? item.teamName ?? "Unknown Team" : getPlayerName(item.playerProfileId);
+      item.type === "team"
+        ? (item.teamName ?? "Unknown Team")
+        : getPlayerName(item.playerProfileId);
 
     return (
       <View style={styles.entryCard}>
@@ -78,106 +74,103 @@ export default function LeaderboardScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        <View style={styles.topBar}>
-          <View>
-            <Text style={styles.title}>Leaderboard</Text>
-            <Text style={styles.subtitle}>See the top scores by mode and type.</Text>
-          </View>
+    <ScreenContainer>
+      <View style={styles.topBar}>
+        <View>
+          <Text style={styles.title}>Leaderboard</Text>
+          <Text style={styles.subtitle}>
+            See the top scores by mode and type.
+          </Text>
+        </View>
 
-          <Pressable style={styles.backButton} onPress={() => router.push("/menu")}>
-            <Text style={styles.backButtonText}>Menu</Text>
+        <Pressable
+          style={styles.backButton}
+          onPress={() => router.push("/menu")}
+        >
+          <Text style={styles.backButtonText}>Menu</Text>
+        </Pressable>
+      </View>
+
+      <View style={styles.filterSection}>
+        <Text style={styles.filterLabel}>Type</Text>
+        <View style={styles.toggleRow}>
+          <Pressable
+            style={[
+              styles.toggleButton,
+              viewType === "solo" && styles.toggleButtonActive,
+            ]}
+            onPress={() => setViewType("solo")}
+          >
+            <Text style={styles.toggleButtonText}>Solo</Text>
+          </Pressable>
+
+          <Pressable
+            style={[
+              styles.toggleButton,
+              viewType === "team" && styles.toggleButtonActive,
+            ]}
+            onPress={() => setViewType("team")}
+          >
+            <Text style={styles.toggleButtonText}>Team</Text>
           </Pressable>
         </View>
+      </View>
 
-        <View style={styles.filterSection}>
-          <Text style={styles.filterLabel}>Type</Text>
-          <View style={styles.toggleRow}>
-            <Pressable
-              style={[
-                styles.toggleButton,
-                viewType === "solo" && styles.toggleButtonActive,
-              ]}
-              onPress={() => setViewType("solo")}
-            >
-              <Text style={styles.toggleButtonText}>Solo</Text>
-            </Pressable>
+      <View style={styles.filterSection}>
+        <Text style={styles.filterLabel}>Game Mode</Text>
+        <View style={styles.modeFilterWrap}>
+          <Pressable
+            style={[
+              styles.modeChip,
+              modeFilter === "all" && styles.modeChipActive,
+            ]}
+            onPress={() => setModeFilter("all")}
+          >
+            <Text style={styles.modeChipText}>All</Text>
+          </Pressable>
 
+          {mockGameModes.map((mode) => (
             <Pressable
-              style={[
-                styles.toggleButton,
-                viewType === "team" && styles.toggleButtonActive,
-              ]}
-              onPress={() => setViewType("team")}
-            >
-              <Text style={styles.toggleButtonText}>Team</Text>
-            </Pressable>
-          </View>
-        </View>
-
-        <View style={styles.filterSection}>
-          <Text style={styles.filterLabel}>Game Mode</Text>
-          <View style={styles.modeFilterWrap}>
-            <Pressable
+              key={mode.id}
               style={[
                 styles.modeChip,
-                modeFilter === "all" && styles.modeChipActive,
+                modeFilter === mode.id && styles.modeChipActive,
               ]}
-              onPress={() => setModeFilter("all")}
+              onPress={() => setModeFilter(mode.id)}
             >
-              <Text style={styles.modeChipText}>All</Text>
+              <Text style={styles.modeChipText}>{mode.name}</Text>
             </Pressable>
-
-            {mockGameModes.map((mode) => (
-              <Pressable
-                key={mode.id}
-                style={[
-                  styles.modeChip,
-                  modeFilter === mode.id && styles.modeChipActive,
-                ]}
-                onPress={() => setModeFilter(mode.id)}
-              >
-                <Text style={styles.modeChipText}>{mode.name}</Text>
-              </Pressable>
-            ))}
-          </View>
-        </View>
-
-        <View style={styles.listSection}>
-          {filteredEntries.length === 0 ? (
-            <View style={styles.emptyState}>
-              <Text style={styles.emptyStateTitle}>No entries found</Text>
-              <Text style={styles.emptyStateText}>
-                Try another type or game mode filter.
-              </Text>
-            </View>
-          ) : (
-            <FlatList
-              data={filteredEntries}
-              keyExtractor={(item) => item.id}
-              renderItem={renderLeaderboardItem}
-              contentContainerStyle={styles.listContent}
-              showsVerticalScrollIndicator={false}
-            />
-          )}
+          ))}
         </View>
       </View>
-    </SafeAreaView>
+
+      <View style={styles.listSection}>
+        {filteredEntries.length === 0 ? (
+          <View style={styles.emptyState}>
+            <Text style={styles.emptyStateTitle}>No entries found</Text>
+            <Text style={styles.emptyStateText}>
+              Try another type or game mode filter.
+            </Text>
+          </View>
+        ) : (
+          <FlatList
+            data={filteredEntries}
+            keyExtractor={(item) => item.id}
+            renderItem={renderLeaderboardItem}
+            contentContainerStyle={styles.listContent}
+            showsVerticalScrollIndicator={false}
+          />
+        )}
+      </View>
+    </ScreenContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: "#111111",
-  },
   container: {
     flex: 1,
     backgroundColor: "#111111",
     paddingHorizontal: 18,
-    paddingTop: 16,
-    paddingBottom: 22,
   },
   topBar: {
     flexDirection: "row",

@@ -1,7 +1,8 @@
-import React from "react";
-import { View, Text, StyleSheet, Pressable, SafeAreaView } from "react-native";
 import { router } from "expo-router";
+import React from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
+import ScreenContainer from "../src/components/ScreenContainer";
 import { mockGameModes } from "../src/data/mockGameModes";
 import type { GameMode } from "../src/types/game";
 
@@ -12,62 +13,60 @@ export default function MenuScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        <Text style={styles.title}>Menu</Text>
-        <Text style={styles.subtitle}>Choose a mode and start the game.</Text>
+    <ScreenContainer>
+      <Text style={styles.title}>Menu</Text>
+      <Text style={styles.subtitle}>Choose a mode and start the game.</Text>
 
-        <View style={styles.topNav}>
-          <Pressable style={styles.topNavButton} onPress={() => router.push("/players")}>
-            <Text style={styles.topNavButtonText}>Players</Text>
-          </Pressable>
+      <View style={styles.topNav}>
+        <Pressable
+          style={styles.topNavButton}
+          onPress={() => router.push("/players")}
+        >
+          <Text style={styles.topNavButtonText}>Players</Text>
+        </Pressable>
 
-          <Pressable
-            style={styles.topNavButton}
-            onPress={() => router.push("/leaderboard")}
-          >
-            <Text style={styles.topNavButtonText}>Leaderboard</Text>
-          </Pressable>
+        <Pressable
+          style={styles.topNavButton}
+          onPress={() => router.push("/leaderboard")}
+        >
+          <Text style={styles.topNavButtonText}>Leaderboard</Text>
+        </Pressable>
 
-          <Pressable style={styles.topNavButton} onPress={() => router.push("/settings")}>
-            <Text style={styles.topNavButtonText}>Settings</Text>
-          </Pressable>
-        </View>
+        <Pressable
+          style={styles.topNavButton}
+          onPress={() => router.push("/settings")}
+        >
+          <Text style={styles.topNavButtonText}>Settings</Text>
+        </Pressable>
+      </View>
 
-        <View style={styles.body}>
-          <Text style={styles.sectionTitle}>Game Modes</Text>
+      <View style={styles.body}>
+        <Text style={styles.sectionTitle}>Game Modes</Text>
 
-          <View style={styles.modesList}>
-            {mockGameModes.map((mode) => (
-              <Pressable
-                key={mode.id}
-                style={styles.modeButton}
-                onPress={() => handleModePress(mode)}
-              >
-                <Text style={styles.modeTitle}>{mode.name}</Text>
-                {!!mode.description && (
-                  <Text style={styles.modeDescription}>{mode.description}</Text>
-                )}
-              </Pressable>
-            ))}
-          </View>
+        <View style={styles.modesList}>
+          {mockGameModes.map((mode) => (
+            <Pressable
+              key={mode.id}
+              style={styles.modeButton}
+              onPress={() => handleModePress(mode)}
+            >
+              <Text style={styles.modeTitle}>{mode.name}</Text>
+              {!!mode.description && (
+                <Text style={styles.modeDescription}>{mode.description}</Text>
+              )}
+            </Pressable>
+          ))}
         </View>
       </View>
-    </SafeAreaView>
+    </ScreenContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: "#111111",
-  },
   container: {
     flex: 1,
     backgroundColor: "#111111",
     paddingHorizontal: 18,
-    paddingTop: 16,
-    paddingBottom: 22,
   },
   title: {
     fontSize: 30,

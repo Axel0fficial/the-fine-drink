@@ -1,14 +1,8 @@
-import React, { useMemo } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
-  SafeAreaView,
-  FlatList,
-} from "react-native";
 import { router } from "expo-router";
+import React, { useMemo } from "react";
+import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 
+import ScreenContainer from "../src/components/ScreenContainer";
 import { useGameStore } from "../src/state/gameStore";
 import type { GamePlayer } from "../src/types/game";
 
@@ -48,74 +42,69 @@ export default function WinnerScreen() {
 
   if (!winner) {
     return (
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.container}>
-          <Text style={styles.title}>Winner</Text>
-          <Text style={styles.emptyText}>No finished game data found.</Text>
+      <ScreenContainer>
+        <Text style={styles.title}>Winner</Text>
+        <Text style={styles.emptyText}>No finished game data found.</Text>
 
-          <Pressable style={styles.primaryButton} onPress={() => router.push("/menu")}>
-            <Text style={styles.primaryButtonText}>Back to Menu</Text>
-          </Pressable>
-        </View>
-      </SafeAreaView>
+        <Pressable
+          style={styles.primaryButton}
+          onPress={() => router.push("/menu")}
+        >
+          <Text style={styles.primaryButtonText}>Back to Menu</Text>
+        </Pressable>
+      </ScreenContainer>
     );
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        <Text style={styles.title}>Winner</Text>
-        <Text style={styles.subtitle}>The game is over. Here are the results.</Text>
+    <ScreenContainer>
+      <Text style={styles.title}>Winner</Text>
+      <Text style={styles.subtitle}>
+        The game is over. Here are the results.
+      </Text>
 
-        <View style={styles.winnerCard}>
-          <Text style={styles.winnerLabel}>Winner / King</Text>
-          <Text style={styles.winnerName}>{winner.name}</Text>
-          <Text style={styles.winnerScore}>{winner.score} points</Text>
-        </View>
-
-        <View style={styles.scoreboardSection}>
-          <Text style={styles.sectionTitle}>Scoreboard</Text>
-
-          <FlatList
-            data={sortedPlayers}
-            keyExtractor={(item) => item.id}
-            renderItem={renderScoreItem}
-            contentContainerStyle={styles.scoreboardList}
-            showsVerticalScrollIndicator={false}
-          />
-        </View>
-
-        <View style={styles.bottomActions}>
-          <Pressable
-            style={styles.secondaryButton}
-            onPress={() => router.push("/menu")}
-          >
-            <Text style={styles.secondaryButtonText}>Menu</Text>
-          </Pressable>
-
-          <Pressable
-            style={styles.primaryButton}
-            onPress={() => router.push("/leaderboard")}
-          >
-            <Text style={styles.primaryButtonText}>Leaderboard</Text>
-          </Pressable>
-        </View>
+      <View style={styles.winnerCard}>
+        <Text style={styles.winnerLabel}>Winner / King</Text>
+        <Text style={styles.winnerName}>{winner.name}</Text>
+        <Text style={styles.winnerScore}>{winner.score} points</Text>
       </View>
-    </SafeAreaView>
+
+      <View style={styles.scoreboardSection}>
+        <Text style={styles.sectionTitle}>Scoreboard</Text>
+
+        <FlatList
+          data={sortedPlayers}
+          keyExtractor={(item) => item.id}
+          renderItem={renderScoreItem}
+          contentContainerStyle={styles.scoreboardList}
+          showsVerticalScrollIndicator={false}
+        />
+      </View>
+
+      <View style={styles.bottomActions}>
+        <Pressable
+          style={styles.secondaryButton}
+          onPress={() => router.push("/menu")}
+        >
+          <Text style={styles.secondaryButtonText}>Menu</Text>
+        </Pressable>
+
+        <Pressable
+          style={styles.primaryButton}
+          onPress={() => router.push("/leaderboard")}
+        >
+          <Text style={styles.primaryButtonText}>Leaderboard</Text>
+        </Pressable>
+      </View>
+    </ScreenContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: "#111111",
-  },
   container: {
     flex: 1,
     backgroundColor: "#111111",
     paddingHorizontal: 18,
-    paddingTop: 16,
-    paddingBottom: 22,
   },
   title: {
     fontSize: 30,

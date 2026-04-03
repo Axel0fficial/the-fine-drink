@@ -1,14 +1,8 @@
-import React, { useEffect, useMemo, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
-  SafeAreaView,
-  Alert,
-} from "react-native";
 import { router } from "expo-router";
+import React, { useEffect, useMemo, useState } from "react";
+import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 
+import ScreenContainer from "../src/components/ScreenContainer";
 import { useGameStore } from "../src/state/gameStore";
 import type { Challenge } from "../src/types/game";
 
@@ -21,7 +15,9 @@ function shuffleArray<T>(items: T[]): T[] {
   return copy;
 }
 
-function pickTwoChallenges(challenges: Challenge[]): [Challenge | null, Challenge | null] {
+function pickTwoChallenges(
+  challenges: Challenge[],
+): [Challenge | null, Challenge | null] {
   const enabledChallenges = challenges.filter((challenge) => challenge.enabled);
 
   if (enabledChallenges.length === 0) return [null, null];
@@ -48,14 +44,17 @@ function resolveChallengeDescription(challenge: Challenge): string {
   if (challenge.logicType === "timer" && challenge.logicConfig?.seconds) {
     return challenge.description.replace(
       "{seconds}",
-      String(challenge.logicConfig.seconds)
+      String(challenge.logicConfig.seconds),
     );
   }
 
-  if (challenge.logicType === "status_effect" && challenge.logicConfig?.rounds) {
+  if (
+    challenge.logicType === "status_effect" &&
+    challenge.logicConfig?.rounds
+  ) {
     return challenge.description.replace(
       "{rounds}",
-      String(challenge.logicConfig.rounds)
+      String(challenge.logicConfig.rounds),
     );
   }
 
@@ -66,11 +65,14 @@ export default function GameScreen() {
   const { selectedPlayers, setSelectedPlayers, challenges } = useGameStore();
 
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
-  const [primaryChallenge, setPrimaryChallenge] = useState<Challenge | null>(null);
-  const [secondaryChallenge, setSecondaryChallenge] = useState<Challenge | null>(null);
-  const [selectedChallengeSlot, setSelectedChallengeSlot] = useState<"primary" | "secondary">(
-    "primary"
+  const [primaryChallenge, setPrimaryChallenge] = useState<Challenge | null>(
+    null,
   );
+  const [secondaryChallenge, setSecondaryChallenge] =
+    useState<Challenge | null>(null);
+  const [selectedChallengeSlot, setSelectedChallengeSlot] = useState<
+    "primary" | "secondary"
+  >("primary");
   const [statusText, setStatusText] = useState("Start the round.");
   const [turnCounter, setTurnCounter] = useState(1);
 
@@ -112,14 +114,17 @@ export default function GameScreen() {
 
   const handleDone = () => {
     if (!currentPlayer || !shownChallenge) {
-      Alert.alert("Missing challenge", "No challenge is available for this turn.");
+      Alert.alert(
+        "Missing challenge",
+        "No challenge is available for this turn.",
+      );
       return;
     }
 
     const updatedPlayers = selectedPlayers.map((player) =>
       player.id === currentPlayer.id
         ? { ...player, score: player.score + shownChallenge.points }
-        : player
+        : player,
     );
 
     setSelectedPlayers(updatedPlayers);
@@ -127,7 +132,7 @@ export default function GameScreen() {
     setStatusText(
       `${currentPlayer.name} completed "${shownChallenge.title}" and earned ${shownChallenge.points} point${
         shownChallenge.points === 1 ? "" : "s"
-      }.`
+      }.`,
     );
 
     goToNextPlayer();
@@ -146,116 +151,110 @@ export default function GameScreen() {
 
   if (!currentPlayer) {
     return (
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.container}>
-          <Text style={styles.title}>Game</Text>
-          <Text style={styles.emptyText}>No players selected.</Text>
+      <ScreenContainer>
+        <Text style={styles.title}>Game</Text>
+        <Text style={styles.emptyText}>No players selected.</Text>
 
-          <Pressable style={styles.backButton} onPress={() => router.push("/players")}>
-            <Text style={styles.backButtonText}>Back to Players</Text>
-          </Pressable>
-        </View>
-      </SafeAreaView>
+        <Pressable
+          style={styles.backButton}
+          onPress={() => router.push("/players")}
+        >
+          <Text style={styles.backButtonText}>Back to Players</Text>
+        </Pressable>
+      </ScreenContainer>
     );
   }
 
   const canToggle = !!secondaryChallenge;
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        <View style={styles.topBar}>
-          <View>
-            <Text style={styles.title}>Game</Text>
-            <Text style={styles.turnText}>Turn {turnCounter}</Text>
-          </View>
-
-          <Pressable style={styles.finishButton} onPress={handleFinishGame}>
-            <Text style={styles.finishButtonText}>Finish</Text>
-          </Pressable>
+    <ScreenContainer>
+      <View style={styles.topBar}>
+        <View>
+          <Text style={styles.title}>Game</Text>
+          <Text style={styles.turnText}>Turn {turnCounter}</Text>
         </View>
 
-        <View style={styles.infoRow}>
-          <View style={styles.infoCard}>
-            <Text style={styles.infoLabel}>Current Player</Text>
-            <Text style={styles.infoValue}>{currentPlayer.name}</Text>
-          </View>
+        <Pressable style={styles.finishButton} onPress={handleFinishGame}>
+          <Text style={styles.finishButtonText}>Finish</Text>
+        </Pressable>
+      </View>
 
-          <View style={styles.infoCard}>
-            <Text style={styles.infoLabel}>Leader / King</Text>
-            <Text style={styles.infoValue}>
-              {leader ? `${leader.name} (${leader.score})` : "None"}
-            </Text>
-          </View>
+      <View style={styles.infoRow}>
+        <View style={styles.infoCard}>
+          <Text style={styles.infoLabel}>Current Player</Text>
+          <Text style={styles.infoValue}>{currentPlayer.name}</Text>
         </View>
 
-        <View style={styles.scoreCard}>
-          <Text style={styles.scoreLabel}>Score</Text>
-          <Text style={styles.scoreValue}>{currentPlayer.score}</Text>
-        </View>
-
-        <View style={styles.challengeSwitchRow}>
-          <Pressable
-            style={[
-              styles.challengeToggle,
-              selectedChallengeSlot === "primary" && styles.challengeToggleActive,
-            ]}
-            onPress={() => setSelectedChallengeSlot("primary")}
-          >
-            <Text style={styles.challengeToggleText}>Challenge A</Text>
-          </Pressable>
-
-          <Pressable
-            style={[
-              styles.challengeToggle,
-              selectedChallengeSlot === "secondary" && styles.challengeToggleActive,
-              !canToggle && styles.challengeToggleDisabled,
-            ]}
-            onPress={() => {
-              if (canToggle) setSelectedChallengeSlot("secondary");
-            }}
-          >
-            <Text style={styles.challengeToggleText}>Challenge B</Text>
-          </Pressable>
-        </View>
-
-        <View style={styles.challengeCard}>
-          <Text style={styles.challengeTitle}>
-            {shownChallenge?.title ?? "No challenge"}
+        <View style={styles.infoCard}>
+          <Text style={styles.infoLabel}>Leader / King</Text>
+          <Text style={styles.infoValue}>
+            {leader ? `${leader.name} (${leader.score})` : "None"}
           </Text>
-          <Text style={styles.challengeDescription}>{shownDescription}</Text>
-        </View>
-
-        <View style={styles.statusCard}>
-          <Text style={styles.statusLabel}>Status</Text>
-          <Text style={styles.statusText}>{statusText}</Text>
-        </View>
-
-        <View style={styles.actionsRow}>
-          <Pressable style={styles.passButton} onPress={handlePass}>
-            <Text style={styles.passButtonText}>Pass</Text>
-          </Pressable>
-
-          <Pressable style={styles.doneButton} onPress={handleDone}>
-            <Text style={styles.doneButtonText}>Done</Text>
-          </Pressable>
         </View>
       </View>
-    </SafeAreaView>
+
+      <View style={styles.scoreCard}>
+        <Text style={styles.scoreLabel}>Score</Text>
+        <Text style={styles.scoreValue}>{currentPlayer.score}</Text>
+      </View>
+
+      <View style={styles.challengeSwitchRow}>
+        <Pressable
+          style={[
+            styles.challengeToggle,
+            selectedChallengeSlot === "primary" && styles.challengeToggleActive,
+          ]}
+          onPress={() => setSelectedChallengeSlot("primary")}
+        >
+          <Text style={styles.challengeToggleText}>Challenge A</Text>
+        </Pressable>
+
+        <Pressable
+          style={[
+            styles.challengeToggle,
+            selectedChallengeSlot === "secondary" &&
+              styles.challengeToggleActive,
+            !canToggle && styles.challengeToggleDisabled,
+          ]}
+          onPress={() => {
+            if (canToggle) setSelectedChallengeSlot("secondary");
+          }}
+        >
+          <Text style={styles.challengeToggleText}>Challenge B</Text>
+        </Pressable>
+      </View>
+
+      <View style={styles.challengeCard}>
+        <Text style={styles.challengeTitle}>
+          {shownChallenge?.title ?? "No challenge"}
+        </Text>
+        <Text style={styles.challengeDescription}>{shownDescription}</Text>
+      </View>
+
+      <View style={styles.statusCard}>
+        <Text style={styles.statusLabel}>Status</Text>
+        <Text style={styles.statusText}>{statusText}</Text>
+      </View>
+
+      <View style={styles.actionsRow}>
+        <Pressable style={styles.passButton} onPress={handlePass}>
+          <Text style={styles.passButtonText}>Pass</Text>
+        </Pressable>
+
+        <Pressable style={styles.doneButton} onPress={handleDone}>
+          <Text style={styles.doneButtonText}>Done</Text>
+        </Pressable>
+      </View>
+    </ScreenContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: "#111111",
-  },
   container: {
     flex: 1,
     backgroundColor: "#111111",
     paddingHorizontal: 18,
-    paddingTop: 16,
-    paddingBottom: 22,
   },
   topBar: {
     flexDirection: "row",
