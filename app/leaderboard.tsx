@@ -4,31 +4,34 @@ import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 
 import ScreenContainer from "../src/components/ScreenContainer";
 import { mockGameModes } from "../src/data/mockGameModes";
-import { mockLeaderboard } from "../src/data/mockLeaderboard";
 import { mockPlayers } from "../src/data/mockPlayers";
+import { useGameStore } from "../src/state/gameStore";
 import type { LeaderboardEntry } from "../src/types/game";
 
 type LeaderboardView = "solo" | "team";
 type GameModeFilter = "all" | string;
 
 export default function LeaderboardScreen() {
+  const { leaderboardEntries } = useGameStore();
+
   const [viewType, setViewType] = useState<LeaderboardView>("solo");
   const [modeFilter, setModeFilter] = useState<GameModeFilter>("all");
 
   const filteredEntries = useMemo(() => {
-    let entries = mockLeaderboard.filter((entry) => entry.type === viewType);
+    let entries = leaderboardEntries.filter((entry) => entry.type === viewType);
 
     if (modeFilter !== "all") {
       entries = entries.filter((entry) => entry.gameModeId === modeFilter);
     }
 
     return [...entries].sort((a, b) => b.score - a.score);
-  }, [viewType, modeFilter]);
+  }, [leaderboardEntries, viewType, modeFilter]);
 
-  const getPlayerName = (playerProfileId?: string) => {
-    if (!playerProfileId) return "Unknown Player";
+  const getPlayerName = (playerProfileId?: string, fallbackName?: string) => {
+    if (!playerProfileId) return fallbackName ?? "Unknown Player";
     return (
       mockPlayers.find((player) => player.id === playerProfileId)?.name ??
+      fallbackName ??
       "Unknown Player"
     );
   };
@@ -50,7 +53,7 @@ export default function LeaderboardScreen() {
     const displayName =
       item.type === "team"
         ? (item.teamName ?? "Unknown Team")
-        : getPlayerName(item.playerProfileId);
+        : getPlayerName(item.playerProfileId, item.teamName);
 
     return (
       <View style={styles.entryCard}>
@@ -167,11 +170,6 @@ export default function LeaderboardScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#111111",
-    paddingHorizontal: 18,
-  },
   topBar: {
     flexDirection: "row",
     justifyContent: "space-between",

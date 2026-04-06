@@ -20,15 +20,6 @@ export const mockGameModes: GameMode[] = [
     routeTarget: "/game",
   },
   {
-    id: "team",
-    name: "Team Battle",
-    description: "Play in teams and compete together.",
-    allowedCategories: ["group", "team", "quantity"],
-    defaultRounds: 6,
-    teamMode: true,
-    routeTarget: "/game",
-  },
-  {
     id: "custom",
     name: "Custom Mode",
     description: "Build your own match settings step by step.",

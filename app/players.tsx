@@ -1,4 +1,3 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import React, { useEffect, useMemo, useState } from "react";
 import {
@@ -11,15 +10,10 @@ import {
   TextInput,
   View,
 } from "react-native";
-import ScreenContainer from "../src/components/ScreenContainer";
 
-import { mockPlayers } from "../src/data/mockPlayers";
+import ScreenContainer from "../src/components/ScreenContainer";
 import { useGameStore } from "../src/state/gameStore";
 import type { GamePlayer, PlayerProfile, TeamColor } from "../src/types/game";
-
-const STORAGE_KEYS = {
-  selectedPlayers: "thefinedrink:selectedPlayers",
-};
 
 const TEAM_ORDER: TeamColor[] = ["none", "red", "blue", "green", "yellow"];
 
@@ -45,12 +39,12 @@ function createGamePlayerFromProfile(profile: PlayerProfile): GamePlayer {
   };
 }
 
-function createNewGamePlayer(name: string): GamePlayer {
+function createPlayerProfile(name: string): PlayerProfile {
   return {
-    id: `gp_new_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+    id: `player_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
     name,
-    score: 0,
-    team: "none",
+    totalPoints: 0,
+    totalWins: 0,
   };
 }
 
@@ -71,63 +65,58 @@ function shuffleArray<T>(items: T[]): T[] {
 
 export default function PlayerScreen() {
   const [playerName, setPlayerName] = useState("");
-  const [players, setPlayers] = useState<GamePlayer[]>([]);
   const [existingPlayersModalVisible, setExistingPlayersModalVisible] =
     useState(false);
-  const [teamModeEnabled, setTeamModeEnabled] = useState(false);
-  const [isLoadingSavedPlayers, setIsLoadingSavedPlayers] = useState(true);
-  const { setSelectedPlayers } = useGameStore();
+
+  const {
+    selectedPlayers,
+    setSelectedPlayers,
+    playerProfiles,
+    setPlayerProfiles,
+  } = useGameStore();
+
+  const [players, setPlayers] = useState<GamePlayer[]>(selectedPlayers);
+
+  useEffect(() => {
+    setPlayers(selectedPlayers);
+  }, [selectedPlayers]);
+
+  const [teamModeEnabled, setTeamModeEnabled] = useState(
+    selectedPlayers.some((player) => player.team !== "none"),
+  );
+
+  useEffect(() => {
+    setTeamModeEnabled(players.some((player) => player.team !== "none"));
+  }, [players]);
 
   const canContinue = players.length >= 2;
 
-  useEffect(() => {
-    loadSavedPlayers();
-  }, []);
+  const handleToggleTeams = () => {
+    setTeamModeEnabled((prev) => {
+      const nextValue = !prev;
 
-  useEffect(() => {
-    if (!isLoadingSavedPlayers) {
-      saveSelectedPlayers(players);
-    }
-  }, [players, isLoadingSavedPlayers]);
-
-  async function loadSavedPlayers() {
-    try {
-      const raw = await AsyncStorage.getItem(STORAGE_KEYS.selectedPlayers);
-
-      if (raw) {
-        const parsed = JSON.parse(raw) as GamePlayer[];
-
-        if (Array.isArray(parsed)) {
-          setPlayers(parsed);
-        }
+      if (!nextValue) {
+        setPlayers((currentPlayers) =>
+          currentPlayers.map((player) => ({
+            ...player,
+            team: "none",
+          })),
+        );
       }
-    } catch (error) {
-      console.error("Failed to load saved players:", error);
-    } finally {
-      setIsLoadingSavedPlayers(false);
-    }
-  }
 
-  async function saveSelectedPlayers(nextPlayers: GamePlayer[]) {
-    try {
-      await AsyncStorage.setItem(
-        STORAGE_KEYS.selectedPlayers,
-        JSON.stringify(nextPlayers),
-      );
-    } catch (error) {
-      console.error("Failed to save selected players:", error);
-    }
-  }
+      return nextValue;
+    });
+  };
 
   const existingPlayerIdsInMatch = useMemo(() => {
     return new Set(players.map((player) => player.profileId).filter(Boolean));
   }, [players]);
 
   const availableExistingPlayers = useMemo(() => {
-    return mockPlayers.filter(
+    return playerProfiles.filter(
       (profile) => !existingPlayerIdsInMatch.has(profile.id),
     );
-  }, [existingPlayerIdsInMatch]);
+  }, [playerProfiles, existingPlayerIdsInMatch]);
 
   const addPlayerByName = () => {
     const cleanName = normalizeName(playerName);
@@ -146,7 +135,7 @@ export default function PlayerScreen() {
       return;
     }
 
-    const existingProfile = mockPlayers.find(
+    const existingProfile = playerProfiles.find(
       (profile) => profile.name.toLowerCase() === cleanName.toLowerCase(),
     );
 
@@ -156,7 +145,10 @@ export default function PlayerScreen() {
         createGamePlayerFromProfile(existingProfile),
       ]);
     } else {
-      setPlayers((prev) => [...prev, createNewGamePlayer(cleanName)]);
+      const newProfile = createPlayerProfile(cleanName);
+
+      setPlayerProfiles((prev) => [...prev, newProfile]);
+      setPlayers((prev) => [...prev, createGamePlayerFromProfile(newProfile)]);
     }
 
     setPlayerName("");
@@ -287,7 +279,7 @@ export default function PlayerScreen() {
             styles.topNavButton,
             teamModeEnabled && styles.topNavButtonActive,
           ]}
-          onPress={() => setTeamModeEnabled((prev) => !prev)}
+          onPress={handleToggleTeams}
         >
           <Text style={styles.topNavButtonText}>
             {teamModeEnabled ? "Teams: On" : "Teams"}

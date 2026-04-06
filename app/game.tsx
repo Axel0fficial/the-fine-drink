@@ -62,9 +62,11 @@ function resolveChallengeDescription(challenge: Challenge): string {
 }
 
 export default function GameScreen() {
-  const { selectedPlayers, setSelectedPlayers, challenges } = useGameStore();
+  const { selectedPlayers, setSelectedPlayers, challenges, selectedRounds } =
+    useGameStore();
 
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
+  const [currentRound, setCurrentRound] = useState(1);
   const [primaryChallenge, setPrimaryChallenge] = useState<Challenge | null>(
     null,
   );
@@ -74,7 +76,6 @@ export default function GameScreen() {
     "primary" | "secondary"
   >("primary");
   const [statusText, setStatusText] = useState("Start the round.");
-  const [turnCounter, setTurnCounter] = useState(1);
 
   const currentPlayer = selectedPlayers[currentPlayerIndex] ?? null;
 
@@ -91,6 +92,8 @@ export default function GameScreen() {
     return resolveChallengeDescription(shownChallenge);
   }, [shownChallenge]);
 
+  const turnInRound = currentPlayerIndex + 1;
+
   const generateTurnChallenges = () => {
     const [first, second] = pickTwoChallenges(challenges);
     setPrimaryChallenge(first);
@@ -106,9 +109,22 @@ export default function GameScreen() {
   const goToNextPlayer = () => {
     if (selectedPlayers.length === 0) return;
 
-    const nextIndex = (currentPlayerIndex + 1) % selectedPlayers.length;
-    setCurrentPlayerIndex(nextIndex);
-    setTurnCounter((prev) => prev + 1);
+    const isLastPlayerInRound =
+      currentPlayerIndex === selectedPlayers.length - 1;
+    const isLastRound = currentRound === selectedRounds;
+
+    if (isLastPlayerInRound && isLastRound) {
+      router.push("/winner");
+      return;
+    }
+
+    if (isLastPlayerInRound) {
+      setCurrentPlayerIndex(0);
+      setCurrentRound((prev) => prev + 1);
+    } else {
+      setCurrentPlayerIndex((prev) => prev + 1);
+    }
+
     generateTurnChallenges();
   };
 
@@ -171,8 +187,10 @@ export default function GameScreen() {
     <ScreenContainer>
       <View style={styles.topBar}>
         <View>
-          <Text style={styles.title}>Game</Text>
-          <Text style={styles.turnText}>Turn {turnCounter}</Text>
+          <Text style={styles.title}>Round {currentRound}</Text>
+          <Text style={styles.turnText}>
+            Player {turnInRound} of {selectedPlayers.length}
+          </Text>
         </View>
 
         <Pressable style={styles.finishButton} onPress={handleFinishGame}>
@@ -251,11 +269,6 @@ export default function GameScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#111111",
-    paddingHorizontal: 18,
-  },
   topBar: {
     flexDirection: "row",
     justifyContent: "space-between",

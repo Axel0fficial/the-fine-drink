@@ -1,22 +1,65 @@
 import { router } from "expo-router";
-import React from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
 import ScreenContainer from "../src/components/ScreenContainer";
 import { mockGameModes } from "../src/data/mockGameModes";
+import { useGameStore } from "../src/state/gameStore";
 import type { GameMode } from "../src/types/game";
 
 export default function MenuScreen() {
+  const { selectedRounds, setSelectedRounds, setSelectedGameModeId } =
+    useGameStore();
+
+  const [roundsInput, setRoundsInput] = useState(String(selectedRounds));
+
+  useEffect(() => {
+    setRoundsInput(String(selectedRounds));
+  }, [selectedRounds]);
+
   const handleModePress = (mode: GameMode) => {
+    const parsedRounds = Number.parseInt(roundsInput, 10);
+
+    if (!Number.isFinite(parsedRounds) || parsedRounds < 1) {
+      setSelectedRounds(6);
+      setRoundsInput("6");
+    } else {
+      setSelectedRounds(parsedRounds);
+    }
+
+    setSelectedGameModeId(mode.id);
+
     const targetRoute = mode.routeTarget ?? "/game";
     router.push(targetRoute);
   };
 
+  const handleRoundsChange = (value: string) => {
+    const cleaned = value.replace(/[^0-9]/g, "");
+    setRoundsInput(cleaned);
+
+    if (cleaned === "") return;
+
+    const parsed = Number.parseInt(cleaned, 10);
+    if (Number.isFinite(parsed) && parsed >= 1) {
+      setSelectedRounds(parsed);
+    }
+  };
+
+  const handleRoundsBlur = () => {
+    const parsed = Number.parseInt(roundsInput, 10);
+
+    if (!Number.isFinite(parsed) || parsed < 1) {
+      setSelectedRounds(6);
+      setRoundsInput("6");
+      return;
+    }
+
+    setSelectedRounds(parsed);
+    setRoundsInput(String(parsed));
+  };
+
   return (
     <ScreenContainer>
-      <Text style={styles.title}>Menu</Text>
-      <Text style={styles.subtitle}>Choose a mode and start the game.</Text>
-
       <View style={styles.topNav}>
         <Pressable
           style={styles.topNavButton}
@@ -38,6 +81,21 @@ export default function MenuScreen() {
         >
           <Text style={styles.topNavButtonText}>Settings</Text>
         </Pressable>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Rounds</Text>
+
+        <TextInput
+          value={roundsInput}
+          onChangeText={handleRoundsChange}
+          onBlur={handleRoundsBlur}
+          keyboardType="number-pad"
+          style={styles.roundsInput}
+          placeholder="6"
+          placeholderTextColor="#8b8b8b"
+          maxLength={3}
+        />
       </View>
 
       <View style={styles.body}>
@@ -63,26 +121,9 @@ export default function MenuScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#111111",
-    paddingHorizontal: 18,
-  },
-  title: {
-    fontSize: 30,
-    fontWeight: "800",
-    color: "#ffffff",
-  },
-  subtitle: {
-    marginTop: 6,
-    fontSize: 14,
-    lineHeight: 20,
-    color: "#b5b5b5",
-  },
   topNav: {
     flexDirection: "row",
     gap: 10,
-    marginTop: 18,
     marginBottom: 22,
   },
   topNavButton: {
@@ -101,14 +142,30 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     textAlign: "center",
   },
-  body: {
-    flex: 1,
+  section: {
+    marginBottom: 22,
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: "800",
     color: "#ffffff",
-    marginBottom: 16,
+    marginBottom: 14,
+  },
+  roundsInput: {
+    width: 110,
+    backgroundColor: "#1b1b1b",
+    borderWidth: 1,
+    borderColor: "#313131",
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    color: "#ffffff",
+    fontSize: 18,
+    fontWeight: "700",
+    textAlign: "center",
+  },
+  body: {
+    flex: 1,
   },
   modesList: {
     alignItems: "flex-start",
