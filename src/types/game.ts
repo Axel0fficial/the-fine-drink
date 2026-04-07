@@ -1,12 +1,14 @@
 export type TeamColor = "none" | "red" | "blue" | "green" | "yellow";
 export type Difficulty = "easy" | "normal" | "hard" | "brutal";
 export type ModifierScope = "session" | "leader" | "last_place" | "player";
+export type PlayerTag = "none" | "non_drinker";
 
 export type PlayerProfile = {
   id: string;
   name: string;
   totalPoints: number;
   totalWins: number;
+  tag: PlayerTag;
 };
 
 export type GamePlayer = {
@@ -15,6 +17,7 @@ export type GamePlayer = {
   name: string;
   score: number;
   team: TeamColor;
+  tag: PlayerTag;
 };
 
 export type Challenge = {

@@ -27,6 +27,7 @@ const ALL_CATEGORIES = [
   "timed",
   "reaction",
   "social",
+  "drinking",
 ];
 
 function createCustomChallenge(input: {

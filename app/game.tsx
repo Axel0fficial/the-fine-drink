@@ -4,7 +4,7 @@ import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 
 import ScreenContainer from "../src/components/ScreenContainer";
 import { useGameStore } from "../src/state/gameStore";
-import type { Challenge } from "../src/types/game";
+import type { Challenge, GamePlayer } from "../src/types/game";
 
 function shuffleArray<T>(items: T[]): T[] {
   const copy = [...items];
@@ -15,15 +15,33 @@ function shuffleArray<T>(items: T[]): T[] {
   return copy;
 }
 
-function pickTwoChallenges(
+function getEligibleChallengesForPlayer(
   challenges: Challenge[],
+  player: GamePlayer | null,
+): Challenge[] {
+  return challenges.filter((challenge) => {
+    if (!challenge.enabled) return false;
+
+    const isDrinkingChallenge = challenge.categories.includes("drinking");
+
+    if (player?.tag === "non_drinker" && isDrinkingChallenge) {
+      return false;
+    }
+
+    return true;
+  });
+}
+
+function pickTwoChallengesForPlayer(
+  challenges: Challenge[],
+  player: GamePlayer | null,
 ): [Challenge | null, Challenge | null] {
-  const enabledChallenges = challenges.filter((challenge) => challenge.enabled);
+  const eligibleChallenges = getEligibleChallengesForPlayer(challenges, player);
 
-  if (enabledChallenges.length === 0) return [null, null];
-  if (enabledChallenges.length === 1) return [enabledChallenges[0], null];
+  if (eligibleChallenges.length === 0) return [null, null];
+  if (eligibleChallenges.length === 1) return [eligibleChallenges[0], null];
 
-  const shuffled = shuffleArray(enabledChallenges);
+  const shuffled = shuffleArray(eligibleChallenges);
   return [shuffled[0], shuffled[1]];
 }
 
@@ -88,23 +106,35 @@ export default function GameScreen() {
     selectedChallengeSlot === "primary" ? primaryChallenge : secondaryChallenge;
 
   const shownDescription = useMemo(() => {
-    if (!shownChallenge) return "No challenge available.";
+    if (!shownChallenge) {
+      return "No challenge available for this player.";
+    }
     return resolveChallengeDescription(shownChallenge);
   }, [shownChallenge]);
 
   const turnInRound = currentPlayerIndex + 1;
 
   const generateTurnChallenges = () => {
-    const [first, second] = pickTwoChallenges(challenges);
+    const [first, second] = pickTwoChallengesForPlayer(
+      challenges,
+      currentPlayer,
+    );
+
     setPrimaryChallenge(first);
     setSecondaryChallenge(second);
     setSelectedChallengeSlot("primary");
+
+    if (!first && !second && currentPlayer) {
+      setStatusText(
+        `${currentPlayer.name} has no eligible challenges with the current rules.`,
+      );
+    }
   };
 
   useEffect(() => {
     if (selectedPlayers.length === 0) return;
     generateTurnChallenges();
-  }, [selectedPlayers.length]);
+  }, [selectedPlayers.length, currentPlayerIndex, currentRound]);
 
   const goToNextPlayer = () => {
     if (selectedPlayers.length === 0) return;
@@ -124,8 +154,6 @@ export default function GameScreen() {
     } else {
       setCurrentPlayerIndex((prev) => prev + 1);
     }
-
-    generateTurnChallenges();
   };
 
   const handleDone = () => {
@@ -245,8 +273,17 @@ export default function GameScreen() {
 
       <View style={styles.challengeCard}>
         <Text style={styles.challengeTitle}>
-          {shownChallenge?.title ?? "No challenge"}
+          {shownChallenge ? shownChallenge.title : "No challenge available"}
         </Text>
+
+        <Text style={styles.challengeMeta}>
+          {shownChallenge
+            ? `${shownChallenge.difficulty.toUpperCase()} • ${shownChallenge.categories.join(", ")}`
+            : currentPlayer.tag === "non_drinker"
+              ? "This player cannot receive drinking challenges."
+              : "No eligible challenge found."}
+        </Text>
+
         <Text style={styles.challengeDescription}>{shownDescription}</Text>
       </View>
 
@@ -255,12 +292,19 @@ export default function GameScreen() {
         <Text style={styles.statusText}>{statusText}</Text>
       </View>
 
-      <View style={styles.actionsRow}>
+      <View style={styles.bottomRow}>
         <Pressable style={styles.passButton} onPress={handlePass}>
           <Text style={styles.passButtonText}>Pass</Text>
         </Pressable>
 
-        <Pressable style={styles.doneButton} onPress={handleDone}>
+        <Pressable
+          style={[
+            styles.doneButton,
+            !shownChallenge && styles.doneButtonDisabled,
+          ]}
+          onPress={handleDone}
+          disabled={!shownChallenge}
+        >
           <Text style={styles.doneButtonText}>Done</Text>
         </Pressable>
       </View>
@@ -269,13 +313,6 @@ export default function GameScreen() {
 }
 
 const styles = StyleSheet.create({
-  topBar: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginBottom: 18,
-    gap: 12,
-  },
   title: {
     fontSize: 30,
     fontWeight: "800",
@@ -286,69 +323,82 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#b5b5b5",
   },
+  emptyText: {
+    marginTop: 12,
+    fontSize: 15,
+    color: "#b5b5b5",
+  },
+  topBar: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginBottom: 20,
+  },
   finishButton: {
-    backgroundColor: "#1f1f1f",
-    borderWidth: 1,
-    borderColor: "#333333",
-    paddingVertical: 10,
-    paddingHorizontal: 14,
+    backgroundColor: "#2b2b2b",
     borderRadius: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
   },
   finishButtonText: {
     color: "#ffffff",
-    fontSize: 14,
     fontWeight: "700",
+    fontSize: 14,
   },
   infoRow: {
     flexDirection: "row",
-    gap: 12,
+    gap: 10,
     marginBottom: 14,
   },
   infoCard: {
     flex: 1,
-    backgroundColor: "#1b1b1b",
+    backgroundColor: "#171717",
     borderWidth: 1,
-    borderColor: "#2f2f2f",
-    borderRadius: 16,
+    borderColor: "#2a2a2a",
+    borderRadius: 14,
     padding: 14,
   },
   infoLabel: {
-    color: "#aaaaaa",
+    color: "#9ca3af",
     fontSize: 12,
+    fontWeight: "700",
+    textTransform: "uppercase",
     marginBottom: 6,
   },
   infoValue: {
     color: "#ffffff",
-    fontSize: 17,
+    fontSize: 16,
     fontWeight: "800",
   },
   scoreCard: {
-    backgroundColor: "#2b2144",
+    backgroundColor: "#1d1d1d",
     borderWidth: 1,
-    borderColor: "#8b5cf6",
+    borderColor: "#313131",
     borderRadius: 16,
-    paddingVertical: 16,
-    paddingHorizontal: 16,
+    padding: 16,
     marginBottom: 16,
+    alignItems: "center",
   },
   scoreLabel: {
-    color: "#d8cfff",
+    color: "#9ca3af",
     fontSize: 13,
-    marginBottom: 4,
+    fontWeight: "700",
+    marginBottom: 6,
+    textTransform: "uppercase",
   },
   scoreValue: {
-    color: "#ffffff",
-    fontSize: 28,
+    color: "#8b5cf6",
+    fontSize: 32,
     fontWeight: "900",
   },
   challengeSwitchRow: {
     flexDirection: "row",
     gap: 10,
-    marginBottom: 14,
+    marginBottom: 12,
   },
   challengeToggle: {
     flex: 1,
-    backgroundColor: "#1d1d1d",
+    backgroundColor: "#222222",
     borderWidth: 1,
     borderColor: "#313131",
     borderRadius: 12,
@@ -360,12 +410,12 @@ const styles = StyleSheet.create({
     borderColor: "#8b5cf6",
   },
   challengeToggleDisabled: {
-    opacity: 0.4,
+    opacity: 0.45,
   },
   challengeToggleText: {
     color: "#ffffff",
     fontSize: 14,
-    fontWeight: "700",
+    fontWeight: "800",
   },
   challengeCard: {
     flex: 1,
@@ -374,33 +424,38 @@ const styles = StyleSheet.create({
     borderColor: "#2a2a2a",
     borderRadius: 18,
     padding: 18,
-    justifyContent: "center",
     marginBottom: 14,
   },
   challengeTitle: {
     color: "#ffffff",
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: "900",
-    marginBottom: 12,
-    textAlign: "center",
+    marginBottom: 8,
+  },
+  challengeMeta: {
+    color: "#8b8b8b",
+    fontSize: 13,
+    lineHeight: 18,
+    marginBottom: 14,
   },
   challengeDescription: {
-    color: "#d0d0d0",
+    color: "#f3f3f3",
     fontSize: 18,
     lineHeight: 28,
-    textAlign: "center",
   },
   statusCard: {
-    backgroundColor: "#1b1b1b",
+    backgroundColor: "#171717",
     borderWidth: 1,
-    borderColor: "#2f2f2f",
+    borderColor: "#2a2a2a",
     borderRadius: 14,
     padding: 14,
     marginBottom: 16,
   },
   statusLabel: {
-    color: "#aaaaaa",
+    color: "#9ca3af",
     fontSize: 12,
+    fontWeight: "700",
+    textTransform: "uppercase",
     marginBottom: 6,
   },
   statusText: {
@@ -408,52 +463,51 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
   },
-  actionsRow: {
+  bottomRow: {
     flexDirection: "row",
     gap: 12,
   },
   passButton: {
     flex: 1,
     backgroundColor: "#2b2b2b",
-    paddingVertical: 16,
+    paddingVertical: 15,
     borderRadius: 14,
     alignItems: "center",
     justifyContent: "center",
   },
   passButtonText: {
     color: "#ffffff",
-    fontSize: 16,
     fontWeight: "800",
+    fontSize: 15,
   },
   doneButton: {
     flex: 1,
     backgroundColor: "#8b5cf6",
-    paddingVertical: 16,
+    paddingVertical: 15,
     borderRadius: 14,
     alignItems: "center",
     justifyContent: "center",
   },
+  doneButtonDisabled: {
+    backgroundColor: "#3b3159",
+    opacity: 0.5,
+  },
   doneButtonText: {
     color: "#ffffff",
-    fontSize: 16,
     fontWeight: "800",
-  },
-  emptyText: {
-    color: "#ffffff",
-    fontSize: 18,
-    marginTop: 20,
-    marginBottom: 20,
+    fontSize: 15,
   },
   backButton: {
-    backgroundColor: "#8b5cf6",
+    marginTop: 18,
+    backgroundColor: "#2b2b2b",
     paddingVertical: 14,
-    paddingHorizontal: 18,
     borderRadius: 12,
-    alignSelf: "flex-start",
+    alignItems: "center",
+    justifyContent: "center",
   },
   backButtonText: {
     color: "#ffffff",
-    fontSize: 15,
     fontWeight: "800",
+    fontSize: 15,
   },
 });

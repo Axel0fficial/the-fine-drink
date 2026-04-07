@@ -6,7 +6,7 @@ export const mockChallenges: Challenge[] = [
     title: "Take a Sip",
     description: "Take {x} sips.",
     difficulty: "easy",
-    categories: ["individual", "quantity"],
+    categories: ["individual", "quantity", "drinking"],
     points: 1,
 
     baseChance: 0.8,
@@ -37,7 +37,7 @@ export const mockChallenges: Challenge[] = [
     title: "Waterfall",
     description: "Everyone starts drinking, you can only stop when the player before you stops.",
     difficulty: "normal",
-    categories: ["group"],
+    categories: ["group", "drinking"],
     points: 3,
 
     baseChance: 0.4,

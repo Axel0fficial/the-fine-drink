@@ -1,7 +1,6 @@
 import { router } from "expo-router";
 import React, { useEffect, useMemo, useState } from "react";
 import {
-  Alert,
   FlatList,
   Modal,
   Pressable,
@@ -13,7 +12,12 @@ import {
 
 import ScreenContainer from "../src/components/ScreenContainer";
 import { useGameStore } from "../src/state/gameStore";
-import type { GamePlayer, PlayerProfile, TeamColor } from "../src/types/game";
+import type {
+  GamePlayer,
+  PlayerProfile,
+  PlayerTag,
+  TeamColor,
+} from "../src/types/game";
 
 const TEAM_ORDER: TeamColor[] = ["none", "red", "blue", "green", "yellow"];
 
@@ -24,6 +28,11 @@ const TEAM_COLORS: Record<TeamColor, string> = {
   green: "#22c55e",
   yellow: "#eab308",
 };
+
+const PLAYER_TAG_OPTIONS: { value: PlayerTag; label: string }[] = [
+  { value: "none", label: "No Tag" },
+  { value: "non_drinker", label: "Non-drinker" },
+];
 
 function normalizeName(value: string) {
   return value.trim().replace(/\s+/g, " ");
@@ -36,6 +45,7 @@ function createGamePlayerFromProfile(profile: PlayerProfile): GamePlayer {
     name: profile.name,
     score: 0,
     team: "none",
+    tag: profile.tag,
   };
 }
 
@@ -45,6 +55,7 @@ function createPlayerProfile(name: string): PlayerProfile {
     name,
     totalPoints: 0,
     totalWins: 0,
+    tag: "none",
   };
 }
 
@@ -63,10 +74,25 @@ function shuffleArray<T>(items: T[]): T[] {
   return copy;
 }
 
+function formatTag(tag: PlayerTag) {
+  switch (tag) {
+    case "non_drinker":
+      return "Non-drinker";
+    case "none":
+    default:
+      return "No tag";
+  }
+}
+
 export default function PlayerScreen() {
   const [playerName, setPlayerName] = useState("");
   const [existingPlayersModalVisible, setExistingPlayersModalVisible] =
     useState(false);
+  const [editingProfile, setEditingProfile] = useState<PlayerProfile | null>(
+    null,
+  );
+  const [editName, setEditName] = useState("");
+  const [editTag, setEditTag] = useState<PlayerTag>("none");
 
   const {
     selectedPlayers,
@@ -91,6 +117,14 @@ export default function PlayerScreen() {
 
   const canContinue = players.length >= 2;
 
+  const existingPlayerIdsInMatch = useMemo(() => {
+    return new Set(players.map((player) => player.profileId).filter(Boolean));
+  }, [players]);
+
+  const sortedProfiles = useMemo(() => {
+    return [...playerProfiles].sort((a, b) => a.name.localeCompare(b.name));
+  }, [playerProfiles]);
+
   const handleToggleTeams = () => {
     setTeamModeEnabled((prev) => {
       const nextValue = !prev;
@@ -108,16 +142,6 @@ export default function PlayerScreen() {
     });
   };
 
-  const existingPlayerIdsInMatch = useMemo(() => {
-    return new Set(players.map((player) => player.profileId).filter(Boolean));
-  }, [players]);
-
-  const availableExistingPlayers = useMemo(() => {
-    return playerProfiles.filter(
-      (profile) => !existingPlayerIdsInMatch.has(profile.id),
-    );
-  }, [playerProfiles, existingPlayerIdsInMatch]);
-
   const addPlayerByName = () => {
     const cleanName = normalizeName(playerName);
 
@@ -127,13 +151,7 @@ export default function PlayerScreen() {
       (player) => player.name.toLowerCase() === cleanName.toLowerCase(),
     );
 
-    if (alreadyInMatch) {
-      Alert.alert(
-        "Player already added",
-        `"${cleanName}" is already in this match.`,
-      );
-      return;
-    }
+    if (alreadyInMatch) return;
 
     const existingProfile = playerProfiles.find(
       (profile) => profile.name.toLowerCase() === cleanName.toLowerCase(),
@@ -201,18 +219,106 @@ export default function PlayerScreen() {
     router.push("/menu");
   };
 
-  const renderExistingPlayerCard = ({ item }: { item: PlayerProfile }) => {
+  const openEditProfile = (profile: PlayerProfile) => {
+    setEditingProfile(profile);
+    setEditName(profile.name);
+    setEditTag(profile.tag);
+  };
+
+  const closeEditProfile = () => {
+    setEditingProfile(null);
+    setEditName("");
+    setEditTag("none");
+  };
+
+  const saveEditedProfile = () => {
+    if (!editingProfile) return;
+
+    const cleanName = normalizeName(editName);
+    if (!cleanName) return;
+
+    const duplicateProfile = playerProfiles.find(
+      (profile) =>
+        profile.id !== editingProfile.id &&
+        profile.name.toLowerCase() === cleanName.toLowerCase(),
+    );
+
+    if (duplicateProfile) return;
+
+    setPlayerProfiles((prev) =>
+      prev.map((profile) =>
+        profile.id === editingProfile.id
+          ? {
+              ...profile,
+              name: cleanName,
+              tag: editTag,
+            }
+          : profile,
+      ),
+    );
+
+    setPlayers((prev) =>
+      prev.map((player) =>
+        player.profileId === editingProfile.id
+          ? {
+              ...player,
+              name: cleanName,
+              tag: editTag,
+            }
+          : player,
+      ),
+    );
+
+    closeEditProfile();
+  };
+
+  const deleteEditedProfile = () => {
+    if (!editingProfile) return;
+
+    setPlayerProfiles((prev) =>
+      prev.filter((profile) => profile.id !== editingProfile.id),
+    );
+
+    closeEditProfile();
+  };
+
+  const renderProfileCard = ({ item }: { item: PlayerProfile }) => {
+    const alreadyInMatch = existingPlayerIdsInMatch.has(item.id);
+
     return (
-      <Pressable
-        style={styles.existingPlayerCard}
-        onPress={() => addExistingPlayer(item)}
-      >
+      <View style={styles.existingPlayerCard}>
         <Text style={styles.existingPlayerName}>{item.name}</Text>
         <Text style={styles.existingPlayerMeta}>Wins: {item.totalWins}</Text>
-        <Text style={styles.existingPlayerMeta}>
-          Points: {item.totalPoints}
-        </Text>
-      </Pressable>
+        <Text style={styles.existingPlayerMeta}>Points: {item.totalPoints}</Text>
+        <Text style={styles.existingPlayerMeta}>Tag: {formatTag(item.tag)}</Text>
+
+        <View style={styles.profileCardActions}>
+          <Pressable
+            style={[
+              styles.profileCardButton,
+              alreadyInMatch && styles.profileCardButtonDisabled,
+            ]}
+            onPress={() => addExistingPlayer(item)}
+            disabled={alreadyInMatch}
+          >
+            <Text
+              style={[
+                styles.profileCardButtonText,
+                alreadyInMatch && styles.profileCardButtonTextDisabled,
+              ]}
+            >
+              {alreadyInMatch ? "Added" : "Add"}
+            </Text>
+          </Pressable>
+
+          <Pressable
+            style={[styles.profileCardButton, styles.profileEditButton]}
+            onPress={() => openEditProfile(item)}
+          >
+            <Text style={styles.profileCardButtonText}>Edit</Text>
+          </Pressable>
+        </View>
+      </View>
     );
   };
 
@@ -245,7 +351,8 @@ export default function PlayerScreen() {
             {index + 1}. {item.name}
           </Text>
           <Text style={styles.playerSubtext}>
-            {item.profileId ? "Existing profile" : "New player"}
+            {item.profileId ? "Existing profile" : "New player"} •{" "}
+            {formatTag(item.tag)}
           </Text>
         </View>
 
@@ -363,32 +470,94 @@ export default function PlayerScreen() {
         <View style={styles.modalBackdrop}>
           <View style={styles.modalCard}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Select Existing Players</Text>
+              <Text style={styles.modalTitle}>Player Profiles</Text>
               <Pressable onPress={() => setExistingPlayersModalVisible(false)}>
                 <Text style={styles.modalCloseText}>Close</Text>
               </Pressable>
             </View>
 
-            {availableExistingPlayers.length === 0 ? (
+            {sortedProfiles.length === 0 ? (
               <View style={styles.modalEmptyState}>
-                <Text style={styles.modalEmptyTitle}>
-                  No available profiles
-                </Text>
+                <Text style={styles.modalEmptyTitle}>No profiles</Text>
                 <Text style={styles.modalEmptyText}>
-                  All saved players are already in the current match.
+                  Create a player with the input to start building reusable
+                  profiles.
                 </Text>
               </View>
             ) : (
               <FlatList
-                data={availableExistingPlayers}
+                data={sortedProfiles}
                 keyExtractor={(item) => item.id}
-                renderItem={renderExistingPlayerCard}
+                renderItem={renderProfileCard}
                 numColumns={2}
                 columnWrapperStyle={styles.modalGridRow}
                 contentContainerStyle={styles.modalGridContent}
                 showsVerticalScrollIndicator={false}
               />
             )}
+          </View>
+        </View>
+      </Modal>
+
+      <Modal
+        visible={!!editingProfile}
+        animationType="slide"
+        transparent
+        onRequestClose={closeEditProfile}
+      >
+        <View style={styles.modalBackdrop}>
+          <View style={styles.editModalCard}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Edit Profile</Text>
+              <Pressable onPress={closeEditProfile}>
+                <Text style={styles.modalCloseText}>Close</Text>
+              </Pressable>
+            </View>
+
+            <Text style={styles.inputLabel}>Name</Text>
+            <TextInput
+              value={editName}
+              onChangeText={setEditName}
+              placeholder="Player name"
+              placeholderTextColor="#8b8b8b"
+              style={styles.editInput}
+            />
+
+            <Text style={styles.inputLabel}>Tag</Text>
+            <View style={styles.tagRow}>
+              {PLAYER_TAG_OPTIONS.map((option) => {
+                const selected = editTag === option.value;
+
+                return (
+                  <Pressable
+                    key={option.value}
+                    style={[
+                      styles.tagButton,
+                      selected && styles.tagButtonActive,
+                    ]}
+                    onPress={() => setEditTag(option.value)}
+                  >
+                    <Text style={styles.tagButtonText}>{option.label}</Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+
+            <View style={styles.editActions}>
+              <Pressable
+                style={[styles.editActionButton, styles.deleteProfileButton]}
+                onPress={deleteEditedProfile}
+              >
+                <Text style={styles.deleteProfileButtonText}>Delete</Text>
+              </Pressable>
+
+              <Pressable
+                style={[styles.editActionButton, styles.saveProfileButton]}
+                onPress={saveEditedProfile}
+              >
+                <Text style={styles.saveProfileButtonText}>Save</Text>
+              </Pressable>
+            </View>
           </View>
         </View>
       </Modal>
@@ -618,6 +787,13 @@ const styles = StyleSheet.create({
     borderColor: "#303030",
     padding: 16,
   },
+  editModalCard: {
+    backgroundColor: "#151515",
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: "#303030",
+    padding: 16,
+  },
   modalHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -649,7 +825,7 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     paddingVertical: 16,
     paddingHorizontal: 14,
-    minHeight: 100,
+    minHeight: 150,
     justifyContent: "center",
   },
   existingPlayerName: {
@@ -662,6 +838,33 @@ const styles = StyleSheet.create({
     color: "#b3b3b3",
     fontSize: 13,
     marginTop: 2,
+  },
+  profileCardActions: {
+    flexDirection: "row",
+    gap: 8,
+    marginTop: 14,
+  },
+  profileCardButton: {
+    flex: 1,
+    backgroundColor: "#2b2b2b",
+    borderRadius: 10,
+    paddingVertical: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  profileEditButton: {
+    backgroundColor: "#3a2d5e",
+  },
+  profileCardButtonDisabled: {
+    opacity: 0.5,
+  },
+  profileCardButtonText: {
+    color: "#ffffff",
+    fontSize: 13,
+    fontWeight: "800",
+  },
+  profileCardButtonTextDisabled: {
+    color: "#d3cbe9",
   },
   modalEmptyState: {
     paddingVertical: 28,
@@ -679,5 +882,74 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: "center",
     lineHeight: 20,
+  },
+  inputLabel: {
+    color: "#ffffff",
+    fontSize: 14,
+    fontWeight: "700",
+    marginBottom: 8,
+  },
+  editInput: {
+    backgroundColor: "#1b1b1b",
+    borderWidth: 1,
+    borderColor: "#313131",
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 14,
+    color: "#ffffff",
+    fontSize: 16,
+    marginBottom: 16,
+  },
+  tagRow: {
+    flexDirection: "row",
+    gap: 10,
+    marginBottom: 20,
+  },
+  tagButton: {
+    flex: 1,
+    backgroundColor: "#202020",
+    borderWidth: 1,
+    borderColor: "#313131",
+    borderRadius: 12,
+    paddingVertical: 12,
+    alignItems: "center",
+  },
+  tagButtonActive: {
+    backgroundColor: "#2b2144",
+    borderColor: "#8b5cf6",
+  },
+  tagButtonText: {
+    color: "#ffffff",
+    fontSize: 14,
+    fontWeight: "700",
+  },
+  editActions: {
+    flexDirection: "row",
+    gap: 12,
+  },
+  editActionButton: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  deleteProfileButton: {
+    backgroundColor: "#2a1616",
+    borderWidth: 1,
+    borderColor: "#7f1d1d",
+  },
+  deleteProfileButtonText: {
+    color: "#f0b4b4",
+    fontWeight: "800",
+    fontSize: 15,
+  },
+  saveProfileButton: {
+    backgroundColor: "#8b5cf6",
+  },
+  saveProfileButtonText: {
+    color: "#ffffff",
+    fontWeight: "800",
+    fontSize: 15,
   },
 });
