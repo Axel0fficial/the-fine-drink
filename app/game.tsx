@@ -1,19 +1,22 @@
 import { router } from "expo-router";
 import React, { useEffect, useMemo, useState } from "react";
-import { Alert, Pressable, StyleSheet, Text } from "react-native";
+import { Alert, Pressable, Text } from "react-native";
 
 import ScreenContainer from "../src/components/ScreenContainer";
 import ChallengeView from "../src/components/game/ChallengeView";
 import GameActions from "../src/components/game/GameActions";
 import GameHeader from "../src/components/game/GameHeader";
+import MiniGameHost from "../src/components/game/MiniGameHost";
 import PlayerInfoRow from "../src/components/game/PlayerInfoRow";
 import StatusView from "../src/components/game/StatusView";
+import { gameSharedStyles } from "../src/components/style/gameSharedStyles";
 import {
   pickTwoChallengesForPlayer,
-  resolveChallengeDescription,
+  resolveChallenge,
+  type ResolvedChallenge,
 } from "../src/game/gameLogic";
+import type { MiniGameResult } from "../src/minigames/types";
 import { useGameStore } from "../src/state/gameStore";
-import type { Challenge } from "../src/types/game";
 
 export default function GameScreen() {
   const { selectedPlayers, setSelectedPlayers, challenges, selectedRounds } =
@@ -21,11 +24,10 @@ export default function GameScreen() {
 
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
   const [currentRound, setCurrentRound] = useState(1);
-  const [primaryChallenge, setPrimaryChallenge] = useState<Challenge | null>(
-    null,
-  );
+  const [primaryChallenge, setPrimaryChallenge] =
+    useState<ResolvedChallenge | null>(null);
   const [secondaryChallenge, setSecondaryChallenge] =
-    useState<Challenge | null>(null);
+    useState<ResolvedChallenge | null>(null);
   const [selectedChallengeSlot, setSelectedChallengeSlot] = useState<
     "primary" | "secondary"
   >("primary");
@@ -38,15 +40,16 @@ export default function GameScreen() {
     return [...selectedPlayers].sort((a, b) => b.score - a.score)[0];
   }, [selectedPlayers]);
 
-  const shownChallenge =
+  const shownResolvedChallenge =
     selectedChallengeSlot === "primary" ? primaryChallenge : secondaryChallenge;
 
-  const shownDescription = useMemo(() => {
-    if (!shownChallenge) {
-      return "No challenge available for this player.";
-    }
-    return resolveChallengeDescription(shownChallenge);
-  }, [shownChallenge]);
+  const shownChallenge = shownResolvedChallenge?.challenge ?? null;
+  const shownDescription =
+    shownResolvedChallenge?.description ??
+    "No challenge available for this player.";
+
+  const isMiniGameChallenge =
+    shownChallenge?.presentationType === "minigame" && !!shownChallenge.minigameType;
 
   const turnInRound = currentPlayerIndex + 1;
 
@@ -56,11 +59,14 @@ export default function GameScreen() {
       currentPlayer,
     );
 
-    setPrimaryChallenge(first);
-    setSecondaryChallenge(second);
+    const resolvedFirst = resolveChallenge(first);
+    const resolvedSecond = resolveChallenge(second);
+
+    setPrimaryChallenge(resolvedFirst);
+    setSecondaryChallenge(resolvedSecond);
     setSelectedChallengeSlot("primary");
 
-    if (!first && !second && currentPlayer) {
+    if (!resolvedFirst && !resolvedSecond && currentPlayer) {
       setStatusText(
         `${currentPlayer.name} has no eligible challenges with the current rules.`,
       );
@@ -92,6 +98,18 @@ export default function GameScreen() {
     }
   };
 
+  const awardPointsToCurrentPlayer = (points: number) => {
+    if (!currentPlayer || points <= 0) return;
+
+    const updatedPlayers = selectedPlayers.map((player) =>
+      player.id === currentPlayer.id
+        ? { ...player, score: player.score + points }
+        : player,
+    );
+
+    setSelectedPlayers(updatedPlayers);
+  };
+
   const handleDone = () => {
     if (!currentPlayer || !shownChallenge) {
       Alert.alert(
@@ -101,18 +119,27 @@ export default function GameScreen() {
       return;
     }
 
-    const updatedPlayers = selectedPlayers.map((player) =>
-      player.id === currentPlayer.id
-        ? { ...player, score: player.score + shownChallenge.points }
-        : player,
-    );
-
-    setSelectedPlayers(updatedPlayers);
+    awardPointsToCurrentPlayer(shownChallenge.points);
 
     setStatusText(
       `${currentPlayer.name} completed "${shownChallenge.title}" and earned ${shownChallenge.points} point${
         shownChallenge.points === 1 ? "" : "s"
       }.`,
+    );
+
+    goToNextPlayer();
+  };
+
+  const handleMiniGameComplete = (result: MiniGameResult) => {
+    if (!currentPlayer || !shownChallenge) return;
+
+    if (result.pointsAwarded && result.pointsAwarded > 0) {
+      awardPointsToCurrentPlayer(result.pointsAwarded);
+    }
+
+    setStatusText(
+      result.statusText ??
+        `${currentPlayer.name} finished the minigame "${shownChallenge.title}".`,
     );
 
     goToNextPlayer();
@@ -132,14 +159,14 @@ export default function GameScreen() {
   if (!currentPlayer) {
     return (
       <ScreenContainer>
-        <Text style={styles.title}>Game</Text>
-        <Text style={styles.emptyText}>No players selected.</Text>
+        <Text style={gameSharedStyles.title}>Game</Text>
+        <Text style={gameSharedStyles.emptyText}>No players selected.</Text>
 
         <Pressable
-          style={styles.backButton}
+          style={gameSharedStyles.backButton}
           onPress={() => router.push("/players")}
         >
-          <Text style={styles.backButtonText}>Back to Players</Text>
+          <Text style={gameSharedStyles.backButtonText}>Back to Players</Text>
         </Pressable>
       </ScreenContainer>
     );
@@ -163,49 +190,34 @@ export default function GameScreen() {
         currentScore={currentPlayer.score}
       />
 
-      <ChallengeView
-        selectedChallengeSlot={selectedChallengeSlot}
-        onSelectPrimary={() => setSelectedChallengeSlot("primary")}
-        onSelectSecondary={() => setSelectedChallengeSlot("secondary")}
-        canToggle={canToggle}
-        shownChallenge={shownChallenge}
-        shownDescription={shownDescription}
-        currentPlayerTag={currentPlayer.tag}
-      />
+      {isMiniGameChallenge && shownChallenge ? (
+        <MiniGameHost
+          challenge={shownChallenge}
+          currentPlayer={currentPlayer}
+          allPlayers={selectedPlayers}
+          onComplete={handleMiniGameComplete}
+        />
+      ) : (
+        <ChallengeView
+          selectedChallengeSlot={selectedChallengeSlot}
+          onSelectPrimary={() => setSelectedChallengeSlot("primary")}
+          onSelectSecondary={() => setSelectedChallengeSlot("secondary")}
+          canToggle={canToggle}
+          shownChallenge={shownChallenge}
+          shownDescription={shownDescription}
+          currentPlayerTag={currentPlayer.tag}
+        />
+      )}
 
       <StatusView statusText={statusText} />
 
-      <GameActions
-        onPass={handlePass}
-        onDone={handleDone}
-        doneDisabled={!shownChallenge}
-      />
+      {!isMiniGameChallenge && (
+        <GameActions
+          onPass={handlePass}
+          onDone={handleDone}
+          doneDisabled={!shownChallenge}
+        />
+      )}
     </ScreenContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  title: {
-    fontSize: 30,
-    fontWeight: "800",
-    color: "#ffffff",
-  },
-  emptyText: {
-    marginTop: 12,
-    fontSize: 15,
-    color: "#b5b5b5",
-  },
-  backButton: {
-    marginTop: 18,
-    backgroundColor: "#2b2b2b",
-    paddingVertical: 14,
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  backButtonText: {
-    color: "#ffffff",
-    fontWeight: "800",
-    fontSize: 15,
-  },
-});

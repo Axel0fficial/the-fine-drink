@@ -206,4 +206,30 @@ export const mockChallenges: Challenge[] = [
       max: 4,
     },
   },
+  {
+    id: "mg1",
+    title: "Dice Duel",
+    description: "Two players roll a die. Highest number wins.",
+    difficulty: "easy",
+    categories: ["group", "reaction","individual"],
+    points: 2,
+
+    baseChance: 0.35,
+    minChance: 0.2,
+    maxChance: 0.5,
+
+    cooldownTurns: 3,
+    isUnique: false,
+    isFavorite: false,
+    isCustom: false,
+    enabled: true,
+
+    logicType: "none",
+
+    presentationType: "minigame",
+    minigameType: "dice_duel",
+    minigameConfig: {
+      sides: 6,
+    },
+  },
 ];

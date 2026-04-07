@@ -2,6 +2,8 @@ export type TeamColor = "none" | "red" | "blue" | "green" | "yellow";
 export type Difficulty = "easy" | "normal" | "hard" | "brutal";
 export type ModifierScope = "session" | "leader" | "last_place" | "player";
 export type PlayerTag = "none" | "non_drinker";
+export type ChallengePresentationType = "standard" | "minigame";
+export type MiniGameType = "dice_duel" | "cup_guess" | "find_object";
 
 export type PlayerProfile = {
   id: string;
@@ -55,6 +57,10 @@ export type Challenge = {
     hard?: Record<string, any>;
     brutal?: Record<string, any>;
   };
+
+  presentationType?: ChallengePresentationType;
+  minigameType?: MiniGameType;
+  minigameConfig?: Record<string, any>;
 };
 
 export type GameMode = {

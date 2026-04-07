@@ -1,5 +1,10 @@
 import type { Challenge, GamePlayer } from "../types/game";
 
+export type ResolvedChallenge = {
+  challenge: Challenge;
+  description: string;
+};
+
 function shuffleArray<T>(items: T[]): T[] {
   const copy = [...items];
   for (let i = copy.length - 1; i > 0; i--) {
@@ -71,4 +76,15 @@ export function resolveChallengeDescription(challenge: Challenge): string {
   }
 
   return challenge.description;
+}
+
+export function resolveChallenge(
+  challenge: Challenge | null,
+): ResolvedChallenge | null {
+  if (!challenge) return null;
+
+  return {
+    challenge,
+    description: resolveChallengeDescription(challenge),
+  };
 }

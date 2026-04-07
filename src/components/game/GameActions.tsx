@@ -1,5 +1,6 @@
 import React from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
+import { gameSharedStyles as styles } from "../style/gameSharedStyles";
 
 type Props = {
   onPass: () => void;
@@ -28,40 +29,3 @@ export default function GameActions({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  bottomRow: {
-    flexDirection: "row",
-    gap: 12,
-  },
-  passButton: {
-    flex: 1,
-    backgroundColor: "#2b2b2b",
-    paddingVertical: 15,
-    borderRadius: 14,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  passButtonText: {
-    color: "#ffffff",
-    fontWeight: "800",
-    fontSize: 15,
-  },
-  doneButton: {
-    flex: 1,
-    backgroundColor: "#8b5cf6",
-    paddingVertical: 15,
-    borderRadius: 14,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  doneButtonDisabled: {
-    backgroundColor: "#3b3159",
-    opacity: 0.5,
-  },
-  doneButtonText: {
-    color: "#ffffff",
-    fontWeight: "800",
-    fontSize: 15,
-  },
-});
