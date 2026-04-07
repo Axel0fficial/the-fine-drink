@@ -10,4 +10,5 @@ export const CHALLENGE_CATEGORIES = [
   "timed",
   "reaction",
   "social",
+  "drinking"
 ] as const;

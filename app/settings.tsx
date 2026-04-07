@@ -11,6 +11,7 @@ import {
 
 import ScreenContainer from "../src/components/ScreenContainer";
 import { useGameStore } from "../src/state/gameStore";
+import { sharedStyles } from "./sharedStyles";
 
 export default function SettingsScreen() {
   const [resetModalVisible, setResetModalVisible] = useState(false);
@@ -30,33 +31,33 @@ export default function SettingsScreen() {
 
   return (
     <ScreenContainer>
-      <View style={styles.header}>
-        <Text style={styles.title}>Settings</Text>
-        <Text style={styles.subtitle}>
+      <View style={sharedStyles.header}>
+        <Text style={sharedStyles.title}>Settings</Text>
+        <Text style={sharedStyles.subtitle}>
           Manage testing data, saved profiles, challenges, and leaderboard data.
         </Text>
       </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Data Tools</Text>
-        <Text style={styles.sectionText}>
+      <View style={sharedStyles.section}>
+        <Text style={sharedStyles.sectionTitle}>Data Tools</Text>
+        <Text style={[sharedStyles.sectionText, styles.sectionTextSpacing]}>
           Open the reset panel to clear testing data individually or all at once.
         </Text>
 
         <Pressable
-          style={styles.primaryButton}
+          style={sharedStyles.primaryButton}
           onPress={() => setResetModalVisible(true)}
         >
-          <Text style={styles.primaryButtonText}>Open Reset Tools</Text>
+          <Text style={sharedStyles.primaryButtonText}>Open Reset Tools</Text>
         </Pressable>
       </View>
 
-      <View style={styles.bottomActions}>
+      <View style={sharedStyles.bottomActions}>
         <Pressable
-          style={styles.secondaryButton}
+          style={sharedStyles.secondaryButton}
           onPress={() => router.push("/menu")}
         >
-          <Text style={styles.secondaryButtonText}>Back to Menu</Text>
+          <Text style={sharedStyles.secondaryButtonText}>Back to Menu</Text>
         </Pressable>
       </View>
 
@@ -66,17 +67,17 @@ export default function SettingsScreen() {
         transparent
         onRequestClose={() => setResetModalVisible(false)}
       >
-        <View style={styles.modalBackdrop}>
-          <View style={styles.modalCard}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Reset Data</Text>
+        <View style={sharedStyles.modalBackdrop}>
+          <View style={sharedStyles.modalCard}>
+            <View style={sharedStyles.modalHeader}>
+              <Text style={sharedStyles.modalTitle}>Reset Data</Text>
               <Pressable onPress={() => setResetModalVisible(false)}>
-                <Text style={styles.modalCloseText}>Close</Text>
+                <Text style={sharedStyles.modalCloseText}>Close</Text>
               </Pressable>
             </View>
 
             <ScrollView showsVerticalScrollIndicator={false}>
-              <Text style={styles.modalDescription}>
+              <Text style={sharedStyles.modalDescription}>
                 Use these options to clean testing data without clearing app
                 cache manually.
               </Text>
@@ -139,100 +140,7 @@ export default function SettingsScreen() {
 }
 
 const styles = StyleSheet.create({
-  header: {
-    marginBottom: 24,
-  },
-  title: {
-    fontSize: 30,
-    fontWeight: "800",
-    color: "#ffffff",
-    marginBottom: 6,
-  },
-  subtitle: {
-    fontSize: 14,
-    lineHeight: 20,
-    color: "#b5b5b5",
-  },
-  section: {
-    backgroundColor: "#171717",
-    borderWidth: 1,
-    borderColor: "#2a2a2a",
-    borderRadius: 16,
-    padding: 16,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: "800",
-    color: "#ffffff",
-    marginBottom: 8,
-  },
-  sectionText: {
-    fontSize: 14,
-    lineHeight: 20,
-    color: "#aaaaaa",
-    marginBottom: 16,
-  },
-  primaryButton: {
-    backgroundColor: "#8b5cf6",
-    borderRadius: 14,
-    paddingVertical: 14,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  primaryButtonText: {
-    color: "#ffffff",
-    fontWeight: "800",
-    fontSize: 15,
-  },
-  bottomActions: {
-    marginTop: 18,
-  },
-  secondaryButton: {
-    backgroundColor: "#2b2b2b",
-    paddingVertical: 15,
-    borderRadius: 14,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  secondaryButtonText: {
-    color: "#ffffff",
-    fontWeight: "800",
-    fontSize: 15,
-  },
-  modalBackdrop: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.72)",
-    justifyContent: "center",
-    padding: 18,
-  },
-  modalCard: {
-    maxHeight: "82%",
-    backgroundColor: "#151515",
-    borderRadius: 18,
-    borderWidth: 1,
-    borderColor: "#303030",
-    padding: 16,
-  },
-  modalHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 14,
-  },
-  modalTitle: {
-    color: "#ffffff",
-    fontSize: 22,
-    fontWeight: "800",
-  },
-  modalCloseText: {
-    color: "#8b5cf6",
-    fontSize: 15,
-    fontWeight: "700",
-  },
-  modalDescription: {
-    color: "#aaaaaa",
-    fontSize: 14,
-    lineHeight: 20,
+  sectionTextSpacing: {
     marginBottom: 16,
   },
   resetButton: {
