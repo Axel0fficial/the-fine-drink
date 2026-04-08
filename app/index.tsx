@@ -5,12 +5,10 @@ export default function WelcomeScreen() {
   return (
     <View style={styles.container}>
       <Image
-        source={require("../assets/fdTransparentWhite.png")}
+        source={require("../assets/images/fdTransparentWhite.png")}
         style={styles.logo}
         resizeMode="contain"
       />
-
-      <Text style={styles.subtitle}>A game hidden in the fine print</Text>
 
       <Pressable style={styles.button} onPress={() => router.push("/players")}>
         <Text style={styles.buttonText}>Start</Text>
