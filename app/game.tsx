@@ -1,6 +1,6 @@
 import { router } from "expo-router";
-import React, { useEffect, useMemo, useState } from "react";
-import { Alert, Pressable, Text } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Alert, Pressable, Text, View } from "react-native";
 
 import ScreenContainer from "../src/components/ScreenContainer";
 import ChallengeView from "../src/components/game/ChallengeView";
@@ -8,14 +8,13 @@ import GameActions from "../src/components/game/GameActions";
 import GameHeader from "../src/components/game/GameHeader";
 import MiniGameHost from "../src/components/game/MiniGameHost";
 import PlayerInfoRow from "../src/components/game/PlayerInfoRow";
-import StatusView from "../src/components/game/StatusView";
 import { gameSharedStyles } from "../src/components/style/gameSharedStyles";
 import {
   pickTwoChallengesForPlayer,
   resolveChallenge,
   type ResolvedChallenge,
 } from "../src/game/gameLogic";
-import type { MiniGameResult } from "../src/minigames/types";
+import type { MatchStatus, MiniGameResult } from "../src/minigames/types";
 import { useGameStore } from "../src/state/gameStore";
 
 export default function GameScreen() {
@@ -35,11 +34,6 @@ export default function GameScreen() {
 
   const currentPlayer = selectedPlayers[currentPlayerIndex] ?? null;
 
-  const leader = useMemo(() => {
-    if (selectedPlayers.length === 0) return null;
-    return [...selectedPlayers].sort((a, b) => b.score - a.score)[0];
-  }, [selectedPlayers]);
-
   const shownResolvedChallenge =
     selectedChallengeSlot === "primary" ? primaryChallenge : secondaryChallenge;
 
@@ -49,7 +43,8 @@ export default function GameScreen() {
     "No challenge available for this player.";
 
   const isMiniGameChallenge =
-    shownChallenge?.presentationType === "minigame" && !!shownChallenge.minigameType;
+    shownChallenge?.presentationType === "minigame" &&
+    !!shownChallenge.minigameType;
 
   const turnInRound = currentPlayerIndex + 1;
 
@@ -130,11 +125,18 @@ export default function GameScreen() {
     goToNextPlayer();
   };
 
+  const [activeStatuses, setActiveStatuses] = useState<MatchStatus[]>([]);
+
   const handleMiniGameComplete = (result: MiniGameResult) => {
     if (!currentPlayer || !shownChallenge) return;
 
     if (result.pointsAwarded && result.pointsAwarded > 0) {
       awardPointsToCurrentPlayer(result.pointsAwarded);
+    }
+
+    const appliedStatus = result.appliedStatus;
+    if (appliedStatus) {
+      setActiveStatuses((prev) => [...prev, appliedStatus]);
     }
 
     setStatusText(
@@ -173,7 +175,6 @@ export default function GameScreen() {
   }
 
   const canToggle = !!secondaryChallenge;
-  const leaderText = leader ? `${leader.name} (${leader.score})` : "None";
 
   return (
     <ScreenContainer>
@@ -186,7 +187,6 @@ export default function GameScreen() {
 
       <PlayerInfoRow
         currentPlayerName={currentPlayer.name}
-        leaderText={leaderText}
         currentScore={currentPlayer.score}
       />
 
@@ -209,7 +209,65 @@ export default function GameScreen() {
         />
       )}
 
-      <StatusView statusText={statusText} />
+      {activeStatuses.length > 0 && (
+        <View
+          style={{
+            backgroundColor: "#171717",
+            borderWidth: 1,
+            borderColor: "#2a2a2a",
+            borderRadius: 14,
+            padding: 14,
+            marginBottom: 16,
+          }}
+        >
+          <Text
+            style={{
+              color: "#9ca3af",
+              fontSize: 12,
+              fontWeight: "700",
+              textTransform: "uppercase",
+              marginBottom: 10,
+            }}
+          >
+            Active Match Statuses
+          </Text>
+
+          {activeStatuses.map((status) => (
+            <View
+              key={status.id}
+              style={{
+                backgroundColor: status.tone === "good" ? "#15261b" : "#2a1717",
+                borderWidth: 1,
+                borderColor: status.tone === "good" ? "#2f855a" : "#c53030",
+                borderRadius: 12,
+                padding: 12,
+                marginBottom: 10,
+              }}
+            >
+              <Text
+                style={{
+                  color: "#ffffff",
+                  fontSize: 13,
+                  fontWeight: "800",
+                  marginBottom: 6,
+                }}
+              >
+                {status.playerName}
+              </Text>
+
+              <Text
+                style={{
+                  color: "#f3f4f6",
+                  fontSize: 14,
+                  lineHeight: 20,
+                }}
+              >
+                {status.text}
+              </Text>
+            </View>
+          ))}
+        </View>
+      )}
 
       {!isMiniGameChallenge && (
         <GameActions

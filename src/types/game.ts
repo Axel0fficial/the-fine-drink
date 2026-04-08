@@ -3,7 +3,11 @@ export type Difficulty = "easy" | "normal" | "hard" | "brutal";
 export type ModifierScope = "session" | "leader" | "last_place" | "player";
 export type PlayerTag = "none" | "non_drinker";
 export type ChallengePresentationType = "standard" | "minigame";
-export type MiniGameType = "dice_duel" | "cup_guess" | "find_object";
+export type MiniGameType =
+  | "dice_duel"
+  | "cup_guess"
+  | "find_object"
+  | "fine_drink";
 
 export type PlayerProfile = {
   id: string;

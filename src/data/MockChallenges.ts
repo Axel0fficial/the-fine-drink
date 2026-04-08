@@ -35,7 +35,8 @@ export const mockChallenges: Challenge[] = [
   {
     id: "c2",
     title: "Waterfall",
-    description: "Everyone starts drinking, you can only stop when the player before you stops.",
+    description:
+      "Everyone starts drinking, you can only stop when the player before you stops.",
     difficulty: "normal",
     categories: ["group", "drinking"],
     points: 3,
@@ -211,7 +212,7 @@ export const mockChallenges: Challenge[] = [
     title: "Dice Duel",
     description: "Two players roll a die. Highest number wins.",
     difficulty: "easy",
-    categories: ["group", "reaction","individual"],
+    categories: ["group", "reaction", "individual"],
     points: 2,
 
     baseChance: 0.35,
@@ -231,5 +232,29 @@ export const mockChallenges: Challenge[] = [
     minigameConfig: {
       sides: 6,
     },
+  },
+  {
+    id: "mg_fine_drink",
+    title: "The Fine Drink",
+    description:
+      "Peek at one fate, then decide whether to risk the opposite for the rest of the match.",
+    difficulty: "normal",
+    categories: ["individual", "social", "status"],
+    points: 3,
+
+    baseChance: 0.28,
+    minChance: 0.15,
+    maxChance: 0.4,
+
+    cooldownTurns: 5,
+    isUnique: false,
+    isFavorite: true,
+    isCustom: false,
+    enabled: true,
+
+    logicType: "none",
+
+    presentationType: "minigame",
+    minigameType: "fine_drink",
   },
 ];

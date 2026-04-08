@@ -62,6 +62,12 @@ export const gameSharedStyles = StyleSheet.create({
     fontWeight: "800",
   },
 
+  scoreValueSmall: {
+    color: "#8b5cf6",
+    fontSize: 24,
+    fontWeight: "900",
+  },
+
   scoreCard: {
     backgroundColor: "#1d1d1d",
     borderWidth: 1,
@@ -229,5 +235,35 @@ export const gameSharedStyles = StyleSheet.create({
     color: "#ffffff",
     fontWeight: "800",
     fontSize: 15,
+  },
+  challengeHintRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 12,
+    marginBottom: 10,
+  },
+
+  challengeArrow: {
+    color: "#d1d5db",
+    fontSize: 18,
+    fontWeight: "800",
+  },
+
+  challengeArrowDisabled: {
+    opacity: 0.25,
+  },
+
+  challengeIndicator: {
+    color: "#9ca3af",
+    fontSize: 13,
+    fontWeight: "700",
+  },
+
+  challengeSwipeHint: {
+    marginTop: 18,
+    color: "#8b8b8b",
+    fontSize: 12,
+    textAlign: "center",
   },
 });

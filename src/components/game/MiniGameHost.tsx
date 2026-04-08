@@ -2,6 +2,7 @@ import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 import DiceDuelMiniGame from "../../minigames/diceDuel/DiceDuelMiniGame";
+import FineDrinkMiniGame from "../../minigames/fineDrink/fineDrinkMiniGame";
 import type { MiniGameResult } from "../../minigames/types";
 import type { Challenge, GamePlayer } from "../../types/game";
 
@@ -29,12 +30,22 @@ export default function MiniGameHost({
         />
       );
 
+    case "fine_drink":
+      return (
+        <FineDrinkMiniGame
+          challenge={challenge}
+          currentPlayer={currentPlayer}
+          onComplete={onComplete}
+        />
+      );
+
     default:
       return (
         <View style={styles.card}>
           <Text style={styles.title}>Unsupported minigame</Text>
           <Text style={styles.text}>
-            This challenge references a minigame that has not been implemented yet.
+            This challenge references a minigame that has not been implemented
+            yet.
           </Text>
         </View>
       );
