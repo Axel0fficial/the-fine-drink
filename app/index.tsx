@@ -1,10 +1,15 @@
-import { View, Text, StyleSheet, Pressable } from "react-native";
 import { router } from "expo-router";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
 export default function WelcomeScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>The Fine Drink</Text>
+      <Image
+        source={require("../assets/fdTransparentWhite.png")}
+        style={styles.logo}
+        resizeMode="contain"
+      />
+
       <Text style={styles.subtitle}>A game hidden in the fine print</Text>
 
       <Pressable style={styles.button} onPress={() => router.push("/players")}>
@@ -22,10 +27,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 24,
   },
-  title: {
-    fontSize: 36,
-    fontWeight: "bold",
-    color: "#fff",
+  logo: {
+    width: 260,
+    height: 120,
     marginBottom: 12,
   },
   subtitle: {
