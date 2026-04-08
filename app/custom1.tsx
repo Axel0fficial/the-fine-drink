@@ -56,9 +56,14 @@ function createCustomChallenge(input: {
 }
 
 export default function Custom1Screen() {
-  const { challenges, enabledCategories, setChallenges, setEnabledCategories } =
-    useGameStore();
-
+  const {
+  challenges,
+  customModeEnabledCategories,
+  customModeDisabledChallengeIds,
+  setChallenges,
+  setCustomModeEnabledCategories,
+  setCustomModeDisabledChallengeIds,
+} = useGameStore();
   const [createModalVisible, setCreateModalVisible] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [newDescription, setNewDescription] = useState("");
@@ -66,31 +71,28 @@ export default function Custom1Screen() {
   const [newCategories, setNewCategories] = useState<string[]>([]);
 
   const visibleChallenges = useMemo(() => {
-    return challenges.filter((challenge) =>
-      challenge.categories.some((category) =>
-        enabledCategories.includes(category),
-      ),
-    );
-  }, [challenges, enabledCategories]);
+  return challenges.filter((challenge) =>
+    challenge.categories.some((category) =>
+      customModeEnabledCategories.includes(category),
+    ),
+  );
+}, [challenges, customModeEnabledCategories]);
 
   const toggleChallengeEnabled = (challengeId: string) => {
-    setChallenges((prev) =>
-      prev.map((challenge) =>
-        challenge.id === challengeId
-          ? { ...challenge, enabled: !challenge.enabled }
-          : challenge,
-      ),
-    );
-  };
+  setCustomModeDisabledChallengeIds((prev) =>
+    prev.includes(challengeId)
+      ? prev.filter((id) => id !== challengeId)
+      : [...prev, challengeId],
+  );
+};
 
   const toggleCategory = (category: string) => {
-    setEnabledCategories((prev) =>
-      prev.includes(category)
-        ? prev.filter((item) => item !== category)
-        : [...prev, category],
-    );
-  };
-
+  setCustomModeEnabledCategories((prev) =>
+    prev.includes(category)
+      ? prev.filter((item) => item !== category)
+      : [...prev, category],
+  );
+};
   const toggleNewCategory = (category: string) => {
     setNewCategories((prev) =>
       prev.includes(category)
@@ -100,12 +102,16 @@ export default function Custom1Screen() {
   };
 
   const deleteCustomChallenge = (challengeId: string) => {
-    setChallenges((prev) =>
-      prev.filter(
-        (challenge) => !(challenge.id === challengeId && challenge.isCustom),
-      ),
-    );
-  };
+  setChallenges((prev) =>
+    prev.filter(
+      (challenge) => !(challenge.id === challengeId && challenge.isCustom),
+    ),
+  );
+
+  setCustomModeDisabledChallengeIds((prev) =>
+    prev.filter((id) => id !== challengeId),
+  );
+};
 
   const handleCreateChallenge = () => {
     const cleanTitle = newTitle.trim();
@@ -160,7 +166,7 @@ export default function Custom1Screen() {
           </View>
 
           <Switch
-            value={item.enabled}
+            value={!customModeDisabledChallengeIds.includes(item.id)}
             onValueChange={() => toggleChallengeEnabled(item.id)}
           />
         </View>
@@ -169,7 +175,7 @@ export default function Custom1Screen() {
 
         <View style={styles.challengeFooter}>
           <Text style={styles.challengeStatus}>
-            {item.enabled ? "Enabled" : "Disabled"}
+            {customModeDisabledChallengeIds.includes(item.id) ? "Disabled" : "Enabled"}
           </Text>
 
           {item.isCustom && (
@@ -211,7 +217,7 @@ export default function Custom1Screen() {
 
           <View style={styles.categoryWrap}>
             {ALL_CATEGORIES.map((category) => {
-              const active = enabledCategories.includes(category);
+              const active = customModeEnabledCategories.includes(category);
 
               return (
                 <Pressable

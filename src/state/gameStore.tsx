@@ -30,6 +30,8 @@ type GameStore = {
   selectedPlayers: GamePlayer[];
   challenges: Challenge[];
   enabledCategories: string[];
+  customModeEnabledCategories: string[];
+  customModeDisabledChallengeIds: string[];
   selectedDifficulty: Difficulty;
   selectedRounds: number;
   selectedGameModeId: string | null;
@@ -42,6 +44,8 @@ type GameStore = {
   setModifiers: React.Dispatch<React.SetStateAction<SessionModifier[]>>;
   setChallenges: React.Dispatch<React.SetStateAction<Challenge[]>>;
   setEnabledCategories: React.Dispatch<React.SetStateAction<string[]>>;
+  setCustomModeEnabledCategories: React.Dispatch<React.SetStateAction<string[]>>;
+  setCustomModeDisabledChallengeIds: React.Dispatch<React.SetStateAction<string[]>>;
   setSelectedDifficulty: React.Dispatch<React.SetStateAction<Difficulty>>;
   setSelectedRounds: React.Dispatch<React.SetStateAction<number>>;
   setSelectedGameModeId: React.Dispatch<React.SetStateAction<string | null>>;
@@ -62,17 +66,30 @@ const GameContext = createContext<GameStore | null>(null);
 
 export function GameProvider({ children }: { children: React.ReactNode }) {
   const [selectedPlayers, setSelectedPlayers] = useState<GamePlayer[]>([]);
-  const [playerProfiles, setPlayerProfiles] = useState<PlayerProfile[]>(mockPlayers);
+  const [playerProfiles, setPlayerProfiles] =
+    useState<PlayerProfile[]>(mockPlayers);
   const [challenges, setChallenges] = useState<Challenge[]>(mockChallenges);
   const [modifiers, setModifiers] = useState<SessionModifier[]>(mockModifiers);
+
+  // Keep this as a future/global setting bucket if you still want it later.
   const [enabledCategories, setEnabledCategories] =
     useState<string[]>(DEFAULT_CATEGORIES);
+
+  // Custom Mode only
+  const [customModeEnabledCategories, setCustomModeEnabledCategories] =
+    useState<string[]>(DEFAULT_CATEGORIES);
+  const [customModeDisabledChallengeIds, setCustomModeDisabledChallengeIds] =
+    useState<string[]>([]);
+
   const [selectedDifficulty, setSelectedDifficulty] =
     useState<Difficulty>("normal");
   const [selectedRounds, setSelectedRounds] = useState<number>(6);
   const [selectedGameModeId, setSelectedGameModeId] = useState<string | null>(
     null,
   );
+  const [leaderboardEntries, setLeaderboardEntries] =
+    useState<LeaderboardEntry[]>(mockLeaderboard);
+
   const LEGACY_SELECTED_PLAYERS_KEY = "thefinedrink:selectedPlayers";
 
   const resetPlayerProfiles = async () => {
@@ -82,6 +99,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
 
   const resetChallenges = async () => {
     setChallenges(mockChallenges);
+    setCustomModeDisabledChallengeIds([]);
   };
 
   const resetLeaderboard = async () => {
@@ -101,14 +119,14 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     setChallenges(mockChallenges);
     setModifiers(mockModifiers);
     setEnabledCategories(DEFAULT_CATEGORIES);
+    setCustomModeEnabledCategories(DEFAULT_CATEGORIES);
+    setCustomModeDisabledChallengeIds([]);
     setSelectedDifficulty("normal");
     setSelectedRounds(6);
     setSelectedGameModeId(null);
     setLeaderboardEntries(mockLeaderboard);
     await AsyncStorage.removeItem(LEGACY_SELECTED_PLAYERS_KEY);
   };
-  const [leaderboardEntries, setLeaderboardEntries] =
-    useState<LeaderboardEntry[]>(mockLeaderboard);
 
   const resetMatchScores = () => {
     setSelectedPlayers((prev) =>
@@ -117,6 +135,13 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
         score: 0,
       })),
     );
+  };
+
+  const resetCustomConfig = () => {
+    setCustomModeEnabledCategories(DEFAULT_CATEGORIES);
+    setCustomModeDisabledChallengeIds([]);
+    setModifiers(mockModifiers);
+    setSelectedDifficulty("normal");
   };
 
   useEffect(() => {
@@ -132,6 +157,12 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
         if (parsed.playerProfiles) setPlayerProfiles(parsed.playerProfiles);
         if (parsed.enabledCategories)
           setEnabledCategories(parsed.enabledCategories);
+        if (parsed.customModeEnabledCategories)
+          setCustomModeEnabledCategories(parsed.customModeEnabledCategories);
+        if (parsed.customModeDisabledChallengeIds)
+          setCustomModeDisabledChallengeIds(
+            parsed.customModeDisabledChallengeIds,
+          );
         if (parsed.selectedDifficulty)
           setSelectedDifficulty(parsed.selectedDifficulty);
         if (parsed.selectedRounds) setSelectedRounds(parsed.selectedRounds);
@@ -158,6 +189,8 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
             playerProfiles,
             challenges,
             enabledCategories,
+            customModeEnabledCategories,
+            customModeDisabledChallengeIds,
             selectedDifficulty,
             selectedRounds,
             selectedGameModeId,
@@ -172,26 +205,18 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
 
     save();
   }, [
-  selectedPlayers,
-  playerProfiles,
-  challenges,
-  enabledCategories,
-  selectedDifficulty,
-  selectedRounds,
-  selectedGameModeId,
-  modifiers,
-  leaderboardEntries,
-]);
-
-  const resetCustomConfig = () => {
-    setSelectedPlayers([]);
-    setChallenges(mockChallenges);
-    setModifiers(mockModifiers);
-    setEnabledCategories(DEFAULT_CATEGORIES);
-    setSelectedDifficulty("normal");
-    setSelectedRounds(6);
-    setSelectedGameModeId(null);
-  };
+    selectedPlayers,
+    playerProfiles,
+    challenges,
+    enabledCategories,
+    customModeEnabledCategories,
+    customModeDisabledChallengeIds,
+    selectedDifficulty,
+    selectedRounds,
+    selectedGameModeId,
+    modifiers,
+    leaderboardEntries,
+  ]);
 
   return (
     <GameContext.Provider
@@ -199,6 +224,8 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
         selectedPlayers,
         challenges,
         enabledCategories,
+        customModeEnabledCategories,
+        customModeDisabledChallengeIds,
         selectedDifficulty,
         selectedRounds,
         selectedGameModeId,
@@ -209,6 +236,8 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
         setSelectedPlayers,
         setChallenges,
         setEnabledCategories,
+        setCustomModeEnabledCategories,
+        setCustomModeDisabledChallengeIds,
         setSelectedDifficulty,
         setSelectedRounds,
         setSelectedGameModeId,

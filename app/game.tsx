@@ -19,8 +19,15 @@ import type { MatchStatus, MiniGameResult } from "../src/minigames/types";
 import { useGameStore } from "../src/state/gameStore";
 
 export default function GameScreen() {
-  const { selectedPlayers, setSelectedPlayers, challenges, selectedRounds } =
-    useGameStore();
+  const {
+  selectedPlayers,
+  setSelectedPlayers,
+  challenges,
+  selectedRounds,
+  selectedGameModeId,
+  customModeEnabledCategories,
+  customModeDisabledChallengeIds,
+} = useGameStore();
 
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
   const [currentRound, setCurrentRound] = useState(1);
@@ -35,6 +42,29 @@ export default function GameScreen() {
   const [activeStatuses, setActiveStatuses] = useState<MatchStatus[]>([]);
 
   const currentPlayer = selectedPlayers[currentPlayerIndex] ?? null;
+
+  const activeChallenges = useMemo(() => {
+    if (selectedGameModeId === "custom") {
+      return challenges.filter((challenge) => {
+        const categoryAllowed = challenge.categories.some((category) =>
+          customModeEnabledCategories.includes(category),
+        );
+
+        const enabledForCustom = !customModeDisabledChallengeIds.includes(
+          challenge.id,
+        );
+
+        return categoryAllowed && enabledForCustom;
+      });
+    }
+
+    return challenges;
+  }, [
+    challenges,
+    customModeEnabledCategories,
+    customModeDisabledChallengeIds,
+    selectedGameModeId,
+  ]);
 
   const shownResolvedChallenge =
     selectedChallengeSlot === "primary" ? primaryChallenge : secondaryChallenge;
@@ -61,7 +91,7 @@ export default function GameScreen() {
 
   const generateTurnChallenges = () => {
     const [first, second] = pickTwoChallengesForPlayer(
-      challenges,
+      activeChallenges,
       currentPlayer,
     );
 

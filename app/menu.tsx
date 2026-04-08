@@ -8,8 +8,12 @@ import { useGameStore } from "../src/state/gameStore";
 import type { GameMode } from "../src/types/game";
 
 export default function MenuScreen() {
-  const { selectedRounds, setSelectedRounds, setSelectedGameModeId } =
-    useGameStore();
+  const {
+  selectedRounds,
+  setSelectedRounds,
+  setSelectedGameModeId,
+  resetCustomConfig,
+} = useGameStore();
 
   const [roundsInput, setRoundsInput] = useState(String(selectedRounds));
 
@@ -28,6 +32,10 @@ export default function MenuScreen() {
     }
 
     setSelectedGameModeId(mode.id);
+
+    if (mode.id === "custom") {
+      resetCustomConfig();
+    }
 
     const targetRoute = mode.routeTarget ?? "/game";
     router.push(targetRoute);
