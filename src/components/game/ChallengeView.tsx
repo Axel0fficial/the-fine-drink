@@ -1,5 +1,10 @@
-import React, { useMemo, useRef } from "react";
-import { PanResponder, Text, View } from "react-native";
+import React from "react";
+import { Text, View } from "react-native";
+import {
+  Gesture,
+  GestureDetector,
+} from "react-native-gesture-handler";
+
 import type { Challenge, PlayerTag } from "../../types/game";
 import { gameSharedStyles as styles } from "../style/gameSharedStyles";
 
@@ -22,32 +27,27 @@ export default function ChallengeView({
   shownDescription,
   currentPlayerTag,
 }: Props) {
-  const panResponder = useRef(
-    PanResponder.create({
-      onMoveShouldSetPanResponder: (_, gestureState) => {
-        const horizontalMove = Math.abs(gestureState.dx);
-        const verticalMove = Math.abs(gestureState.dy);
-        return horizontalMove > 20 && horizontalMove > verticalMove;
-      },
-      onPanResponderRelease: (_, gestureState) => {
-        if (!canToggle) return;
+  const panGesture = Gesture.Pan()
+    .activeOffsetX([-20, 20])
+    .failOffsetY([-15, 15])
+    .onEnd((event) => {
+      if (!canToggle) return;
 
-        if (gestureState.dx < -40 && selectedChallengeSlot === "primary") {
-          onSelectSecondary();
-        } else if (
-          gestureState.dx > 40 &&
-          selectedChallengeSlot === "secondary"
-        ) {
-          onSelectPrimary();
-        }
-      },
-    }),
-  ).current;
+      if (event.translationX < -50 && selectedChallengeSlot === "primary") {
+        onSelectSecondary();
+      } else if (
+        event.translationX > 50 &&
+        selectedChallengeSlot === "secondary"
+      ) {
+        onSelectPrimary();
+      }
+    });
 
-  const indicatorText = useMemo(() => {
-    if (!canToggle) return "1 / 1";
-    return selectedChallengeSlot === "primary" ? "1 / 2" : "2 / 2";
-  }, [canToggle, selectedChallengeSlot]);
+  const indicatorText = !canToggle
+    ? "1 / 1"
+    : selectedChallengeSlot === "primary"
+      ? "1 / 2"
+      : "2 / 2";
 
   return (
     <>
@@ -55,8 +55,7 @@ export default function ChallengeView({
         <Text
           style={[
             styles.challengeArrow,
-            selectedChallengeSlot === "primary" &&
-              styles.challengeArrowDisabled,
+            selectedChallengeSlot === "primary" && styles.challengeArrowDisabled,
           ]}
         >
           ←
@@ -75,25 +74,27 @@ export default function ChallengeView({
         </Text>
       </View>
 
-      <View {...panResponder.panHandlers} style={styles.challengeCard}>
-        <Text style={styles.challengeTitle}>
-          {shownChallenge ? shownChallenge.title : "No challenge available"}
-        </Text>
+      <GestureDetector gesture={panGesture}>
+        <View style={styles.challengeCard}>
+          <Text style={styles.challengeTitle}>
+            {shownChallenge ? shownChallenge.title : "No challenge available"}
+          </Text>
 
-        <Text style={styles.challengeMeta}>
-          {shownChallenge
-            ? `${shownChallenge.difficulty.toUpperCase()} • ${shownChallenge.categories.join(", ")}`
-            : currentPlayerTag === "non_drinker"
-              ? "This player cannot receive drinking challenges."
-              : "No eligible challenge found."}
-        </Text>
+          <Text style={styles.challengeMeta}>
+            {shownChallenge
+              ? `${shownChallenge.difficulty.toUpperCase()} • ${shownChallenge.categories.join(", ")}`
+              : currentPlayerTag === "non_drinker"
+                ? "This player cannot receive drinking challenges."
+                : "No eligible challenge found."}
+          </Text>
 
-        <Text style={styles.challengeDescription}>{shownDescription}</Text>
+          <Text style={styles.challengeDescription}>{shownDescription}</Text>
 
-        {canToggle && (
-          <Text style={styles.challengeSwipeHint}>Slide left or right</Text>
-        )}
-      </View>
+          {canToggle && (
+            <Text style={styles.challengeSwipeHint}>Slide left or right</Text>
+          )}
+        </View>
+      </GestureDetector>
     </>
   );
 }

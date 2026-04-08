@@ -236,6 +236,7 @@ export const gameSharedStyles = StyleSheet.create({
     fontWeight: "800",
     fontSize: 15,
   },
+
   challengeHintRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -327,4 +328,5 @@ export const gameSharedStyles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "700",
   },
+  
 });

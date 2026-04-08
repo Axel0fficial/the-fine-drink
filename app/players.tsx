@@ -283,45 +283,34 @@ export default function PlayerScreen() {
   };
 
   const renderProfileCard = ({ item }: { item: PlayerProfile }) => {
-    const alreadyInMatch = existingPlayerIdsInMatch.has(item.id);
+  const alreadyInMatch = existingPlayerIdsInMatch.has(item.id);
 
-    return (
-      <View style={styles.existingPlayerCard}>
-        <Text style={styles.existingPlayerName}>{item.name}</Text>
-        <Text style={styles.existingPlayerMeta}>Wins: {item.totalWins}</Text>
-        <Text style={styles.existingPlayerMeta}>Points: {item.totalPoints}</Text>
-        <Text style={styles.existingPlayerMeta}>Tag: {formatTag(item.tag)}</Text>
-
-        <View style={styles.profileCardActions}>
-          <Pressable
-            style={[
-              styles.profileCardButton,
-              alreadyInMatch && styles.profileCardButtonDisabled,
-            ]}
-            onPress={() => addExistingPlayer(item)}
-            disabled={alreadyInMatch}
-          >
-            <Text
-              style={[
-                styles.profileCardButtonText,
-                alreadyInMatch && styles.profileCardButtonTextDisabled,
-              ]}
-            >
-              {alreadyInMatch ? "Added" : "Add"}
-            </Text>
-          </Pressable>
-
-          <Pressable
-            style={[styles.profileCardButton, styles.profileEditButton]}
-            onPress={() => openEditProfile(item)}
-          >
-            <Text style={styles.profileCardButtonText}>Edit</Text>
-          </Pressable>
+  return (
+    <Pressable
+      style={[
+        styles.existingPlayerCard,
+        alreadyInMatch && styles.existingPlayerCardDisabled,
+      ]}
+      onPress={() => {
+        if (!alreadyInMatch) addExistingPlayer(item);
+      }}
+      disabled={alreadyInMatch}
+    >
+      <View style={styles.existingPlayerCardTopRow}>
+        <View style={styles.existingPlayerCardTextWrap}>
+          <Text style={styles.existingPlayerName}>{item.name}</Text>
         </View>
-      </View>
-    );
-  };
 
+        <Pressable
+          style={styles.profileEditButton}
+          onPress={() => openEditProfile(item)}
+        >
+          <Text style={styles.profileEditButtonText}>Edit</Text>
+        </Pressable>
+      </View>
+    </Pressable>
+  );
+};
   const renderPlayerRow = ({
     item,
     index,
@@ -513,6 +502,20 @@ export default function PlayerScreen() {
                 <Text style={styles.modalCloseText}>Close</Text>
               </Pressable>
             </View>
+            {editingProfile && (
+  <View style={styles.profileSummaryCard}>
+    <Text style={styles.profileSummaryTitle}>Profile Info</Text>
+    <Text style={styles.profileSummaryText}>
+      Wins: {editingProfile.totalWins}
+    </Text>
+    <Text style={styles.profileSummaryText}>
+      Points: {editingProfile.totalPoints}
+    </Text>
+    <Text style={styles.profileSummaryText}>
+      Current Tag: {formatTag(editingProfile.tag)}
+    </Text>
+  </View>
+)}
 
             <Text style={styles.inputLabel}>Name</Text>
             <TextInput
@@ -825,7 +828,7 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     paddingVertical: 16,
     paddingHorizontal: 14,
-    minHeight: 150,
+    minHeight: 100,
     justifyContent: "center",
   },
   existingPlayerName: {
@@ -851,9 +854,6 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     alignItems: "center",
     justifyContent: "center",
-  },
-  profileEditButton: {
-    backgroundColor: "#3a2d5e",
   },
   profileCardButtonDisabled: {
     opacity: 0.5,
@@ -952,4 +952,62 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     fontSize: 15,
   },
+  existingPlayerCardDisabled: {
+  opacity: 0.55,
+},
+
+existingPlayerCardTopRow: {
+  flexDirection: "row",
+  alignItems: "center",
+  justifyContent: "space-between",
+  gap: 12,
+},
+
+existingPlayerCardTextWrap: {
+  flex: 1,
+},
+
+existingPlayerHint: {
+  marginTop: 4,
+  fontSize: 13,
+  color: "#9ca3af",
+},
+
+profileEditButton: {
+  backgroundColor: "#2b2b2b",
+  borderWidth: 1,
+  borderColor: "#3a3a3a",
+  paddingVertical: 10,
+  paddingHorizontal: 14,
+  borderRadius: 12,
+},
+
+profileEditButtonText: {
+  color: "#ffffff",
+  fontSize: 14,
+  fontWeight: "700",
+},
+
+profileSummaryCard: {
+  backgroundColor: "#1b1b1b",
+  borderWidth: 1,
+  borderColor: "#313131",
+  borderRadius: 14,
+  padding: 14,
+  marginBottom: 16,
+},
+
+profileSummaryTitle: {
+  color: "#ffffff",
+  fontSize: 15,
+  fontWeight: "800",
+  marginBottom: 10,
+},
+
+profileSummaryText: {
+  color: "#d1d5db",
+  fontSize: 14,
+  lineHeight: 20,
+  marginBottom: 4,
+},
 });

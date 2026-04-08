@@ -23,8 +23,8 @@ export default function ScreenContainer({
           styles.container,
           {
             backgroundColor,
-            paddingTop: 16 + insets.top,
-            paddingBottom: 22 + insets.bottom,
+            paddingTop: 4 + insets.top,
+            paddingBottom: 6 + insets.bottom,
           },
         ]}
       >

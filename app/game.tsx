@@ -214,8 +214,7 @@ export default function GameScreen() {
         currentScore={currentPlayer.score}
       />
 
-      <ActiveStatusesPanel statuses={visibleStatuses} />
-
+      
       {isMiniGameChallenge && shownChallenge ? (
         <MiniGameHost
           key={`${currentRound}-${currentPlayer.id}-${shownChallenge.id}-${selectedChallengeSlot}`}
@@ -235,6 +234,9 @@ export default function GameScreen() {
           currentPlayerTag={currentPlayer.tag}
         />
       )}
+
+      <ActiveStatusesPanel statuses={visibleStatuses} />
+
 
       {!isMiniGameChallenge && (
         <GameActions
