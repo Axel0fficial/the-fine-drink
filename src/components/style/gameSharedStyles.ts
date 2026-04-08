@@ -266,4 +266,65 @@ export const gameSharedStyles = StyleSheet.create({
     fontSize: 12,
     textAlign: "center",
   },
+  statusPanel: {
+    backgroundColor: "#171717",
+    borderWidth: 1,
+    borderColor: "#2a2a2a",
+    borderRadius: 14,
+    padding: 14,
+    marginBottom: 16,
+  },
+
+  statusPanelTitle: {
+    color: "#9ca3af",
+    fontSize: 12,
+    fontWeight: "700",
+    textTransform: "uppercase",
+    marginBottom: 10,
+  },
+
+  statusPanelScroll: {
+    maxHeight: 160,
+  },
+
+  statusPanelContent: {
+    paddingBottom: 4,
+  },
+
+  activeStatusCard: {
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 10,
+    borderWidth: 1,
+  },
+
+  activeStatusCardGood: {
+    backgroundColor: "#15261b",
+    borderColor: "#2f855a",
+  },
+
+  activeStatusCardBad: {
+    backgroundColor: "#2a1717",
+    borderColor: "#c53030",
+  },
+
+  activeStatusHeader: {
+    color: "#ffffff",
+    fontSize: 13,
+    fontWeight: "800",
+    marginBottom: 6,
+  },
+
+  activeStatusText: {
+    color: "#f3f4f6",
+    fontSize: 14,
+    lineHeight: 20,
+  },
+
+  activeStatusRounds: {
+    marginTop: 8,
+    color: "#d1d5db",
+    fontSize: 12,
+    fontWeight: "700",
+  },
 });

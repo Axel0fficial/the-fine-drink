@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import type { Challenge, GamePlayer } from "../../types/game";
@@ -25,26 +25,31 @@ export default function FineDrinkMiniGame({
   onComplete,
 }: Props) {
   const [phase, setPhase] = useState<"offer" | "revealed">("offer");
+  const [visibleTone, setVisibleTone] = useState<"good" | "bad">("good");
+  const [visiblePrompt, setVisiblePrompt] = useState<FineDrinkPrompt | null>(
+    null,
+  );
   const [revealedPrompt, setRevealedPrompt] = useState<FineDrinkPrompt | null>(
     null,
   );
 
-  const visibleTone = useMemo<"good" | "bad">(
-    () => (Math.random() < 0.5 ? "good" : "bad"),
-    [],
-  );
+  useEffect(() => {
+    const nextVisibleTone: "good" | "bad" =
+      Math.random() < 0.5 ? "good" : "bad";
 
-  const visiblePrompt = useMemo(() => {
-    return visibleTone === "good"
-      ? randomItem(FINE_DRINK_GOOD_PROMPTS)
-      : randomItem(FINE_DRINK_BAD_PROMPTS);
-  }, [visibleTone]);
+    const nextVisiblePrompt =
+      nextVisibleTone === "good"
+        ? randomItem(FINE_DRINK_GOOD_PROMPTS)
+        : randomItem(FINE_DRINK_BAD_PROMPTS);
 
-  const hiddenPool = useMemo(() => {
-    return visibleTone === "good"
-      ? FINE_DRINK_BAD_PROMPTS
-      : FINE_DRINK_GOOD_PROMPTS;
-  }, [visibleTone]);
+    setPhase("offer");
+    setVisibleTone(nextVisibleTone);
+    setVisiblePrompt(nextVisiblePrompt);
+    setRevealedPrompt(null);
+  }, [currentPlayer.id, challenge.id]);
+
+  const hiddenPool =
+    visibleTone === "good" ? FINE_DRINK_BAD_PROMPTS : FINE_DRINK_GOOD_PROMPTS;
 
   const handlePass = () => {
     onComplete({
@@ -61,15 +66,18 @@ export default function FineDrinkMiniGame({
   };
 
   const handleAcceptRevealedStatus = () => {
-    if (!revealedPrompt) return;
+    const currentVisiblePrompt = visiblePrompt;
+    if (!revealedPrompt || !currentVisiblePrompt) return;
 
     const appliedStatus: MatchStatus = {
       id: `match_status_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+      scope: "player",
       playerId: currentPlayer.id,
       playerName: currentPlayer.name,
       text: revealedPrompt.text,
       tone: revealedPrompt.tone,
       sourceChallengeId: challenge.id,
+      remainingRounds: null,
     };
 
     onComplete({
@@ -80,11 +88,13 @@ export default function FineDrinkMiniGame({
       } permanent fate.`,
       appliedStatus,
       payload: {
-        visiblePromptId: visiblePrompt.id,
+        visiblePromptId: currentVisiblePrompt.id,
         revealedPromptId: revealedPrompt.id,
       },
     });
   };
+
+  if (!visiblePrompt) return null;
 
   return (
     <View style={styles.card}>

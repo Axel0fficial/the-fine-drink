@@ -1,12 +1,17 @@
 export type MatchStatusTone = "good" | "bad";
 
+export type MatchStatusScope = "global" | "player";
+
 export type MatchStatus = {
   id: string;
-  playerId: string;
-  playerName: string;
+  scope: MatchStatusScope;
+  playerId?: string;
+  playerName?: string;
   text: string;
   tone: MatchStatusTone;
   sourceChallengeId: string;
+
+  remainingRounds?: number | null;
 };
 
 export type MiniGameResult = {

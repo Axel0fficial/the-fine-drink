@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Alert, Pressable, Text, View } from "react-native";
 
 import ScreenContainer from "../src/components/ScreenContainer";
+import ActiveStatusesPanel from "../src/components/game/ActiveStatusesPanel";
 import ChallengeView from "../src/components/game/ChallengeView";
 import GameActions from "../src/components/game/GameActions";
 import GameHeader from "../src/components/game/GameHeader";
@@ -126,7 +127,10 @@ export default function GameScreen() {
   };
 
   const [activeStatuses, setActiveStatuses] = useState<MatchStatus[]>([]);
-
+  const visibleStatuses = activeStatuses.filter((status) => {
+    if (status.scope === "global") return true;
+    return status.playerId === currentPlayer?.id;
+  });
   const handleMiniGameComplete = (result: MiniGameResult) => {
     if (!currentPlayer || !shownChallenge) return;
 
@@ -192,6 +196,7 @@ export default function GameScreen() {
 
       {isMiniGameChallenge && shownChallenge ? (
         <MiniGameHost
+          key={`${currentRound}-${currentPlayer.id}-${shownChallenge.id}-${selectedChallengeSlot}`}
           challenge={shownChallenge}
           currentPlayer={currentPlayer}
           allPlayers={selectedPlayers}
@@ -232,40 +237,7 @@ export default function GameScreen() {
             Active Match Statuses
           </Text>
 
-          {activeStatuses.map((status) => (
-            <View
-              key={status.id}
-              style={{
-                backgroundColor: status.tone === "good" ? "#15261b" : "#2a1717",
-                borderWidth: 1,
-                borderColor: status.tone === "good" ? "#2f855a" : "#c53030",
-                borderRadius: 12,
-                padding: 12,
-                marginBottom: 10,
-              }}
-            >
-              <Text
-                style={{
-                  color: "#ffffff",
-                  fontSize: 13,
-                  fontWeight: "800",
-                  marginBottom: 6,
-                }}
-              >
-                {status.playerName}
-              </Text>
-
-              <Text
-                style={{
-                  color: "#f3f4f6",
-                  fontSize: 14,
-                  lineHeight: 20,
-                }}
-              >
-                {status.text}
-              </Text>
-            </View>
-          ))}
+          <ActiveStatusesPanel statuses={visibleStatuses} />
         </View>
       )}
 
