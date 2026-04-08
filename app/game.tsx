@@ -1,6 +1,6 @@
 import { router } from "expo-router";
-import React, { useEffect, useState } from "react";
-import { Alert, Pressable, Text, View } from "react-native";
+import React, { useEffect, useMemo, useState } from "react";
+import { Alert, Pressable, Text } from "react-native";
 
 import ScreenContainer from "../src/components/ScreenContainer";
 import ActiveStatusesPanel from "../src/components/game/ActiveStatusesPanel";
@@ -32,6 +32,7 @@ export default function GameScreen() {
     "primary" | "secondary"
   >("primary");
   const [statusText, setStatusText] = useState("Start the round.");
+  const [activeStatuses, setActiveStatuses] = useState<MatchStatus[]>([]);
 
   const currentPlayer = selectedPlayers[currentPlayerIndex] ?? null;
 
@@ -47,7 +48,16 @@ export default function GameScreen() {
     shownChallenge?.presentationType === "minigame" &&
     !!shownChallenge.minigameType;
 
+  const isFineDrinkChallenge = shownChallenge?.minigameType === "fine_drink";
+
   const turnInRound = currentPlayerIndex + 1;
+
+  const visibleStatuses = useMemo(() => {
+    return activeStatuses.filter((status) => {
+      if (status.scope === "global") return true;
+      return status.playerId === currentPlayer?.id;
+    });
+  }, [activeStatuses, currentPlayer?.id]);
 
   const generateTurnChallenges = () => {
     const [first, second] = pickTwoChallengesForPlayer(
@@ -126,11 +136,6 @@ export default function GameScreen() {
     goToNextPlayer();
   };
 
-  const [activeStatuses, setActiveStatuses] = useState<MatchStatus[]>([]);
-  const visibleStatuses = activeStatuses.filter((status) => {
-    if (status.scope === "global") return true;
-    return status.playerId === currentPlayer?.id;
-  });
   const handleMiniGameComplete = (result: MiniGameResult) => {
     if (!currentPlayer || !shownChallenge) return;
 
@@ -180,6 +185,21 @@ export default function GameScreen() {
 
   const canToggle = !!secondaryChallenge;
 
+  if (isFineDrinkChallenge && shownChallenge) {
+    return (
+      <ScreenContainer backgroundColor="#4a0059">
+        <MiniGameHost
+          key={`${currentRound}-${currentPlayer.id}-${shownChallenge.id}-${selectedChallengeSlot}`}
+          challenge={shownChallenge}
+          currentPlayer={currentPlayer}
+          allPlayers={selectedPlayers}
+          onComplete={handleMiniGameComplete}
+          fullScreen
+        />
+      </ScreenContainer>
+    );
+  }
+
   return (
     <ScreenContainer>
       <GameHeader
@@ -193,6 +213,8 @@ export default function GameScreen() {
         currentPlayerName={currentPlayer.name}
         currentScore={currentPlayer.score}
       />
+
+      <ActiveStatusesPanel statuses={visibleStatuses} />
 
       {isMiniGameChallenge && shownChallenge ? (
         <MiniGameHost
@@ -212,33 +234,6 @@ export default function GameScreen() {
           shownDescription={shownDescription}
           currentPlayerTag={currentPlayer.tag}
         />
-      )}
-
-      {activeStatuses.length > 0 && (
-        <View
-          style={{
-            backgroundColor: "#171717",
-            borderWidth: 1,
-            borderColor: "#2a2a2a",
-            borderRadius: 14,
-            padding: 14,
-            marginBottom: 16,
-          }}
-        >
-          <Text
-            style={{
-              color: "#9ca3af",
-              fontSize: 12,
-              fontWeight: "700",
-              textTransform: "uppercase",
-              marginBottom: 10,
-            }}
-          >
-            Active Match Statuses
-          </Text>
-
-          <ActiveStatusesPanel statuses={visibleStatuses} />
-        </View>
       )}
 
       {!isMiniGameChallenge && (

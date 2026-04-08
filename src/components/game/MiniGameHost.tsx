@@ -11,6 +11,7 @@ type Props = {
   currentPlayer: GamePlayer;
   allPlayers: GamePlayer[];
   onComplete: (result: MiniGameResult) => void;
+  fullScreen?: boolean;
 };
 
 export default function MiniGameHost({
@@ -18,6 +19,7 @@ export default function MiniGameHost({
   currentPlayer,
   allPlayers,
   onComplete,
+  fullScreen = false,
 }: Props) {
   switch (challenge.minigameType) {
     case "dice_duel":
@@ -36,6 +38,7 @@ export default function MiniGameHost({
           challenge={challenge}
           currentPlayer={currentPlayer}
           onComplete={onComplete}
+          fullScreen={fullScreen}
         />
       );
 
@@ -44,8 +47,7 @@ export default function MiniGameHost({
         <View style={styles.card}>
           <Text style={styles.title}>Unsupported minigame</Text>
           <Text style={styles.text}>
-            This challenge references a minigame that has not been implemented
-            yet.
+            This challenge references a minigame that has not been implemented yet.
           </Text>
         </View>
       );

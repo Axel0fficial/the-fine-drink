@@ -1,18 +1,27 @@
-import React, { useEffect, useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  Animated,
+  Easing,
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
 import type { Challenge, GamePlayer } from "../../types/game";
 import type { MatchStatus, MiniGameResult } from "../types";
 import {
-    FINE_DRINK_BAD_PROMPTS,
-    FINE_DRINK_GOOD_PROMPTS,
-    type FineDrinkPrompt,
+  FINE_DRINK_BAD_PROMPTS,
+  FINE_DRINK_GOOD_PROMPTS,
+  type FineDrinkPrompt,
 } from "./fineDrinkPrompts";
 
 type Props = {
   challenge: Challenge;
   currentPlayer: GamePlayer;
   onComplete: (result: MiniGameResult) => void;
+  fullScreen?: boolean;
 };
 
 function randomItem<T>(items: T[]): T {
@@ -23,6 +32,7 @@ export default function FineDrinkMiniGame({
   challenge,
   currentPlayer,
   onComplete,
+  fullScreen = false,
 }: Props) {
   const [phase, setPhase] = useState<"offer" | "revealed">("offer");
   const [visibleTone, setVisibleTone] = useState<"good" | "bad">("good");
@@ -32,6 +42,8 @@ export default function FineDrinkMiniGame({
   const [revealedPrompt, setRevealedPrompt] = useState<FineDrinkPrompt | null>(
     null,
   );
+  const finePrintOpacity = useRef(new Animated.Value(0)).current;
+  const finePrintTranslateY = useRef(new Animated.Value(16)).current;
 
   useEffect(() => {
     const nextVisibleTone: "good" | "bad" =
@@ -46,10 +58,15 @@ export default function FineDrinkMiniGame({
     setVisibleTone(nextVisibleTone);
     setVisiblePrompt(nextVisiblePrompt);
     setRevealedPrompt(null);
-  }, [currentPlayer.id, challenge.id]);
+
+    finePrintOpacity.setValue(0);
+    finePrintTranslateY.setValue(16);
+  }, [currentPlayer.id, challenge.id, finePrintOpacity, finePrintTranslateY]);
 
   const hiddenPool =
-    visibleTone === "good" ? FINE_DRINK_BAD_PROMPTS : FINE_DRINK_GOOD_PROMPTS;
+    visibleTone === "good"
+      ? FINE_DRINK_BAD_PROMPTS
+      : FINE_DRINK_GOOD_PROMPTS;
 
   const handlePass = () => {
     onComplete({
@@ -60,10 +77,33 @@ export default function FineDrinkMiniGame({
   };
 
   const handleTakeDeal = () => {
-    const hiddenPrompt = randomItem(hiddenPool);
-    setRevealedPrompt(hiddenPrompt);
-    setPhase("revealed");
-  };
+  const hiddenPrompt = randomItem(hiddenPool);
+
+  finePrintOpacity.setValue(0);
+  finePrintTranslateY.setValue(16);
+
+  setRevealedPrompt(hiddenPrompt);
+  setPhase("revealed");
+
+  requestAnimationFrame(() => {
+    Animated.parallel([
+      Animated.timing(finePrintOpacity, {
+        toValue: 1,
+        duration: 420,
+        delay: 120,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }),
+      Animated.timing(finePrintTranslateY, {
+        toValue: 0,
+        duration: 420,
+        delay: 120,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }),
+    ]).start();
+  });
+};
 
   const handleAcceptRevealedStatus = () => {
     const currentVisiblePrompt = visiblePrompt;
@@ -97,154 +137,239 @@ export default function FineDrinkMiniGame({
   if (!visiblePrompt) return null;
 
   return (
-    <View style={styles.card}>
-      <Text style={styles.title}>{challenge.title}</Text>
-      <Text style={styles.subtitle}>{challenge.description}</Text>
+    <View style={[styles.root, fullScreen && styles.fullScreenRoot]}>
+      <View style={styles.topThird}>
+        <View style={styles.logoFrame}>
+          <Image
+            source={require("../../../assets/images/fdLogoPurple.png")}
+            style={styles.logoImage}
+            resizeMode="contain"
+          />
+        </View>
+      </View>
 
-      {phase === "offer" && (
-        <>
-          <View
-            style={[
-              styles.promptCard,
-              visibleTone === "good" ? styles.goodCard : styles.badCard,
-            ]}
-          >
-            <Text style={styles.promptLabel}>
-              Visible {visibleTone === "good" ? "Blessing" : "Curse"}
+      <View style={styles.middleThird}>
+        <Text style={styles.title}>{challenge.title}</Text>
+        <Text style={styles.playerName}>{currentPlayer.name}</Text>
+
+        {phase === "offer" && (
+          <>
+            <Text style={styles.phaseLabel}>
+              {visibleTone === "good" ? "A blessing appears" : "A curse appears"}
             </Text>
             <Text style={styles.promptText}>{visiblePrompt.text}</Text>
-          </View>
+            <Text style={styles.helperText}>
+              Take the deal to reveal the opposite fate for the rest of the match.
+            </Text>
+          </>
+        )}
 
-          <Text style={styles.helperText}>
-            Pass now, or take the deal and receive a hidden prompt from the
-            opposite side for the rest of the match.
-          </Text>
+        {phase === "revealed" && revealedPrompt && (
+          <>
+            <Text style={styles.phaseLabel}>Contract Signed</Text>
+            <Text style={styles.promptTextRevealed}>{visiblePrompt.text}</Text>
 
+            <Animated.View
+              style={[
+                styles.finePrintBlock,
+                {
+                  opacity: finePrintOpacity,
+                  transform: [{ translateY: finePrintTranslateY }],
+                },
+              ]}
+            >
+              <Text style={styles.finePrintLabel}>Fine Print</Text>
+              <Text style={styles.finePrintText}>{revealedPrompt.text}</Text>
+            </Animated.View>
+
+            <Text style={styles.helperText}>
+              This status is now permanent for the rest of the match.
+            </Text>
+          </>
+        )}
+      </View>
+
+      <View style={styles.bottomThird}>
+        {phase === "offer" && (
           <View style={styles.buttonRow}>
             <Pressable style={styles.secondaryButton} onPress={handlePass}>
-              <Text style={styles.secondaryButtonText}>Pass</Text>
+              <Text style={styles.secondaryButtonText}>Leave It</Text>
             </Pressable>
 
             <Pressable style={styles.primaryButton} onPress={handleTakeDeal}>
-              <Text style={styles.primaryButtonText}>Take the Deal</Text>
+              <Text style={styles.primaryButtonText}>Take It</Text>
             </Pressable>
           </View>
-        </>
-      )}
+        )}
 
-      {phase === "revealed" && revealedPrompt && (
-        <>
-          <View
-            style={[
-              styles.promptCard,
-              revealedPrompt.tone === "good" ? styles.goodCard : styles.badCard,
-            ]}
-          >
-            <Text style={styles.promptLabel}>
-              Revealed {revealedPrompt.tone === "good" ? "Blessing" : "Curse"}
-            </Text>
-            <Text style={styles.promptText}>{revealedPrompt.text}</Text>
-          </View>
-
-          <Text style={styles.helperText}>
-            This status is now permanent for the rest of the match.
-          </Text>
-
+        {phase === "revealed" && (
           <Pressable
-            style={styles.primaryButton}
+            style={styles.primaryButtonSingle}
             onPress={handleAcceptRevealedStatus}
           >
             <Text style={styles.primaryButtonText}>Continue</Text>
           </Pressable>
-        </>
-      )}
+        )}
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  card: {
+  root: {
     flex: 1,
-    backgroundColor: "#171717",
-    borderWidth: 1,
-    borderColor: "#2a2a2a",
-    borderRadius: 18,
-    padding: 18,
-    marginBottom: 14,
   },
+  fullScreenRoot: {
+    justifyContent: "space-between",
+  },
+
+  topThird: {
+    flex: 1.1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  middleThird: {
+    flex: 1.2,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 8,
+  },
+  bottomThird: {
+    flex: 0.9,
+    justifyContent: "flex-end",
+    paddingBottom: 8,
+  },
+
+  logoFrame: {
+    width: "100%",
+    maxWidth: 280,
+    height: 180,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  logoImage: {
+    width: "100%",
+    height: "100%",
+  },
+
   title: {
     color: "#ffffff",
-    fontSize: 24,
+    fontSize: 34,
     fontWeight: "900",
-    marginBottom: 8,
+    textAlign: "center",
+    marginBottom: 12,
   },
-  subtitle: {
-    color: "#8b8b8b",
-    fontSize: 14,
-    lineHeight: 20,
-    marginBottom: 18,
-  },
-  promptCard: {
-    borderRadius: 16,
-    padding: 16,
+  playerName: {
+    color: "#ffffff",
+    fontSize: 18,
+    fontWeight: "700",
+    textAlign: "center",
     marginBottom: 14,
-    borderWidth: 1,
+    opacity: 0.9,
   },
-  goodCard: {
-    backgroundColor: "#15261b",
-    borderColor: "#2f855a",
-  },
-  badCard: {
-    backgroundColor: "#2a1717",
-    borderColor: "#c53030",
-  },
-  promptLabel: {
-    color: "#e5e7eb",
-    fontSize: 12,
+  phaseLabel: {
+    color: "#ffffff",
+    fontSize: 13,
     fontWeight: "800",
     textTransform: "uppercase",
-    marginBottom: 8,
+    letterSpacing: 0.8,
+    textAlign: "center",
+    marginBottom: 12,
+    opacity: 0.85,
   },
   promptText: {
     color: "#ffffff",
-    fontSize: 18,
-    lineHeight: 26,
-    fontWeight: "700",
-  },
-  helperText: {
-    color: "#d1d5db",
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: 24,
+    lineHeight: 34,
+    fontWeight: "800",
+    textAlign: "center",
     marginBottom: 16,
   },
+  helperText: {
+    color: "#ffffff",
+    fontSize: 14,
+    lineHeight: 21,
+    textAlign: "center",
+    opacity: 0.88,
+    maxWidth: 320,
+  },
+
   buttonRow: {
     flexDirection: "row",
     gap: 12,
   },
   primaryButton: {
     flex: 1,
-    backgroundColor: "#8b5cf6",
-    paddingVertical: 15,
-    borderRadius: 14,
+    backgroundColor: "#ffffff",
+    paddingVertical: 16,
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  secondaryButton: {
+    flex: 1,
+    backgroundColor: "transparent",
+    borderWidth: 1.5,
+    borderColor: "#ffffff",
+    paddingVertical: 16,
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  primaryButtonSingle: {
+    backgroundColor: "#ffffff",
+    paddingVertical: 16,
+    borderRadius: 16,
     alignItems: "center",
     justifyContent: "center",
   },
   primaryButtonText: {
-    color: "#ffffff",
-    fontWeight: "800",
-    fontSize: 15,
-  },
-  secondaryButton: {
-    flex: 1,
-    backgroundColor: "#2b2b2b",
-    paddingVertical: 15,
-    borderRadius: 14,
-    alignItems: "center",
-    justifyContent: "center",
+    color: "#4a0059",
+    fontWeight: "900",
+    fontSize: 16,
   },
   secondaryButtonText: {
     color: "#ffffff",
+    fontWeight: "900",
+    fontSize: 16,
+  },
+  promptTextRevealed: {
+    color: "#ffffff",
+    fontSize: 22,
+    lineHeight: 32,
     fontWeight: "800",
-    fontSize: 15,
+    textAlign: "center",
+    marginBottom: 10,
+    opacity: 0.82,
+  },
+
+  finePrintBlock: {
+    marginTop: 6,
+    marginBottom: 16,
+    paddingTop: 12,
+    paddingHorizontal: 8,
+    borderTopWidth: 1,
+    borderTopColor: "rgba(255,255,255,0.22)",
+    alignItems: "center",
+  },
+
+  finePrintLabel: {
+    color: "#ffffff",
+    fontSize: 11,
+    fontWeight: "900",
+    letterSpacing: 1,
+    textTransform: "uppercase",
+    opacity: 0.8,
+    marginBottom: 8,
+  },
+
+  finePrintText: {
+    color: "#ffffff",
+    fontSize: 16,
+    lineHeight: 24,
+    fontWeight: "600",
+    textAlign: "center",
+    opacity: 0.95,
+    maxWidth: 320,
   },
 });
