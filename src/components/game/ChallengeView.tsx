@@ -1,10 +1,5 @@
 import React from "react";
-import { Text, View } from "react-native";
-import {
-  Gesture,
-  GestureDetector,
-} from "react-native-gesture-handler";
-
+import { Pressable, Text, View } from "react-native";
 import type { Challenge, PlayerTag } from "../../types/game";
 import { gameSharedStyles as styles } from "../style/gameSharedStyles";
 
@@ -27,74 +22,71 @@ export default function ChallengeView({
   shownDescription,
   currentPlayerTag,
 }: Props) {
-  const panGesture = Gesture.Pan()
-    .activeOffsetX([-20, 20])
-    .failOffsetY([-15, 15])
-    .onEnd((event) => {
-      if (!canToggle) return;
-
-      if (event.translationX < -50 && selectedChallengeSlot === "primary") {
-        onSelectSecondary();
-      } else if (
-        event.translationX > 50 &&
-        selectedChallengeSlot === "secondary"
-      ) {
-        onSelectPrimary();
-      }
-    });
-
   const indicatorText = !canToggle
     ? "1 / 1"
     : selectedChallengeSlot === "primary"
       ? "1 / 2"
       : "2 / 2";
 
+  const goLeft = () => {
+    if (!canToggle) return;
+    if (selectedChallengeSlot === "secondary") {
+      onSelectPrimary();
+    }
+  };
+
+  const goRight = () => {
+    if (!canToggle) return;
+    if (selectedChallengeSlot === "primary") {
+      onSelectSecondary();
+    }
+  };
+
   return (
     <>
-      <View style={styles.challengeHintRow}>
-        <Text
+      <View style={styles.challengeNavRow}>
+        <Pressable
           style={[
-            styles.challengeArrow,
-            selectedChallengeSlot === "primary" && styles.challengeArrowDisabled,
+            styles.challengeNavButton,
+            selectedChallengeSlot === "primary" &&
+              styles.challengeNavButtonDisabled,
           ]}
+          onPress={goLeft}
+          disabled={!canToggle || selectedChallengeSlot === "primary"}
         >
-          ←
-        </Text>
+          <Text style={styles.challengeNavButtonText}>←</Text>
+        </Pressable>
 
         <Text style={styles.challengeIndicator}>{indicatorText}</Text>
 
-        <Text
+        <Pressable
           style={[
-            styles.challengeArrow,
+            styles.challengeNavButton,
             (!canToggle || selectedChallengeSlot === "secondary") &&
-              styles.challengeArrowDisabled,
+              styles.challengeNavButtonDisabled,
           ]}
+          onPress={goRight}
+          disabled={!canToggle || selectedChallengeSlot === "secondary"}
         >
-          →
-        </Text>
+          <Text style={styles.challengeNavButtonText}>→</Text>
+        </Pressable>
       </View>
 
-      <GestureDetector gesture={panGesture}>
-        <View style={styles.challengeCard}>
-          <Text style={styles.challengeTitle}>
-            {shownChallenge ? shownChallenge.title : "No challenge available"}
-          </Text>
+      <View style={styles.challengeCard}>
+        <Text style={styles.challengeTitle}>
+          {shownChallenge ? shownChallenge.title : "No challenge available"}
+        </Text>
 
-          <Text style={styles.challengeMeta}>
-            {shownChallenge
-              ? `${shownChallenge.difficulty.toUpperCase()} • ${shownChallenge.categories.join(", ")}`
-              : currentPlayerTag === "non_drinker"
-                ? "This player cannot receive drinking challenges."
-                : "No eligible challenge found."}
-          </Text>
+        <Text style={styles.challengeMeta}>
+          {shownChallenge
+            ? `${shownChallenge.difficulty.toUpperCase()} • ${shownChallenge.categories.join(", ")}`
+            : currentPlayerTag === "non_drinker"
+              ? "This player cannot receive drinking challenges."
+              : "No eligible challenge found."}
+        </Text>
 
-          <Text style={styles.challengeDescription}>{shownDescription}</Text>
-
-          {canToggle && (
-            <Text style={styles.challengeSwipeHint}>Slide left or right</Text>
-          )}
-        </View>
-      </GestureDetector>
+        <Text style={styles.challengeDescription}>{shownDescription}</Text>
+      </View>
     </>
   );
 }

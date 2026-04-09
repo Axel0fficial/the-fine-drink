@@ -1,3 +1,4 @@
+import { promptPools } from "../data/promptPools";
 import type { Challenge, GamePlayer } from "../types/game";
 
 export type ResolvedChallenge = {
@@ -43,6 +44,36 @@ export function pickTwoChallengesForPlayer(
   const shuffled = shuffleArray(eligibleChallenges);
   return [shuffled[0], shuffled[1]];
 }
+function getRandomItem<T>(items: T[]): T {
+  return items[Math.floor(Math.random() * items.length)];
+}
+
+function resolvePoolPromptChallenge(challenge: Challenge): string {
+  const poolRefs = challenge.logicConfig?.poolRefs as string[] | undefined;
+  const template = challenge.logicConfig?.template as string | undefined;
+
+  if (!poolRefs || poolRefs.length === 0 || !template) {
+    return challenge.description || "Invalid prompt challenge.";
+  }
+
+  const selectedValues = poolRefs.map((poolRef) => {
+    const pool = promptPools[poolRef];
+
+    if (!pool || pool.length === 0) {
+      return `[missing:${poolRef}]`;
+    }
+
+    return getRandomItem(pool);
+  });
+
+  let finalText = template;
+
+  selectedValues.forEach((value, index) => {
+    finalText = finalText.replaceAll(`{${index}}`, value);
+  });
+
+  return finalText;
+}
 
 export function resolveChallengeDescription(challenge: Challenge): string {
   if (!challenge.logicType || challenge.logicType === "none") {
@@ -73,6 +104,10 @@ export function resolveChallengeDescription(challenge: Challenge): string {
       "{rounds}",
       String(challenge.logicConfig.rounds),
     );
+  }
+
+  if (challenge.logicType === "pool_prompt") {
+    return resolvePoolPromptChallenge(challenge);
   }
 
   return challenge.description;

@@ -259,6 +259,8 @@ export const gameSharedStyles = StyleSheet.create({
     color: "#9ca3af",
     fontSize: 13,
     fontWeight: "700",
+    minWidth: 44,
+    textAlign: "center",
   },
 
   challengeSwipeHint: {
@@ -266,30 +268,6 @@ export const gameSharedStyles = StyleSheet.create({
     color: "#8b8b8b",
     fontSize: 12,
     textAlign: "center",
-  },
-  statusPanel: {
-    backgroundColor: "#171717",
-    borderWidth: 1,
-    borderColor: "#2a2a2a",
-    borderRadius: 14,
-    padding: 14,
-    marginBottom: 16,
-  },
-
-  statusPanelTitle: {
-    color: "#9ca3af",
-    fontSize: 12,
-    fontWeight: "700",
-    textTransform: "uppercase",
-    marginBottom: 10,
-  },
-
-  statusPanelScroll: {
-    maxHeight: 160,
-  },
-
-  statusPanelContent: {
-    paddingBottom: 4,
   },
 
   activeStatusCard: {
@@ -328,5 +306,73 @@ export const gameSharedStyles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "700",
   },
-  
+  challengeNavRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 10,
+    marginBottom: 10,
+  },
+
+  challengeNavButton: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: "#222222",
+    borderWidth: 1,
+    borderColor: "#313131",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  challengeNavButtonDisabled: {
+    opacity: 0.3,
+  },
+
+  challengeNavButtonText: {
+    color: "#ffffff",
+    fontSize: 16,
+    fontWeight: "900",
+  },
+  statusPanel: {
+    backgroundColor: "#171717",
+    borderWidth: 1,
+    borderColor: "#2a2a2a",
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingTop: 10,
+    paddingBottom: 8,
+    marginBottom: 12,
+  },
+
+  statusPanelTitle: {
+    color: "#9ca3af",
+    fontSize: 11,
+    fontWeight: "700",
+    textTransform: "uppercase",
+    marginBottom: 8,
+  },
+
+  statusPanelScroll: {
+    maxHeight: 92,
+  },
+
+  statusPanelContent: {
+    paddingBottom: 2,
+  },
+
+  activeStatusLine: {
+    fontSize: 12,
+    lineHeight: 16,
+    marginBottom: 6,
+    fontWeight: "600",
+  },
+
+  activeStatusLineGood: {
+    color: "#86efac",
+  },
+
+  activeStatusLineBad: {
+    color: "#fca5a5",
+  },
 });

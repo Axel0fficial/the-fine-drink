@@ -20,14 +20,14 @@ import { useGameStore } from "../src/state/gameStore";
 
 export default function GameScreen() {
   const {
-  selectedPlayers,
-  setSelectedPlayers,
-  challenges,
-  selectedRounds,
-  selectedGameModeId,
-  customModeEnabledCategories,
-  customModeDisabledChallengeIds,
-} = useGameStore();
+    selectedPlayers,
+    setSelectedPlayers,
+    challenges,
+    selectedRounds,
+    selectedGameModeId,
+    customModeEnabledCategories,
+    customModeDisabledChallengeIds,
+  } = useGameStore();
 
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
   const [currentRound, setCurrentRound] = useState(1);
@@ -244,7 +244,6 @@ export default function GameScreen() {
         currentScore={currentPlayer.score}
       />
 
-      
       {isMiniGameChallenge && shownChallenge ? (
         <MiniGameHost
           key={`${currentRound}-${currentPlayer.id}-${shownChallenge.id}-${selectedChallengeSlot}`}
@@ -256,8 +255,16 @@ export default function GameScreen() {
       ) : (
         <ChallengeView
           selectedChallengeSlot={selectedChallengeSlot}
-          onSelectPrimary={() => setSelectedChallengeSlot("primary")}
-          onSelectSecondary={() => setSelectedChallengeSlot("secondary")}
+          onSelectPrimary={() => {
+            if (selectedChallengeSlot !== "primary") {
+              setSelectedChallengeSlot("primary");
+            }
+          }}
+          onSelectSecondary={() => {
+            if (selectedChallengeSlot !== "secondary") {
+              setSelectedChallengeSlot("secondary");
+            }
+          }}
           canToggle={canToggle}
           shownChallenge={shownChallenge}
           shownDescription={shownDescription}
@@ -266,7 +273,6 @@ export default function GameScreen() {
       )}
 
       <ActiveStatusesPanel statuses={visibleStatuses} />
-
 
       {!isMiniGameChallenge && (
         <GameActions

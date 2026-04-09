@@ -283,34 +283,34 @@ export default function PlayerScreen() {
   };
 
   const renderProfileCard = ({ item }: { item: PlayerProfile }) => {
-  const alreadyInMatch = existingPlayerIdsInMatch.has(item.id);
+    const alreadyInMatch = existingPlayerIdsInMatch.has(item.id);
 
-  return (
-    <Pressable
-      style={[
-        styles.existingPlayerCard,
-        alreadyInMatch && styles.existingPlayerCardDisabled,
-      ]}
-      onPress={() => {
-        if (!alreadyInMatch) addExistingPlayer(item);
-      }}
-      disabled={alreadyInMatch}
-    >
-      <View style={styles.existingPlayerCardTopRow}>
-        <View style={styles.existingPlayerCardTextWrap}>
+    return (
+      <Pressable
+        style={[
+          styles.existingPlayerCard,
+          alreadyInMatch && styles.existingPlayerCardDisabled,
+        ]}
+        onPress={() => {
+          if (!alreadyInMatch) addExistingPlayer(item);
+        }}
+        disabled={alreadyInMatch}
+      >
+        <View style={styles.existingPlayerCardContent}>
           <Text style={styles.existingPlayerName}>{item.name}</Text>
-        </View>
 
-        <Pressable
-          style={styles.profileEditButton}
-          onPress={() => openEditProfile(item)}
-        >
-          <Text style={styles.profileEditButtonText}>Edit</Text>
-        </Pressable>
-      </View>
-    </Pressable>
-  );
-};
+          <View style={styles.existingPlayerCardActions}>
+            <Pressable
+              style={styles.profileEditButton}
+              onPress={() => openEditProfile(item)}
+            >
+              <Text style={styles.profileEditButtonText}>Edit</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Pressable>
+    );
+  };
   const renderPlayerRow = ({
     item,
     index,
@@ -503,19 +503,19 @@ export default function PlayerScreen() {
               </Pressable>
             </View>
             {editingProfile && (
-  <View style={styles.profileSummaryCard}>
-    <Text style={styles.profileSummaryTitle}>Profile Info</Text>
-    <Text style={styles.profileSummaryText}>
-      Wins: {editingProfile.totalWins}
-    </Text>
-    <Text style={styles.profileSummaryText}>
-      Points: {editingProfile.totalPoints}
-    </Text>
-    <Text style={styles.profileSummaryText}>
-      Current Tag: {formatTag(editingProfile.tag)}
-    </Text>
-  </View>
-)}
+              <View style={styles.profileSummaryCard}>
+                <Text style={styles.profileSummaryTitle}>Profile Info</Text>
+                <Text style={styles.profileSummaryText}>
+                  Wins: {editingProfile.totalWins}
+                </Text>
+                <Text style={styles.profileSummaryText}>
+                  Points: {editingProfile.totalPoints}
+                </Text>
+                <Text style={styles.profileSummaryText}>
+                  Current Tag: {formatTag(editingProfile.tag)}
+                </Text>
+              </View>
+            )}
 
             <Text style={styles.inputLabel}>Name</Text>
             <TextInput
@@ -831,12 +831,7 @@ const styles = StyleSheet.create({
     minHeight: 100,
     justifyContent: "center",
   },
-  existingPlayerName: {
-    color: "#ffffff",
-    fontSize: 17,
-    fontWeight: "800",
-    marginBottom: 6,
-  },
+
   existingPlayerMeta: {
     color: "#b3b3b3",
     fontSize: 13,
@@ -953,61 +948,65 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   existingPlayerCardDisabled: {
-  opacity: 0.55,
-},
+    opacity: 0.55,
+  },
 
-existingPlayerCardTopRow: {
-  flexDirection: "row",
-  alignItems: "center",
-  justifyContent: "space-between",
-  gap: 12,
-},
+  existingPlayerHint: {
+    marginTop: 4,
+    fontSize: 13,
+    color: "#9ca3af",
+  },
 
-existingPlayerCardTextWrap: {
-  flex: 1,
-},
+  profileEditButton: {
+    backgroundColor: "#2b2b2b",
+    borderWidth: 1,
+    borderColor: "#3a3a3a",
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderRadius: 12,
+  },
 
-existingPlayerHint: {
-  marginTop: 4,
-  fontSize: 13,
-  color: "#9ca3af",
-},
+  profileEditButtonText: {
+    color: "#ffffff",
+    fontSize: 14,
+    fontWeight: "700",
+  },
 
-profileEditButton: {
-  backgroundColor: "#2b2b2b",
-  borderWidth: 1,
-  borderColor: "#3a3a3a",
-  paddingVertical: 10,
-  paddingHorizontal: 14,
-  borderRadius: 12,
-},
+  profileSummaryCard: {
+    backgroundColor: "#1b1b1b",
+    borderWidth: 1,
+    borderColor: "#313131",
+    borderRadius: 14,
+    padding: 14,
+    marginBottom: 16,
+  },
 
-profileEditButtonText: {
-  color: "#ffffff",
-  fontSize: 14,
-  fontWeight: "700",
-},
+  profileSummaryTitle: {
+    color: "#ffffff",
+    fontSize: 15,
+    fontWeight: "800",
+    marginBottom: 10,
+  },
 
-profileSummaryCard: {
-  backgroundColor: "#1b1b1b",
-  borderWidth: 1,
-  borderColor: "#313131",
-  borderRadius: 14,
-  padding: 14,
-  marginBottom: 16,
-},
+  profileSummaryText: {
+    color: "#d1d5db",
+    fontSize: 14,
+    lineHeight: 20,
+    marginBottom: 4,
+  },
+  existingPlayerCardContent: {
+    gap: 12,
+  },
 
-profileSummaryTitle: {
-  color: "#ffffff",
-  fontSize: 15,
-  fontWeight: "800",
-  marginBottom: 10,
-},
+  existingPlayerCardActions: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+  },
 
-profileSummaryText: {
-  color: "#d1d5db",
-  fontSize: 14,
-  lineHeight: 20,
-  marginBottom: 4,
-},
+  existingPlayerName: {
+    color: "#ffffff",
+    fontSize: 16,
+    fontWeight: "800",
+    lineHeight: 22,
+  },
 });

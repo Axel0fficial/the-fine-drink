@@ -21,30 +21,26 @@ export default function ActiveStatusesPanel({ statuses }: Props) {
         showsVerticalScrollIndicator
       >
         {statuses.map((status) => (
-          <View
+          <Text
             key={status.id}
             style={[
-              styles.activeStatusCard,
+              styles.activeStatusLine,
               status.tone === "good"
-                ? styles.activeStatusCardGood
-                : styles.activeStatusCardBad,
+                ? styles.activeStatusLineGood
+                : styles.activeStatusLineBad,
             ]}
+            numberOfLines={3}
           >
-            <Text style={styles.activeStatusHeader}>
-              {status.scope === "global"
-                ? "Global"
-                : (status.playerName ?? "Player")}
-            </Text>
-
-            <Text style={styles.activeStatusText}>{status.text}</Text>
-
-            {status.remainingRounds != null && (
-              <Text style={styles.activeStatusRounds}>
-                {status.remainingRounds} round
-                {status.remainingRounds === 1 ? "" : "s"} left
-              </Text>
-            )}
-          </View>
+            {status.scope === "global"
+              ? "Global:"
+              : `${status.playerName ?? "Player"}:`}{" "}
+            {status.text}
+            {status.remainingRounds != null
+              ? ` (${status.remainingRounds} round${
+                  status.remainingRounds === 1 ? "" : "s"
+                } left)`
+              : ""}
+          </Text>
         ))}
       </ScrollView>
     </View>

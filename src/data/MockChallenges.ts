@@ -257,4 +257,52 @@ export const mockChallenges: Challenge[] = [
     presentationType: "minigame",
     minigameType: "fine_drink",
   },
+  {
+    id: "c_charades_1",
+    title: "Charades",
+    description: "",
+    difficulty: "normal",
+    categories: ["group", "social"],
+    points: 3,
+
+    baseChance: 0.4,
+    minChance: 0.2,
+    maxChance: 0.6,
+
+    cooldownTurns: 3,
+    isUnique: false,
+    isFavorite: false,
+    isCustom: false,
+    enabled: true,
+
+    logicType: "pool_prompt",
+    logicConfig: {
+      poolRefs: ["charades_people", "charades_actions"],
+      template: "Act like {0} while {1}.",
+    },
+  },
+  {
+    id: "c_wyr_1",
+    title: "Would You Rather",
+    description: "",
+    difficulty: "easy",
+    categories: ["social"],
+    points: 2,
+
+    baseChance: 0.45,
+    minChance: 0.25,
+    maxChance: 0.65,
+
+    cooldownTurns: 2,
+    isUnique: false,
+    isFavorite: false,
+    isCustom: false,
+    enabled: true,
+
+    logicType: "pool_prompt",
+    logicConfig: {
+      poolRefs: ["would_you_rather_romance"],
+      template: "Would you rather date {0}?",
+    },
+  },
 ];

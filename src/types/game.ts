@@ -51,7 +51,8 @@ export type Challenge = {
     | "timer"
     | "random_player"
     | "vote"
-    | "status_effect";
+    | "status_effect"
+    | "pool_prompt";
 
   logicConfig?: Record<string, any>;
 
