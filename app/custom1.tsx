@@ -186,13 +186,7 @@ export default function Custom1Screen() {
         <Text style={styles.challengeDescription}>{item.description}</Text>
 
         <View style={styles.challengeFooter}>
-          <Text style={styles.challengeStatus}>
-            {isGloballyDisabled
-              ? "Disabled in Settings"
-              : isDisabledForCustom
-                ? "Disabled for Custom Mode"
-                : "Enabled"}
-          </Text>
+         
 
           {item.isCustom && (
             <Pressable
