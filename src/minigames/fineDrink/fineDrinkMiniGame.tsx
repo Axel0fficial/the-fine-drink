@@ -10,11 +10,16 @@ import {
 } from "react-native";
 
 import type { Challenge, GamePlayer } from "../../types/game";
-import type { MatchStatus, MiniGameResult } from "../types";
+import type {
+  FineDrinkEffect,
+  MatchStatus,
+  MiniGameResult,
+  PersistentStatusEffect,
+  PromptAudience,
+} from "../types";
 import {
-  FINE_DRINK_BAD_PROMPTS,
-  FINE_DRINK_GOOD_PROMPTS,
-  type FineDrinkPrompt,
+  FINE_DRINK_BAD_EFFECTS,
+  FINE_DRINK_GOOD_EFFECTS,
 } from "./fineDrinkPrompts";
 
 type Props = {
@@ -28,6 +33,42 @@ function randomItem<T>(items: T[]): T {
   return items[Math.floor(Math.random() * items.length)];
 }
 
+function isAudienceAllowedForPlayer(
+  audience: PromptAudience,
+  playerTag: "none" | "non_drinker",
+): boolean {
+  if (audience === "all") return true;
+  if (audience === "drinkers_only") return playerTag !== "non_drinker";
+  if (audience === "non_drinkers_only") return playerTag === "non_drinker";
+  return true;
+}
+
+function getCompatibleEffects(
+  effects: FineDrinkEffect[],
+  currentPlayer: GamePlayer,
+): FineDrinkEffect[] {
+  return effects.filter((effect) =>
+    isAudienceAllowedForPlayer(effect.audience, currentPlayer.tag),
+  );
+}
+
+function toMatchStatus(
+  effect: PersistentStatusEffect,
+  currentPlayer: GamePlayer,
+  challenge: Challenge,
+): MatchStatus {
+  return {
+    id: `match_status_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+    scope: effect.scope,
+    playerId: effect.scope === "player" ? currentPlayer.id : undefined,
+    playerName: effect.scope === "player" ? currentPlayer.name : undefined,
+    text: effect.text,
+    tone: effect.tone,
+    sourceChallengeId: challenge.id,
+    remainingRounds: effect.remainingRounds ?? null,
+  };
+}
+
 export default function FineDrinkMiniGame({
   challenge,
   currentPlayer,
@@ -36,12 +77,13 @@ export default function FineDrinkMiniGame({
 }: Props) {
   const [phase, setPhase] = useState<"offer" | "revealed">("offer");
   const [visibleTone, setVisibleTone] = useState<"good" | "bad">("good");
-  const [visiblePrompt, setVisiblePrompt] = useState<FineDrinkPrompt | null>(
+  const [visibleEffect, setVisibleEffect] = useState<FineDrinkEffect | null>(
     null,
   );
-  const [revealedPrompt, setRevealedPrompt] = useState<FineDrinkPrompt | null>(
+  const [revealedEffect, setRevealedEffect] = useState<FineDrinkEffect | null>(
     null,
   );
+
   const finePrintOpacity = useRef(new Animated.Value(0)).current;
   const finePrintTranslateY = useRef(new Animated.Value(16)).current;
 
@@ -49,15 +91,18 @@ export default function FineDrinkMiniGame({
     const nextVisibleTone: "good" | "bad" =
       Math.random() < 0.5 ? "good" : "bad";
 
-    const nextVisiblePrompt =
+    const sourcePool =
       nextVisibleTone === "good"
-        ? randomItem(FINE_DRINK_GOOD_PROMPTS)
-        : randomItem(FINE_DRINK_BAD_PROMPTS);
+        ? getCompatibleEffects(FINE_DRINK_GOOD_EFFECTS, currentPlayer)
+        : getCompatibleEffects(FINE_DRINK_BAD_EFFECTS, currentPlayer);
+
+    const nextVisibleEffect =
+      sourcePool.length > 0 ? randomItem(sourcePool) : null;
 
     setPhase("offer");
     setVisibleTone(nextVisibleTone);
-    setVisiblePrompt(nextVisiblePrompt);
-    setRevealedPrompt(null);
+    setVisibleEffect(nextVisibleEffect);
+    setRevealedEffect(null);
 
     finePrintOpacity.setValue(0);
     finePrintTranslateY.setValue(16);
@@ -65,8 +110,8 @@ export default function FineDrinkMiniGame({
 
   const hiddenPool =
     visibleTone === "good"
-      ? FINE_DRINK_BAD_PROMPTS
-      : FINE_DRINK_GOOD_PROMPTS;
+      ? getCompatibleEffects(FINE_DRINK_BAD_EFFECTS, currentPlayer)
+      : getCompatibleEffects(FINE_DRINK_GOOD_EFFECTS, currentPlayer);
 
   const handlePass = () => {
     onComplete({
@@ -77,64 +122,101 @@ export default function FineDrinkMiniGame({
   };
 
   const handleTakeDeal = () => {
-  const hiddenPrompt = randomItem(hiddenPool);
+    if (hiddenPool.length === 0) {
+      onComplete({
+        outcome: "passed",
+        pointsAwarded: 0,
+        statusText: `${currentPlayer.name} found no compatible fate in The Fine Drink.`,
+      });
+      return;
+    }
 
-  finePrintOpacity.setValue(0);
-  finePrintTranslateY.setValue(16);
+    const hiddenEffect = randomItem(hiddenPool);
 
-  setRevealedPrompt(hiddenPrompt);
-  setPhase("revealed");
+    finePrintOpacity.setValue(0);
+    finePrintTranslateY.setValue(16);
 
-  requestAnimationFrame(() => {
-    Animated.parallel([
-      Animated.timing(finePrintOpacity, {
-        toValue: 1,
-        duration: 420,
-        delay: 120,
-        easing: Easing.out(Easing.cubic),
-        useNativeDriver: true,
-      }),
-      Animated.timing(finePrintTranslateY, {
-        toValue: 0,
-        duration: 420,
-        delay: 120,
-        easing: Easing.out(Easing.cubic),
-        useNativeDriver: true,
-      }),
-    ]).start();
-  });
-};
+    setRevealedEffect(hiddenEffect);
+    setPhase("revealed");
 
-  const handleAcceptRevealedStatus = () => {
-    const currentVisiblePrompt = visiblePrompt;
-    if (!revealedPrompt || !currentVisiblePrompt) return;
+    requestAnimationFrame(() => {
+      Animated.parallel([
+        Animated.timing(finePrintOpacity, {
+          toValue: 1,
+          duration: 420,
+          delay: 120,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: true,
+        }),
+        Animated.timing(finePrintTranslateY, {
+          toValue: 0,
+          duration: 420,
+          delay: 120,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: true,
+        }),
+      ]).start();
+    });
+  };
 
-    const appliedStatus: MatchStatus = {
-      id: `match_status_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
-      scope: "player",
-      playerId: currentPlayer.id,
-      playerName: currentPlayer.name,
-      text: revealedPrompt.text,
-      tone: revealedPrompt.tone,
-      sourceChallengeId: challenge.id,
-      remainingRounds: null,
-    };
+  const handleAcceptRevealedEffect = () => {
+    if (!visibleEffect || !revealedEffect) return;
+
+    const appliedStatuses: MatchStatus[] = [];
+    const immediateEffects: { text: string; tone: "good" | "bad" }[] = [];
+
+    if (visibleEffect.type === "status") {
+      appliedStatuses.push(
+        toMatchStatus(visibleEffect, currentPlayer, challenge),
+      );
+    } else {
+      immediateEffects.push({
+        text: visibleEffect.text,
+        tone: visibleEffect.tone,
+      });
+    }
+
+    if (revealedEffect.type === "status") {
+      appliedStatuses.push(
+        toMatchStatus(revealedEffect, currentPlayer, challenge),
+      );
+    } else {
+      immediateEffects.push({
+        text: revealedEffect.text,
+        tone: revealedEffect.tone,
+      });
+    }
+
+    const summaryParts: string[] = [];
+
+    if (immediateEffects.length > 0) {
+      summaryParts.push(
+        `Immediate: ${immediateEffects.map((effect) => effect.text).join(" ")}`,
+      );
+    }
+
+    if (appliedStatuses.length > 0) {
+      summaryParts.push(
+        `Status: ${appliedStatuses.map((status) => status.text).join(" ")}`,
+      );
+    }
 
     onComplete({
       outcome: "completed",
       pointsAwarded: challenge.points,
-      statusText: `${currentPlayer.name} accepted The Fine Drink and gained a ${
-        revealedPrompt.tone
-      } permanent fate.`,
-      appliedStatus,
+      statusText:
+        `${currentPlayer.name} accepted The Fine Drink. ` +
+        summaryParts.join(" "),
+      appliedStatuses,
+      immediateEffects,
       payload: {
-        visiblePromptId: currentVisiblePrompt.id,
-        revealedPromptId: revealedPrompt.id,
+        visibleEffectText: visibleEffect.text,
+        revealedEffectText: revealedEffect.text,
       },
     });
   };
 
-  if (!visiblePrompt) return null;
+  if (!visibleEffect) return null;
 
   return (
     <View style={[styles.root, fullScreen && styles.fullScreenRoot]}>
@@ -155,19 +237,25 @@ export default function FineDrinkMiniGame({
         {phase === "offer" && (
           <>
             <Text style={styles.phaseLabel}>
-              {visibleTone === "good" ? "A blessing appears" : "A curse appears"}
+              {visibleTone === "good"
+                ? "A blessing appears"
+                : "A curse appears"}{" "}
+              · {visibleEffect.type === "status" ? "Status" : "Action"}
             </Text>
-            <Text style={styles.promptText}>{visiblePrompt.text}</Text>
+            <Text style={styles.promptText}>{visibleEffect.text}</Text>
             <Text style={styles.helperText}>
-              Take the deal to reveal the opposite fate for the rest of the match.
+              Take the deal to reveal the opposite fate.
             </Text>
           </>
         )}
 
-        {phase === "revealed" && revealedPrompt && (
+        {phase === "revealed" && revealedEffect && (
           <>
-            <Text style={styles.phaseLabel}>Contract Signed</Text>
-            <Text style={styles.promptTextRevealed}>{visiblePrompt.text}</Text>
+            <Text style={styles.phaseLabel}>
+              Contract Signed ·{" "}
+              {visibleEffect.type === "status" ? "Status" : "Action"}
+            </Text>
+            <Text style={styles.promptTextRevealed}>{visibleEffect.text}</Text>
 
             <Animated.View
               style={[
@@ -178,12 +266,15 @@ export default function FineDrinkMiniGame({
                 },
               ]}
             >
-              <Text style={styles.finePrintLabel}>Fine Print</Text>
-              <Text style={styles.finePrintText}>{revealedPrompt.text}</Text>
+              <Text style={styles.finePrintLabel}>
+                Fine Print ·{" "}
+                {revealedEffect.type === "status" ? "Status" : "Action"}
+              </Text>
+              <Text style={styles.finePrintText}>{revealedEffect.text}</Text>
             </Animated.View>
 
             <Text style={styles.helperText}>
-              This status is now permanent for the rest of the match.
+              Both effects apply if you continue.
             </Text>
           </>
         )}
@@ -205,7 +296,7 @@ export default function FineDrinkMiniGame({
         {phase === "revealed" && (
           <Pressable
             style={styles.primaryButtonSingle}
-            onPress={handleAcceptRevealedStatus}
+            onPress={handleAcceptRevealedEffect}
           >
             <Text style={styles.primaryButtonText}>Continue</Text>
           </Pressable>

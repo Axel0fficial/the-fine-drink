@@ -27,6 +27,7 @@ export default function GameScreen() {
     selectedGameModeId,
     customModeEnabledCategories,
     customModeDisabledChallengeIds,
+    globallyDisabledChallengeIds,
   } = useGameStore();
 
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
@@ -44,8 +45,12 @@ export default function GameScreen() {
   const currentPlayer = selectedPlayers[currentPlayerIndex] ?? null;
 
   const activeChallenges = useMemo(() => {
+    const globallyAvailableChallenges = challenges.filter(
+      (challenge) => !globallyDisabledChallengeIds.includes(challenge.id),
+    );
+
     if (selectedGameModeId === "custom") {
-      return challenges.filter((challenge) => {
+      return globallyAvailableChallenges.filter((challenge) => {
         const categoryAllowed = challenge.categories.some((category) =>
           customModeEnabledCategories.includes(category),
         );
@@ -58,9 +63,10 @@ export default function GameScreen() {
       });
     }
 
-    return challenges;
+    return globallyAvailableChallenges;
   }, [
     challenges,
+    globallyDisabledChallengeIds,
     customModeEnabledCategories,
     customModeDisabledChallengeIds,
     selectedGameModeId,
@@ -95,8 +101,8 @@ export default function GameScreen() {
       currentPlayer,
     );
 
-    const resolvedFirst = resolveChallenge(first);
-    const resolvedSecond = resolveChallenge(second);
+    const resolvedFirst = resolveChallenge(first, currentPlayer);
+    const resolvedSecond = resolveChallenge(second, currentPlayer);
 
     setPrimaryChallenge(resolvedFirst);
     setSecondaryChallenge(resolvedSecond);
@@ -173,14 +179,20 @@ export default function GameScreen() {
       awardPointsToCurrentPlayer(result.pointsAwarded);
     }
 
-    const appliedStatus = result.appliedStatus;
-    if (appliedStatus) {
-      setActiveStatuses((prev) => [...prev, appliedStatus]);
+    const appliedStatuses = result.appliedStatuses;
+    if (appliedStatuses && appliedStatuses.length > 0) {
+      setActiveStatuses((prev) => [...prev, ...appliedStatuses]);
     }
+
+    const immediateEffects = result.immediateEffects;
+    const immediateText =
+      immediateEffects && immediateEffects.length > 0
+        ? ` Immediate: ${immediateEffects.map((effect) => effect.text).join(" ")}`
+        : "";
 
     setStatusText(
       result.statusText ??
-        `${currentPlayer.name} finished the minigame "${shownChallenge.title}".`,
+        `${currentPlayer.name} finished the minigame "${shownChallenge.title}".${immediateText}`,
     );
 
     goToNextPlayer();

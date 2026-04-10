@@ -282,6 +282,30 @@ export const mockChallenges: Challenge[] = [
     },
   },
   {
+    id: "c_penalty_prompt",
+    title: "Choose Your Consequence",
+    description: "",
+    difficulty: "normal",
+    categories: ["individual", "social"],
+    points: 2,
+
+    baseChance: 0.4,
+    minChance: 0.2,
+    maxChance: 0.6,
+
+    cooldownTurns: 3,
+    isUnique: false,
+    isFavorite: false,
+    isCustom: false,
+    enabled: true,
+
+    logicType: "pool_prompt",
+    logicConfig: {
+      poolRefs: ["drink_penalties"],
+      template: "Your penalty is: {0}.",
+    },
+  },
+  {
     id: "c_wyr_1",
     title: "Would You Rather",
     description: "",

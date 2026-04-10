@@ -57,13 +57,14 @@ function createCustomChallenge(input: {
 
 export default function Custom1Screen() {
   const {
-  challenges,
-  customModeEnabledCategories,
-  customModeDisabledChallengeIds,
-  setChallenges,
-  setCustomModeEnabledCategories,
-  setCustomModeDisabledChallengeIds,
-} = useGameStore();
+    challenges,
+    customModeEnabledCategories,
+    customModeDisabledChallengeIds,
+    globallyDisabledChallengeIds,
+    setChallenges,
+    setCustomModeEnabledCategories,
+    setCustomModeDisabledChallengeIds,
+  } = useGameStore();
   const [createModalVisible, setCreateModalVisible] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [newDescription, setNewDescription] = useState("");
@@ -71,28 +72,28 @@ export default function Custom1Screen() {
   const [newCategories, setNewCategories] = useState<string[]>([]);
 
   const visibleChallenges = useMemo(() => {
-  return challenges.filter((challenge) =>
-    challenge.categories.some((category) =>
-      customModeEnabledCategories.includes(category),
-    ),
-  );
-}, [challenges, customModeEnabledCategories]);
+    return challenges.filter((challenge) =>
+      challenge.categories.some((category) =>
+        customModeEnabledCategories.includes(category),
+      ),
+    );
+  }, [challenges, customModeEnabledCategories]);
 
   const toggleChallengeEnabled = (challengeId: string) => {
-  setCustomModeDisabledChallengeIds((prev) =>
-    prev.includes(challengeId)
-      ? prev.filter((id) => id !== challengeId)
-      : [...prev, challengeId],
-  );
-};
+    setCustomModeDisabledChallengeIds((prev) =>
+      prev.includes(challengeId)
+        ? prev.filter((id) => id !== challengeId)
+        : [...prev, challengeId],
+    );
+  };
 
   const toggleCategory = (category: string) => {
-  setCustomModeEnabledCategories((prev) =>
-    prev.includes(category)
-      ? prev.filter((item) => item !== category)
-      : [...prev, category],
-  );
-};
+    setCustomModeEnabledCategories((prev) =>
+      prev.includes(category)
+        ? prev.filter((item) => item !== category)
+        : [...prev, category],
+    );
+  };
   const toggleNewCategory = (category: string) => {
     setNewCategories((prev) =>
       prev.includes(category)
@@ -102,16 +103,16 @@ export default function Custom1Screen() {
   };
 
   const deleteCustomChallenge = (challengeId: string) => {
-  setChallenges((prev) =>
-    prev.filter(
-      (challenge) => !(challenge.id === challengeId && challenge.isCustom),
-    ),
-  );
+    setChallenges((prev) =>
+      prev.filter(
+        (challenge) => !(challenge.id === challengeId && challenge.isCustom),
+      ),
+    );
 
-  setCustomModeDisabledChallengeIds((prev) =>
-    prev.filter((id) => id !== challengeId),
-  );
-};
+    setCustomModeDisabledChallengeIds((prev) =>
+      prev.filter((id) => id !== challengeId),
+    );
+  };
 
   const handleCreateChallenge = () => {
     const cleanTitle = newTitle.trim();
@@ -155,8 +156,18 @@ export default function Custom1Screen() {
   };
 
   const renderChallengeItem = ({ item }: { item: Challenge }) => {
+    const isGloballyDisabled = globallyDisabledChallengeIds.includes(item.id);
+    const isDisabledForCustom = customModeDisabledChallengeIds.includes(
+      item.id,
+    );
+    const isEnabledForCustom = !isDisabledForCustom && !isGloballyDisabled;
     return (
-      <View style={styles.challengeCard}>
+      <View
+        style={[
+          styles.challengeCard,
+          isGloballyDisabled && styles.challengeCardGloballyDisabled,
+        ]}
+      >
         <View style={styles.challengeHeader}>
           <View style={styles.challengeHeaderText}>
             <Text style={styles.challengeTitle}>{item.title}</Text>
@@ -166,8 +177,9 @@ export default function Custom1Screen() {
           </View>
 
           <Switch
-            value={!customModeDisabledChallengeIds.includes(item.id)}
+            value={isEnabledForCustom}
             onValueChange={() => toggleChallengeEnabled(item.id)}
+            disabled={isGloballyDisabled}
           />
         </View>
 
@@ -175,7 +187,11 @@ export default function Custom1Screen() {
 
         <View style={styles.challengeFooter}>
           <Text style={styles.challengeStatus}>
-            {customModeDisabledChallengeIds.includes(item.id) ? "Disabled" : "Enabled"}
+            {isGloballyDisabled
+              ? "Disabled in Settings"
+              : isDisabledForCustom
+                ? "Disabled for Custom Mode"
+                : "Enabled"}
           </Text>
 
           {item.isCustom && (
@@ -196,9 +212,11 @@ export default function Custom1Screen() {
       <View style={styles.topBar}>
         <View>
           <Text style={styles.title}>Custom Mode</Text>
-          <Text style={styles.subtitle}>
-            Choose categories, enable challenges, and create your own.
-          </Text>
+          <Pressable onPress={() => router.push("/settings")}>
+            <Text style={styles.globalDisclaimerLink}>
+              Some challenges are disabled in Settings. Tap here to manage them.
+            </Text>
+          </Pressable>
         </View>
 
         <Pressable
@@ -610,5 +628,18 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontSize: 15,
     fontWeight: "800",
+  },
+  globalDisclaimerLink: {
+    color: "#60a5fa",
+    fontSize: 12,
+    lineHeight: 18,
+    textAlign: "center",
+    marginBottom: 10,
+    paddingHorizontal: 12,
+    textDecorationLine: "underline",
+  },
+  challengeCardGloballyDisabled: {
+    opacity: 0.55,
+    borderColor: "#5b5b5b",
   },
 });

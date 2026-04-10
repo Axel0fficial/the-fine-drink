@@ -1,16 +1,27 @@
-export const promptPools: Record<string, string[]> = {
-  charades_people: ["Batman", "a dog", "a news anchor"],
+import type { PromptPoolItem } from "../types/game";
+
+export const promptPools: Record<string, PromptPoolItem[]> = {
+  charades_people: [
+    { text: "Batman", audience: "all" },
+    { text: "a dog", audience: "all" },
+    { text: "a news anchor", audience: "all" },
+  ],
+
   charades_actions: [
-    "doing dishes",
-    "buying groceries",
-    "opening a restaurant",
+    { text: "doing dishes", audience: "all" },
+    { text: "buying groceries", audience: "all" },
+    { text: "opening a restaurant", audience: "all" },
   ],
 
   would_you_rather_romance: [
-    "Henry Cavill",
-    "Keanu Reeves",
-    "Leopold the Third",
+    { text: "Henry Cavill", audience: "all" },
+    { text: "Keanu Reeves", audience: "all" },
+    { text: "Leopold the Third", audience: "all" },
   ],
 
-  objects: ["a broom", "a toaster", "a rubber duck", "a shopping cart"],
+  drink_penalties: [
+    { text: "take 2 sips", audience: "drinkers_only" },
+    { text: "do 10 jumping jacks", audience: "non_drinkers_only" },
+    { text: "lose 1 point", audience: "all" },
+  ],
 };

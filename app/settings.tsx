@@ -5,6 +5,7 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
+  Switch,
   Text,
   View,
 } from "react-native";
@@ -16,13 +17,26 @@ import { sharedStyles } from "./sharedStyles";
 export default function SettingsScreen() {
   const [resetModalVisible, setResetModalVisible] = useState(false);
 
+  const [challengeModalVisible, setChallengeModalVisible] = useState(false);
+
   const {
     resetChallenges,
     resetPlayerProfiles,
     resetLeaderboard,
     resetSelectedPlayers,
     resetAllData,
+    challenges,
+    globallyDisabledChallengeIds,
+    setGloballyDisabledChallengeIds,
   } = useGameStore();
+
+  const toggleGlobalChallengeEnabled = (challengeId: string) => {
+    setGloballyDisabledChallengeIds((prev) =>
+      prev.includes(challengeId)
+        ? prev.filter((id) => id !== challengeId)
+        : [...prev, challengeId],
+    );
+  };
 
   const runReset = async (action: () => void | Promise<void>) => {
     await action();
@@ -37,11 +51,26 @@ export default function SettingsScreen() {
           Manage testing data, saved profiles, challenges, and leaderboard data.
         </Text>
       </View>
+      <View style={sharedStyles.section}>
+        <Text style={sharedStyles.sectionTitle}>Challenge Panel</Text>
+        <Text style={[sharedStyles.sectionText, styles.sectionTextSpacing]}>
+          Open the challenge panel to enable or disable them.
+        </Text>
+        <Pressable
+          style={sharedStyles.secondaryButton}
+          onPress={() => setChallengeModalVisible(true)}
+        >
+          <Text style={sharedStyles.secondaryButtonText}>
+            Global Challenge Availability
+          </Text>
+        </Pressable>
+      </View>
 
       <View style={sharedStyles.section}>
         <Text style={sharedStyles.sectionTitle}>Data Tools</Text>
         <Text style={[sharedStyles.sectionText, styles.sectionTextSpacing]}>
-          Open the reset panel to clear testing data individually or all at once.
+          Open the reset panel to clear testing data individually or all at
+          once.
         </Text>
 
         <Pressable
@@ -135,6 +164,58 @@ export default function SettingsScreen() {
           </View>
         </View>
       </Modal>
+      <Modal
+        visible={challengeModalVisible}
+        animationType="slide"
+        transparent
+        onRequestClose={() => setChallengeModalVisible(false)}
+      >
+        <View style={sharedStyles.modalBackdrop}>
+          <View style={sharedStyles.modalCard}>
+            <View style={sharedStyles.modalHeader}>
+              <Text style={sharedStyles.modalTitle}>
+                Global Challenge Availability
+              </Text>
+              <Pressable onPress={() => setChallengeModalVisible(false)}>
+                <Text style={sharedStyles.modalCloseText}>Close</Text>
+              </Pressable>
+            </View>
+
+            <ScrollView showsVerticalScrollIndicator={false}>
+              <Text style={sharedStyles.modalDescription}>
+                Disable challenges here if you never want them to appear in any
+                game mode on this device.
+              </Text>
+
+              {challenges.map((challenge) => {
+                const enabled = !globallyDisabledChallengeIds.includes(
+                  challenge.id,
+                );
+
+                return (
+                  <View key={challenge.id} style={styles.challengeRow}>
+                    <View style={styles.challengeRowText}>
+                      <Text style={styles.challengeRowTitle}>
+                        {challenge.title}
+                      </Text>
+                      <Text style={styles.challengeRowMeta}>
+                        {challenge.categories.join(", ")}
+                      </Text>
+                    </View>
+
+                    <Switch
+                      value={enabled}
+                      onValueChange={() =>
+                        toggleGlobalChallengeEnabled(challenge.id)
+                      }
+                    />
+                  </View>
+                );
+              })}
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
     </ScreenContainer>
   );
 }
@@ -176,6 +257,32 @@ const styles = StyleSheet.create({
   dangerButtonText: {
     color: "#f0b4b4",
     fontSize: 13,
+    lineHeight: 18,
+  },
+  challengeRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#2a2a2a",
+  },
+
+  challengeRowText: {
+    flex: 1,
+  },
+
+  challengeRowTitle: {
+    color: "#ffffff",
+    fontSize: 15,
+    fontWeight: "800",
+  },
+
+  challengeRowMeta: {
+    marginTop: 4,
+    color: "#9ca3af",
+    fontSize: 12,
     lineHeight: 18,
   },
 });

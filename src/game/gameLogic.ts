@@ -1,5 +1,10 @@
 import { promptPools } from "../data/promptPools";
-import type { Challenge, GamePlayer } from "../types/game";
+import type {
+  Challenge,
+  GamePlayer,
+  PlayerTag,
+  PromptPoolItem,
+} from "../types/game";
 
 export type ResolvedChallenge = {
   challenge: Challenge;
@@ -47,8 +52,30 @@ export function pickTwoChallengesForPlayer(
 function getRandomItem<T>(items: T[]): T {
   return items[Math.floor(Math.random() * items.length)];
 }
+function isAudienceAllowedForPlayer(
+  audience: "all" | "drinkers_only" | "non_drinkers_only",
+  playerTag: PlayerTag,
+): boolean {
+  if (audience === "all") return true;
+  if (audience === "drinkers_only") return playerTag !== "non_drinker";
+  if (audience === "non_drinkers_only") return playerTag === "non_drinker";
+  return true;
+}
 
-function resolvePoolPromptChallenge(challenge: Challenge): string {
+function getCompatiblePromptPoolItems(
+  poolItems: PromptPoolItem[],
+  player: GamePlayer | null,
+): PromptPoolItem[] {
+  const playerTag = player?.tag ?? "none";
+
+  return poolItems.filter((item) =>
+    isAudienceAllowedForPlayer(item.audience, playerTag),
+  );
+}
+function resolvePoolPromptChallenge(
+  challenge: Challenge,
+  player: GamePlayer | null,
+): string | null {
   const poolRefs = challenge.logicConfig?.poolRefs as string[] | undefined;
   const template = challenge.logicConfig?.template as string | undefined;
 
@@ -56,15 +83,23 @@ function resolvePoolPromptChallenge(challenge: Challenge): string {
     return challenge.description || "Invalid prompt challenge.";
   }
 
-  const selectedValues = poolRefs.map((poolRef) => {
+  const selectedValues: string[] = [];
+
+  for (const poolRef of poolRefs) {
     const pool = promptPools[poolRef];
 
     if (!pool || pool.length === 0) {
-      return `[missing:${poolRef}]`;
+      return null;
     }
 
-    return getRandomItem(pool);
-  });
+    const compatibleItems = getCompatiblePromptPoolItems(pool, player);
+
+    if (compatibleItems.length === 0) {
+      return null;
+    }
+
+    selectedValues.push(getRandomItem(compatibleItems).text);
+  }
 
   let finalText = template;
 
@@ -75,7 +110,10 @@ function resolvePoolPromptChallenge(challenge: Challenge): string {
   return finalText;
 }
 
-export function resolveChallengeDescription(challenge: Challenge): string {
+export function resolveChallengeDescription(
+  challenge: Challenge,
+  player: GamePlayer | null,
+): string | null {
   if (!challenge.logicType || challenge.logicType === "none") {
     return challenge.description;
   }
@@ -107,7 +145,7 @@ export function resolveChallengeDescription(challenge: Challenge): string {
   }
 
   if (challenge.logicType === "pool_prompt") {
-    return resolvePoolPromptChallenge(challenge);
+    return resolvePoolPromptChallenge(challenge, player);
   }
 
   return challenge.description;
@@ -115,11 +153,16 @@ export function resolveChallengeDescription(challenge: Challenge): string {
 
 export function resolveChallenge(
   challenge: Challenge | null,
+  player: GamePlayer | null,
 ): ResolvedChallenge | null {
   if (!challenge) return null;
 
+  const description = resolveChallengeDescription(challenge, player);
+
+  if (!description) return null;
+
   return {
     challenge,
-    description: resolveChallengeDescription(challenge),
+    description,
   };
 }

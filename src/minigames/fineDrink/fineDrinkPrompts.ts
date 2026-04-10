@@ -1,63 +1,69 @@
-export type FineDrinkPromptTone = "good" | "bad";
+import type { FineDrinkEffect } from "../types";
 
-export type FineDrinkPrompt = {
-  id: string;
-  text: string;
-  tone: FineDrinkPromptTone;
-};
-
-export const FINE_DRINK_GOOD_PROMPTS: FineDrinkPrompt[] = [
+export const FINE_DRINK_GOOD_EFFECTS: FineDrinkEffect[] = [
   {
-    id: "fd_good_1",
+    type: "action",
+    text: "Give 6 away.",
+    audience: "drinkers_only",
     tone: "good",
-    text: "For the rest of the match, you may pass one challenge without penalty.",
   },
   {
-    id: "fd_good_2",
+    type: "action",
+    text: "Choose a player to lose 2 points.",
+    audience: "all",
     tone: "good",
-    text: "For the rest of the match, gain +1 extra point whenever you complete a challenge.",
   },
   {
-    id: "fd_good_3",
+    type: "status",
+    text: "For the rest of the match, gain +1 point whenever you complete a challenge.",
+    audience: "all",
     tone: "good",
-    text: "For the rest of the match, you may swap Challenge A and B one extra time each turn.",
+    scope: "player",
+    remainingRounds: null,
   },
   {
-    id: "fd_good_4",
+    type: "status",
+    text: "For 2 rounds, all players must compliment the current player before they act.",
+    audience: "all",
     tone: "good",
-    text: "For the rest of the match, if you lose a minigame, you may force a reroll once.",
-  },
-  {
-    id: "fd_good_5",
-    tone: "good",
-    text: "For the rest of the match, the first bad effect against you each round is ignored.",
+    scope: "global",
+    remainingRounds: 2,
   },
 ];
 
-export const FINE_DRINK_BAD_PROMPTS: FineDrinkPrompt[] = [
+export const FINE_DRINK_BAD_EFFECTS: FineDrinkEffect[] = [
   {
-    id: "fd_bad_1",
+    type: "action",
+    text: "Drink 5.",
+    audience: "drinkers_only",
     tone: "bad",
-    text: "For the rest of the match, you must speak in third person.",
   },
   {
-    id: "fd_bad_2",
+    type: "action",
+    text: "Do 12 jumping jacks.",
+    audience: "non_drinkers_only",
     tone: "bad",
-    text: "For the rest of the match, every completed challenge gives you 1 fewer point, minimum 0.",
   },
   {
-    id: "fd_bad_3",
+    type: "action",
+    text: "Lose 2 points immediately.",
+    audience: "all",
     tone: "bad",
+  },
+  {
+    type: "status",
     text: "For the rest of the match, you cannot choose Challenge B.",
+    audience: "all",
+    tone: "bad",
+    scope: "player",
+    remainingRounds: null,
   },
   {
-    id: "fd_bad_4",
+    type: "status",
+    text: "For 2 rounds, all players must cheer whenever they drink.",
+    audience: "all",
     tone: "bad",
-    text: "For the rest of the match, you must stand up before every turn starts.",
-  },
-  {
-    id: "fd_bad_5",
-    tone: "bad",
-    text: "For the rest of the match, whenever you pass, the current leader gains 1 point.",
+    scope: "global",
+    remainingRounds: 2,
   },
 ];

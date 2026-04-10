@@ -114,6 +114,21 @@ export type SessionModifier = {
   logicConfig?: Record<string, any>;
 };
 
+export type PromptAudience = "all" | "drinkers_only" | "non_drinkers_only";
+
+export type PromptPoolItem = {
+  text: string;
+  audience: PromptAudience;
+};
+
+export type StatusPoolItem = {
+  text: string;
+  scope: "player" | "global";
+  tone: "good" | "bad";
+  remainingRounds?: number | null;
+  audience: PromptAudience;
+};
+
 export type ActiveEffect = {
   id: string;
   sourceModifierId?: string;
