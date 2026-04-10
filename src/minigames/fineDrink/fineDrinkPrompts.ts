@@ -3,19 +3,19 @@ import type { FineDrinkEffect } from "../types";
 export const FINE_DRINK_GOOD_EFFECTS: FineDrinkEffect[] = [
   {
     type: "action",
-    text: "Give 6 away.",
+    text: "Regala 6",
     audience: "drinkers_only",
     tone: "good",
   },
   {
     type: "action",
-    text: "Choose a player to lose 2 points.",
+    text: "Cambia tu vaso con alguien a tu eleccion",
     audience: "all",
     tone: "good",
   },
   {
     type: "status",
-    text: "For the rest of the match, gain +1 point whenever you complete a challenge.",
+    text: "Por el resto de la partida regala 1 por cada desafio que completes",
     audience: "all",
     tone: "good",
     scope: "player",
@@ -23,7 +23,7 @@ export const FINE_DRINK_GOOD_EFFECTS: FineDrinkEffect[] = [
   },
   {
     type: "status",
-    text: "For 2 rounds, all players must compliment the current player before they act.",
+    text: "Por 2 rondas, podras apuntar a algun lugar y si alguien se gira a verlo toman 2",
     audience: "all",
     tone: "good",
     scope: "global",
@@ -34,7 +34,7 @@ export const FINE_DRINK_GOOD_EFFECTS: FineDrinkEffect[] = [
 export const FINE_DRINK_BAD_EFFECTS: FineDrinkEffect[] = [
   {
     type: "action",
-    text: "Drink 5.",
+    text: "Toma 6.",
     audience: "drinkers_only",
     tone: "bad",
   },
@@ -46,13 +46,13 @@ export const FINE_DRINK_BAD_EFFECTS: FineDrinkEffect[] = [
   },
   {
     type: "action",
-    text: "Lose 2 points immediately.",
+    text: "Alguien mas elige con quien cambias vaso",
     audience: "all",
     tone: "bad",
   },
   {
     type: "status",
-    text: "For the rest of the match, you cannot choose Challenge B.",
+    text: "Por el resto de la partida no puedes ver la opcion B",
     audience: "all",
     tone: "bad",
     scope: "player",
@@ -60,7 +60,15 @@ export const FINE_DRINK_BAD_EFFECTS: FineDrinkEffect[] = [
   },
   {
     type: "status",
-    text: "For 2 rounds, all players must cheer whenever they drink.",
+    text: "Por 2 rondas todos deben decire salud cunado tomen",
+    audience: "all",
+    tone: "bad",
+    scope: "global",
+    remainingRounds: 2,
+  },
+  {
+    type: "status",
+    text: "Por 2 rondas, podras apuntar a algun lugar y si alguien se gira a verlo tomas 2",
     audience: "all",
     tone: "bad",
     scope: "global",

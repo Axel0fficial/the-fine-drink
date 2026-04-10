@@ -120,6 +120,24 @@ export default function GameScreen() {
     generateTurnChallenges();
   }, [selectedPlayers.length, currentPlayerIndex, currentRound]);
 
+  const decrementRoundStatuses = () => {
+  setActiveStatuses((prev) =>
+    prev
+      .map((status) => {
+        if (status.remainingRounds == null) return status;
+
+        return {
+          ...status,
+          remainingRounds: status.remainingRounds - 1,
+        };
+      })
+      .filter(
+        (status) =>
+          status.remainingRounds == null || status.remainingRounds > 0,
+      ),
+  );
+};
+
   const goToNextPlayer = () => {
     if (selectedPlayers.length === 0) return;
 
@@ -133,11 +151,12 @@ export default function GameScreen() {
     }
 
     if (isLastPlayerInRound) {
-      setCurrentPlayerIndex(0);
-      setCurrentRound((prev) => prev + 1);
-    } else {
-      setCurrentPlayerIndex((prev) => prev + 1);
-    }
+  decrementRoundStatuses();
+  setCurrentPlayerIndex(0);
+  setCurrentRound((prev) => prev + 1);
+} else {
+  setCurrentPlayerIndex((prev) => prev + 1);
+}
   };
 
   const awardPointsToCurrentPlayer = (points: number) => {
@@ -163,13 +182,18 @@ export default function GameScreen() {
 
     awardPointsToCurrentPlayer(shownChallenge.points);
 
-    setStatusText(
-      `${currentPlayer.name} completed "${shownChallenge.title}" and earned ${shownChallenge.points} point${
-        shownChallenge.points === 1 ? "" : "s"
-      }.`,
-    );
+const generatedStatuses = shownResolvedChallenge?.generatedStatuses;
+if (generatedStatuses && generatedStatuses.length > 0) {
+  setActiveStatuses((prev) => [...prev, ...generatedStatuses]);
+}
 
-    goToNextPlayer();
+setStatusText(
+  `${currentPlayer.name} completed "${shownChallenge.title}" and earned ${shownChallenge.points} point${
+    shownChallenge.points === 1 ? "" : "s"
+  }.`,
+);
+
+goToNextPlayer();
   };
 
   const handleMiniGameComplete = (result: MiniGameResult) => {

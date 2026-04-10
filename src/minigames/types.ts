@@ -12,6 +12,9 @@ export type MatchStatus = {
   tone: MatchStatusTone;
   sourceChallengeId: string;
   remainingRounds?: number | null;
+
+  effectKey?: string;
+  effectValue?: number | string | boolean;
 };
 
 export type ImmediateAction = {
