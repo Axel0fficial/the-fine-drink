@@ -1,10 +1,26 @@
 import { StyleSheet } from "react-native";
 
+const COLORS = {
+  black: "#000000",
+  blackSoft: "#0a0a0a",
+  blackCard: "#111111",
+  purple: "#8b5cf6",
+  purpleDark: "#140d22",
+  white: "#ffffff",
+  textMuted: "#aaaaaa",
+  textSoft: "#b5b5b5",
+  textDisabled: "#d3cbe9",
+  overlay: "rgba(0,0,0,0.82)",
+  dangerBg: "#2a1616",
+  dangerBorder: "#7f1d1d",
+  dangerText: "#f0b4b4",
+};
+
 export const sharedStyles = StyleSheet.create({
   // Base screen helpers
   screenContainer: {
     flex: 1,
-    backgroundColor: "#111111",
+    backgroundColor: COLORS.black,
     paddingHorizontal: 18,
   },
 
@@ -15,20 +31,20 @@ export const sharedStyles = StyleSheet.create({
   title: {
     fontSize: 30,
     fontWeight: "800",
-    color: "#ffffff",
+    color: COLORS.white,
   },
 
   subtitle: {
     marginTop: 6,
     fontSize: 14,
     lineHeight: 20,
-    color: "#b5b5b5",
+    color: COLORS.textSoft,
   },
 
   section: {
-    backgroundColor: "#171717",
+    backgroundColor: COLORS.black,
     borderWidth: 1,
-    borderColor: "#2a2a2a",
+    borderColor: COLORS.purple,
     borderRadius: 16,
     padding: 16,
   },
@@ -36,14 +52,14 @@ export const sharedStyles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: "800",
-    color: "#ffffff",
+    color: COLORS.white,
     marginBottom: 8,
   },
 
   sectionText: {
     fontSize: 14,
     lineHeight: 20,
-    color: "#aaaaaa",
+    color: COLORS.textMuted,
   },
 
   // Top bars / navigation
@@ -63,9 +79,9 @@ export const sharedStyles = StyleSheet.create({
 
   topNavButton: {
     flex: 1,
-    backgroundColor: "#1f1f1f",
+    backgroundColor: COLORS.black,
     borderWidth: 1,
-    borderColor: "#333333",
+    borderColor: COLORS.purple,
     paddingVertical: 12,
     paddingHorizontal: 12,
     borderRadius: 12,
@@ -73,12 +89,12 @@ export const sharedStyles = StyleSheet.create({
   },
 
   topNavButtonActive: {
-    borderColor: "#8b5cf6",
-    backgroundColor: "#2b2144",
+    borderColor: COLORS.purple,
+    backgroundColor: COLORS.purpleDark,
   },
 
   topNavButtonText: {
-    color: "#ffffff",
+    color: COLORS.white,
     fontSize: 14,
     fontWeight: "700",
     textAlign: "center",
@@ -86,7 +102,9 @@ export const sharedStyles = StyleSheet.create({
 
   // Buttons
   primaryButton: {
-    backgroundColor: "#8b5cf6",
+    backgroundColor: COLORS.black,
+    borderWidth: 1,
+    borderColor: COLORS.purple,
     paddingVertical: 15,
     paddingHorizontal: 16,
     borderRadius: 14,
@@ -95,22 +113,23 @@ export const sharedStyles = StyleSheet.create({
   },
 
   primaryButtonText: {
-    color: "#ffffff",
+    color: COLORS.white,
     fontWeight: "800",
     fontSize: 15,
   },
 
   primaryButtonDisabled: {
-    backgroundColor: "#3b3159",
-    opacity: 0.5,
+    opacity: 0.35,
   },
 
   primaryButtonTextDisabled: {
-    color: "#d3cbe9",
+    color: COLORS.textDisabled,
   },
 
   secondaryButton: {
-    backgroundColor: "#2b2b2b",
+    backgroundColor: COLORS.black,
+    borderWidth: 1,
+    borderColor: COLORS.purple,
     paddingVertical: 15,
     paddingHorizontal: 16,
     borderRadius: 14,
@@ -119,35 +138,52 @@ export const sharedStyles = StyleSheet.create({
   },
 
   secondaryButtonText: {
-    color: "#ffffff",
+    color: COLORS.white,
     fontWeight: "800",
     fontSize: 15,
   },
 
   smallActionButton: {
-    backgroundColor: "#1f1f1f",
+    backgroundColor: COLORS.black,
     borderWidth: 1,
-    borderColor: "#333333",
+    borderColor: COLORS.purple,
     paddingVertical: 10,
     paddingHorizontal: 14,
     borderRadius: 12,
   },
 
   smallActionButtonText: {
-    color: "#ffffff",
+    color: COLORS.white,
     fontSize: 14,
     fontWeight: "700",
   },
 
+  dangerButton: {
+    backgroundColor: COLORS.dangerBg,
+    borderWidth: 1,
+    borderColor: COLORS.dangerBorder,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  dangerButtonText: {
+    color: COLORS.dangerText,
+    fontWeight: "800",
+    fontSize: 15,
+  },
+
   // Inputs
   input: {
-    backgroundColor: "#1b1b1b",
+    backgroundColor: COLORS.black,
     borderWidth: 1,
-    borderColor: "#313131",
+    borderColor: COLORS.purple,
     borderRadius: 12,
     paddingHorizontal: 14,
     paddingVertical: 14,
-    color: "#ffffff",
+    color: COLORS.white,
     fontSize: 16,
   },
 
@@ -157,7 +193,7 @@ export const sharedStyles = StyleSheet.create({
   },
 
   inputLabel: {
-    color: "#ffffff",
+    color: COLORS.white,
     fontSize: 14,
     fontWeight: "700",
     marginBottom: 8,
@@ -165,20 +201,35 @@ export const sharedStyles = StyleSheet.create({
 
   // Cards / lists
   card: {
-    backgroundColor: "#171717",
+    backgroundColor: COLORS.black,
     borderWidth: 1,
-    borderColor: "#2a2a2a",
+    borderColor: COLORS.purple,
+    borderRadius: 16,
+    padding: 14,
+  },
+
+  flatCard: {
+    backgroundColor: COLORS.black,
+    borderWidth: 0,
     borderRadius: 16,
     padding: 14,
   },
 
   listCard: {
-    backgroundColor: "#202020",
+    backgroundColor: COLORS.black,
+    borderRadius: 14,
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    borderWidth: 0,
+  },
+
+  outlinedListCard: {
+    backgroundColor: COLORS.black,
     borderRadius: 14,
     paddingVertical: 12,
     paddingHorizontal: 12,
     borderWidth: 1,
-    borderColor: "#2f2f2f",
+    borderColor: COLORS.purple,
   },
 
   emptyState: {
@@ -191,13 +242,13 @@ export const sharedStyles = StyleSheet.create({
   emptyStateTitle: {
     fontSize: 18,
     fontWeight: "800",
-    color: "#ffffff",
+    color: COLORS.white,
     marginBottom: 8,
   },
 
   emptyStateText: {
     fontSize: 14,
-    color: "#aaaaaa",
+    color: COLORS.textMuted,
     textAlign: "center",
     lineHeight: 20,
   },
@@ -205,17 +256,17 @@ export const sharedStyles = StyleSheet.create({
   // Modal
   modalBackdrop: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.72)",
+    backgroundColor: COLORS.overlay,
     justifyContent: "center",
     padding: 18,
   },
 
   modalCard: {
     maxHeight: "82%",
-    backgroundColor: "#151515",
+    backgroundColor: COLORS.black,
     borderRadius: 18,
     borderWidth: 1,
-    borderColor: "#303030",
+    borderColor: COLORS.purple,
     padding: 16,
   },
 
@@ -227,19 +278,19 @@ export const sharedStyles = StyleSheet.create({
   },
 
   modalTitle: {
-    color: "#ffffff",
+    color: COLORS.white,
     fontSize: 20,
     fontWeight: "800",
   },
 
   modalCloseText: {
-    color: "#8b5cf6",
+    color: COLORS.purple,
     fontSize: 15,
     fontWeight: "700",
   },
 
   modalDescription: {
-    color: "#aaaaaa",
+    color: COLORS.textMuted,
     fontSize: 14,
     lineHeight: 20,
     marginBottom: 16,
@@ -253,21 +304,21 @@ export const sharedStyles = StyleSheet.create({
   },
 
   chip: {
-    backgroundColor: "#202020",
+    backgroundColor: COLORS.black,
     borderWidth: 1,
-    borderColor: "#313131",
+    borderColor: COLORS.purple,
     borderRadius: 999,
     paddingVertical: 10,
     paddingHorizontal: 14,
   },
 
   chipActive: {
-    backgroundColor: "#2b2144",
-    borderColor: "#8b5cf6",
+    backgroundColor: COLORS.purpleDark,
+    borderColor: COLORS.purple,
   },
 
   chipText: {
-    color: "#ffffff",
+    color: COLORS.white,
     fontSize: 13,
     fontWeight: "700",
   },
@@ -289,3 +340,6 @@ export const sharedStyles = StyleSheet.create({
     marginTop: 16,
   },
 });
+
+export { COLORS };
+

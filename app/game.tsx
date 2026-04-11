@@ -25,9 +25,11 @@ export default function GameScreen() {
     challenges,
     selectedRounds,
     selectedGameModeId,
+    selectedDifficulty,
     customModeEnabledCategories,
     customModeDisabledChallengeIds,
     globallyDisabledChallengeIds,
+    modifiers,
   } = useGameStore();
 
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
@@ -88,21 +90,101 @@ export default function GameScreen() {
 
   const turnInRound = currentPlayerIndex + 1;
 
-  const visibleStatuses = useMemo(() => {
-    return activeStatuses.filter((status) => {
+  const getModifierStatusesForPlayer = (): MatchStatus[] => {
+    if (!currentPlayer) return [];
+
+    const activeModifierStatuses: MatchStatus[] = [];
+
+    for (const modifier of modifiers) {
+      if (!modifier.enabled) continue;
+
+      // DOWN WITH THE KING
+      if (modifier.id === "mod_down_with_the_king") {
+        const leader = selectedPlayers.reduce((prev, curr) =>
+          curr.score > prev.score ? curr : prev,
+        );
+
+        if (currentPlayer.id === leader.id) {
+          activeModifierStatuses.push({
+            id: `mod_status_${modifier.id}_${currentPlayer.id}`,
+            scope: "player",
+            playerId: currentPlayer.id,
+            playerName: currentPlayer.name,
+            text: "You are the leader. Everyone is coming for you.",
+            tone: "bad",
+            sourceChallengeId: modifier.id,
+            remainingRounds: null,
+          });
+        }
+      }
+
+      // SHARED PUNISHMENT (global info)
+      if (modifier.id === "mod_shared_punishment") {
+        activeModifierStatuses.push({
+          id: `mod_status_${modifier.id}`,
+          scope: "global",
+          text: "Punishments are shared with everyone.",
+          tone: "bad",
+          sourceChallengeId: modifier.id,
+          remainingRounds: null,
+        });
+      }
+
+      // LAST PLACE BOOST
+      if (modifier.id === "mod_last_place_boost") {
+        const lastPlayer = selectedPlayers.reduce((prev, curr) =>
+          curr.score < prev.score ? curr : prev,
+        );
+
+        if (currentPlayer.id === lastPlayer.id) {
+          activeModifierStatuses.push({
+            id: `mod_status_${modifier.id}_${currentPlayer.id}`,
+            scope: "player",
+            playerId: currentPlayer.id,
+            playerName: currentPlayer.name,
+            text: "You're last place. Boost active.",
+            tone: "good",
+            sourceChallengeId: modifier.id,
+            remainingRounds: null,
+          });
+        }
+      }
+    }
+
+    return activeModifierStatuses;
+  };
+
+  const modifierStatuses = getModifierStatusesForPlayer();
+
+  const visibleStatuses = [...activeStatuses, ...modifierStatuses].filter(
+    (status) => {
       if (status.scope === "global") return true;
-      return status.playerId === currentPlayer?.id;
-    });
-  }, [activeStatuses, currentPlayer?.id]);
+      if (status.scope === "player") {
+        return status.playerId === currentPlayer?.id;
+      }
+      return false;
+    },
+  );
 
   const generateTurnChallenges = () => {
     const [first, second] = pickTwoChallengesForPlayer(
       activeChallenges,
       currentPlayer,
+      modifiers,
+      selectedPlayers,
+      selectedDifficulty,
     );
 
-    const resolvedFirst = resolveChallenge(first, currentPlayer);
-    const resolvedSecond = resolveChallenge(second, currentPlayer);
+    const resolvedFirst = resolveChallenge(
+      first,
+      currentPlayer,
+      selectedDifficulty,
+    );
+    const resolvedSecond = resolveChallenge(
+      second,
+      currentPlayer,
+      selectedDifficulty,
+    );
 
     setPrimaryChallenge(resolvedFirst);
     setSecondaryChallenge(resolvedSecond);
@@ -121,22 +203,22 @@ export default function GameScreen() {
   }, [selectedPlayers.length, currentPlayerIndex, currentRound]);
 
   const decrementRoundStatuses = () => {
-  setActiveStatuses((prev) =>
-    prev
-      .map((status) => {
-        if (status.remainingRounds == null) return status;
+    setActiveStatuses((prev) =>
+      prev
+        .map((status) => {
+          if (status.remainingRounds == null) return status;
 
-        return {
-          ...status,
-          remainingRounds: status.remainingRounds - 1,
-        };
-      })
-      .filter(
-        (status) =>
-          status.remainingRounds == null || status.remainingRounds > 0,
-      ),
-  );
-};
+          return {
+            ...status,
+            remainingRounds: status.remainingRounds - 1,
+          };
+        })
+        .filter(
+          (status) =>
+            status.remainingRounds == null || status.remainingRounds > 0,
+        ),
+    );
+  };
 
   const goToNextPlayer = () => {
     if (selectedPlayers.length === 0) return;
@@ -151,12 +233,12 @@ export default function GameScreen() {
     }
 
     if (isLastPlayerInRound) {
-  decrementRoundStatuses();
-  setCurrentPlayerIndex(0);
-  setCurrentRound((prev) => prev + 1);
-} else {
-  setCurrentPlayerIndex((prev) => prev + 1);
-}
+      decrementRoundStatuses();
+      setCurrentPlayerIndex(0);
+      setCurrentRound((prev) => prev + 1);
+    } else {
+      setCurrentPlayerIndex((prev) => prev + 1);
+    }
   };
 
   const awardPointsToCurrentPlayer = (points: number) => {
@@ -182,18 +264,18 @@ export default function GameScreen() {
 
     awardPointsToCurrentPlayer(shownChallenge.points);
 
-const generatedStatuses = shownResolvedChallenge?.generatedStatuses;
-if (generatedStatuses && generatedStatuses.length > 0) {
-  setActiveStatuses((prev) => [...prev, ...generatedStatuses]);
-}
+    const generatedStatuses = shownResolvedChallenge?.generatedStatuses;
+    if (generatedStatuses && generatedStatuses.length > 0) {
+      setActiveStatuses((prev) => [...prev, ...generatedStatuses]);
+    }
 
-setStatusText(
-  `${currentPlayer.name} completed "${shownChallenge.title}" and earned ${shownChallenge.points} point${
-    shownChallenge.points === 1 ? "" : "s"
-  }.`,
-);
+    setStatusText(
+      `${currentPlayer.name} completed "${shownChallenge.title}" and earned ${shownChallenge.points} point${
+        shownChallenge.points === 1 ? "" : "s"
+      }.`,
+    );
 
-goToNextPlayer();
+    goToNextPlayer();
   };
 
   const handleMiniGameComplete = (result: MiniGameResult) => {

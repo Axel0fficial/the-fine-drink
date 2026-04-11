@@ -2,6 +2,7 @@ import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
+import { COLORS, sharedStyles } from "../app/sharedStyles";
 import ScreenContainer from "../src/components/ScreenContainer";
 import { mockGameModes } from "../src/data/mockGameModes";
 import { useGameStore } from "../src/state/gameStore";
@@ -9,11 +10,11 @@ import type { GameMode } from "../src/types/game";
 
 export default function MenuScreen() {
   const {
-  selectedRounds,
-  setSelectedRounds,
-  setSelectedGameModeId,
-  resetCustomConfig,
-} = useGameStore();
+    selectedRounds,
+    setSelectedRounds,
+    setSelectedGameModeId,
+    resetCustomConfig,
+  } = useGameStore();
 
   const [roundsInput, setRoundsInput] = useState(String(selectedRounds));
 
@@ -68,31 +69,33 @@ export default function MenuScreen() {
 
   return (
     <ScreenContainer>
-      <View style={styles.topNav}>
+      {/* TOP NAV */}
+      <View style={sharedStyles.topNav}>
         <Pressable
-          style={styles.topNavButton}
+          style={sharedStyles.topNavButton}
           onPress={() => router.push("/players")}
         >
-          <Text style={styles.topNavButtonText}>Players</Text>
+          <Text style={sharedStyles.topNavButtonText}>Players</Text>
         </Pressable>
 
         <Pressable
-          style={styles.topNavButton}
+          style={sharedStyles.topNavButton}
           onPress={() => router.push("/leaderboard")}
         >
-          <Text style={styles.topNavButtonText}>Leaderboard</Text>
+          <Text style={sharedStyles.topNavButtonText}>Leaderboard</Text>
         </Pressable>
 
         <Pressable
-          style={styles.topNavButton}
+          style={sharedStyles.topNavButton}
           onPress={() => router.push("/settings")}
         >
-          <Text style={styles.topNavButtonText}>Settings</Text>
+          <Text style={sharedStyles.topNavButtonText}>Settings</Text>
         </Pressable>
       </View>
 
+      {/* ROUNDS */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Rounds</Text>
+        <Text style={sharedStyles.sectionTitle}>Rounds</Text>
 
         <TextInput
           value={roundsInput}
@@ -106,8 +109,9 @@ export default function MenuScreen() {
         />
       </View>
 
+      {/* GAME MODES */}
       <View style={styles.body}>
-        <Text style={styles.sectionTitle}>Game Modes</Text>
+        <Text style={sharedStyles.sectionTitle}>Game Modes</Text>
 
         <View style={styles.modesList}>
           {mockGameModes.map((mode) => (
@@ -117,6 +121,7 @@ export default function MenuScreen() {
               onPress={() => handleModePress(mode)}
             >
               <Text style={styles.modeTitle}>{mode.name}</Text>
+
               {!!mode.description && (
                 <Text style={styles.modeDescription}>{mode.description}</Text>
               )}
@@ -129,41 +134,15 @@ export default function MenuScreen() {
 }
 
 const styles = StyleSheet.create({
-  topNav: {
-    flexDirection: "row",
-    gap: 10,
-    marginBottom: 22,
-  },
-  topNavButton: {
-    flex: 1,
-    backgroundColor: "#1f1f1f",
-    borderWidth: 1,
-    borderColor: "#333333",
-    paddingVertical: 12,
-    paddingHorizontal: 12,
-    borderRadius: 12,
-    alignItems: "center",
-  },
-  topNavButtonText: {
-    color: "#ffffff",
-    fontSize: 14,
-    fontWeight: "700",
-    textAlign: "center",
-  },
   section: {
     marginBottom: 22,
   },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: "800",
-    color: "#ffffff",
-    marginBottom: 14,
-  },
+
   roundsInput: {
     width: 110,
-    backgroundColor: "#1b1b1b",
+    backgroundColor: COLORS.black,
     borderWidth: 1,
-    borderColor: "#313131",
+    borderColor: COLORS.purple,
     borderRadius: 12,
     paddingHorizontal: 14,
     paddingVertical: 12,
@@ -172,28 +151,33 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     textAlign: "center",
   },
+
   body: {
     flex: 1,
   },
+
   modesList: {
     alignItems: "flex-start",
     gap: 14,
   },
+
   modeButton: {
     width: "70%",
-    backgroundColor: "#1d1d1d",
+    backgroundColor: COLORS.black,
     borderWidth: 1,
-    borderColor: "#313131",
+    borderColor: COLORS.purple,
     borderRadius: 16,
     paddingVertical: 18,
     paddingHorizontal: 16,
   },
+
   modeTitle: {
     color: "#ffffff",
     fontSize: 18,
     fontWeight: "800",
     marginBottom: 6,
   },
+
   modeDescription: {
     color: "#b5b5b5",
     fontSize: 13,

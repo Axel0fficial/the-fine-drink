@@ -2,6 +2,7 @@ import { router } from "expo-router";
 import React, { useEffect, useMemo } from "react";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 
+import { COLORS, sharedStyles } from "../app/sharedStyles";
 import ScreenContainer from "../src/components/ScreenContainer";
 import { useGameStore } from "../src/state/gameStore";
 import type { LeaderboardEntry, TeamColor } from "../src/types/game";
@@ -35,6 +36,7 @@ export default function WinnerScreen() {
     setLeaderboardEntries,
     resetMatchScores,
   } = useGameStore();
+
   const handleBackToMenu = () => {
     resetMatchScores();
     router.push("/menu");
@@ -134,26 +136,53 @@ export default function WinnerScreen() {
     setLeaderboardEntries,
   ]);
 
-  if (isTeamMatch) {
-    if (!winnerTeam) {
-      return (
-        <ScreenContainer>
-          <Text style={styles.title}>Winner</Text>
-          <Text style={styles.emptyText}>
-            No finished team game data found.
-          </Text>
+  // =========================
+  // EMPTY STATES
+  // =========================
 
-          <Pressable style={styles.primaryButton} onPress={handleBackToMenu}>
-            <Text style={styles.primaryButtonText}>Back to Menu</Text>
-          </Pressable>
-        </ScreenContainer>
-      );
-    }
-
+  if (isTeamMatch && !winnerTeam) {
     return (
       <ScreenContainer>
-        <Text style={styles.title}>Winner</Text>
-        <Text style={styles.subtitle}>
+        <Text style={sharedStyles.title}>Winner</Text>
+        <Text style={sharedStyles.subtitle}>
+          No finished team game data found.
+        </Text>
+
+        <Pressable
+          style={sharedStyles.primaryButton}
+          onPress={handleBackToMenu}
+        >
+          <Text style={sharedStyles.primaryButtonText}>Back to Menu</Text>
+        </Pressable>
+      </ScreenContainer>
+    );
+  }
+
+  if (!isTeamMatch && !winnerPlayer) {
+    return (
+      <ScreenContainer>
+        <Text style={sharedStyles.title}>Winner</Text>
+        <Text style={sharedStyles.subtitle}>No finished game data found.</Text>
+
+        <Pressable
+          style={sharedStyles.primaryButton}
+          onPress={handleBackToMenu}
+        >
+          <Text style={sharedStyles.primaryButtonText}>Back to Menu</Text>
+        </Pressable>
+      </ScreenContainer>
+    );
+  }
+
+  // =========================
+  // TEAM VIEW
+  // =========================
+
+  if (isTeamMatch && winnerTeam) {
+    return (
+      <ScreenContainer>
+        <Text style={sharedStyles.title}>Winner</Text>
+        <Text style={sharedStyles.subtitle}>
           The game is over. Here are the team results.
         </Text>
 
@@ -164,7 +193,7 @@ export default function WinnerScreen() {
         </View>
 
         <View style={styles.scoreboardSection}>
-          <Text style={styles.sectionTitle}>Team Scoreboard</Text>
+          <Text style={sharedStyles.sectionTitle}>Team Scoreboard</Text>
 
           <FlatList
             data={teamResults}
@@ -192,50 +221,44 @@ export default function WinnerScreen() {
           />
         </View>
 
-        <View style={styles.bottomActions}>
-          <Pressable style={styles.secondaryButton} onPress={handleBackToMenu}>
-            <Text style={styles.secondaryButtonText}>Menu</Text>
+        <View style={sharedStyles.bottomActions}>
+          <Pressable
+            style={sharedStyles.secondaryButton}
+            onPress={handleBackToMenu}
+          >
+            <Text style={sharedStyles.secondaryButtonText}>Menu</Text>
           </Pressable>
 
           <Pressable
-            style={styles.primaryButton}
+            style={sharedStyles.primaryButton}
             onPress={handleGoToLeaderboard}
           >
-            <Text style={styles.primaryButtonText}>Leaderboard</Text>
+            <Text style={sharedStyles.primaryButtonText}>Leaderboard</Text>
           </Pressable>
         </View>
       </ScreenContainer>
     );
   }
 
-  if (!winnerPlayer) {
-    return (
-      <ScreenContainer>
-        <Text style={styles.title}>Winner</Text>
-        <Text style={styles.emptyText}>No finished game data found.</Text>
-
-        <Pressable style={styles.primaryButton} onPress={handleBackToMenu}>
-          <Text style={styles.primaryButtonText}>Back to Menu</Text>
-        </Pressable>
-      </ScreenContainer>
-    );
-  }
+  // =========================
+  // SOLO VIEW
+  // =========================
 
   return (
     <ScreenContainer>
-      <Text style={styles.title}>Winner</Text>
-      <Text style={styles.subtitle}>
+      <Text style={sharedStyles.title}>Winner</Text>
+      <Text style={sharedStyles.subtitle}>
         The game is over. Here are the final results.
       </Text>
 
       <View style={styles.winnerCard}>
         <Text style={styles.winnerLabel}>Winner</Text>
-        <Text style={styles.winnerName}>{winnerPlayer.name}</Text>
-        <Text style={styles.winnerScore}>{winnerPlayer.score} points</Text>
+        <Text style={styles.winnerName}>{winnerPlayer!.name}</Text>
+        <Text style={styles.winnerScore}>{winnerPlayer!.score} points</Text>
       </View>
 
       <View style={styles.scoreboardSection}>
-        <Text style={styles.sectionTitle}>Final Scoreboard</Text>
+        <Text style={sharedStyles.sectionTitle}>Final Scoreboard</Text>
 
         <FlatList
           data={sortedPlayers}
@@ -261,13 +284,19 @@ export default function WinnerScreen() {
         />
       </View>
 
-      <View style={styles.bottomActions}>
-        <Pressable style={styles.secondaryButton} onPress={handleBackToMenu}>
-          <Text style={styles.secondaryButtonText}>Menu</Text>
+      <View style={sharedStyles.bottomActions}>
+        <Pressable
+          style={sharedStyles.secondaryButton}
+          onPress={handleBackToMenu}
+        >
+          <Text style={sharedStyles.secondaryButtonText}>Menu</Text>
         </Pressable>
 
-        <Pressable style={styles.primaryButton} onPress={handleGoToLeaderboard}>
-          <Text style={styles.primaryButtonText}>Leaderboard</Text>
+        <Pressable
+          style={sharedStyles.primaryButton}
+          onPress={handleGoToLeaderboard}
+        >
+          <Text style={sharedStyles.primaryButtonText}>Leaderboard</Text>
         </Pressable>
       </View>
     </ScreenContainer>
@@ -275,32 +304,16 @@ export default function WinnerScreen() {
 }
 
 const styles = StyleSheet.create({
-  title: {
-    color: "#ffffff",
-    fontSize: 30,
-    fontWeight: "800",
-    marginBottom: 8,
-  },
-  subtitle: {
-    color: "#b5b5b5",
-    fontSize: 14,
-    lineHeight: 20,
-    marginBottom: 20,
-  },
-  emptyText: {
-    color: "#b5b5b5",
-    fontSize: 15,
-    marginBottom: 20,
-  },
   winnerCard: {
     width: "100%",
-    backgroundColor: "#1d1d1d",
+    backgroundColor: COLORS.black,
     borderWidth: 1,
-    borderColor: "#313131",
+    borderColor: COLORS.purple,
     borderRadius: 18,
     padding: 18,
     marginBottom: 20,
   },
+
   winnerLabel: {
     color: "#9ca3af",
     fontSize: 13,
@@ -308,101 +321,77 @@ const styles = StyleSheet.create({
     marginBottom: 6,
     textTransform: "uppercase",
   },
+
   winnerName: {
     color: "#ffffff",
     fontSize: 28,
     fontWeight: "900",
     marginBottom: 6,
   },
+
   winnerScore: {
-    color: "#8b5cf6",
+    color: COLORS.purple,
     fontSize: 18,
     fontWeight: "800",
   },
+
   scoreboardSection: {
     flex: 1,
     width: "100%",
   },
-  sectionTitle: {
-    color: "#ffffff",
-    fontSize: 20,
-    fontWeight: "800",
-    marginBottom: 14,
-  },
+
   scoreboardList: {
     gap: 10,
     paddingBottom: 12,
   },
+
   scoreRow: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#181818",
+    backgroundColor: COLORS.black,
     borderWidth: 1,
-    borderColor: "#2d2d2d",
+    borderColor: COLORS.purple,
     borderRadius: 16,
     paddingVertical: 14,
     paddingHorizontal: 14,
     gap: 12,
   },
+
   rankBadge: {
     width: 34,
     height: 34,
     borderRadius: 17,
-    backgroundColor: "#8b5cf6",
+    backgroundColor: COLORS.black,
+    borderWidth: 1,
+    borderColor: COLORS.purple,
     alignItems: "center",
     justifyContent: "center",
   },
+
   rankBadgeText: {
     color: "#ffffff",
     fontWeight: "800",
   },
+
   playerInfo: {
     flex: 1,
   },
+
   playerName: {
     color: "#ffffff",
     fontSize: 16,
     fontWeight: "800",
     marginBottom: 4,
   },
+
   playerMeta: {
     color: "#9ca3af",
     fontSize: 13,
   },
+
   playerScore: {
     color: "#ffffff",
     fontSize: 18,
     fontWeight: "900",
-  },
-  bottomActions: {
-    flexDirection: "row",
-    gap: 12,
-    marginTop: 18,
-  },
-  primaryButton: {
-    flex: 1,
-    backgroundColor: "#8b5cf6",
-    paddingVertical: 15,
-    borderRadius: 14,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  primaryButtonText: {
-    color: "#ffffff",
-    fontWeight: "800",
-    fontSize: 15,
-  },
-  secondaryButton: {
-    flex: 1,
-    backgroundColor: "#2b2b2b",
-    paddingVertical: 15,
-    borderRadius: 14,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  secondaryButtonText: {
-    color: "#ffffff",
-    fontWeight: "800",
-    fontSize: 15,
   },
 });

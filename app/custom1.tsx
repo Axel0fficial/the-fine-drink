@@ -2,7 +2,6 @@ import { router } from "expo-router";
 import React, { useMemo, useState } from "react";
 import {
   Alert,
-  FlatList,
   Modal,
   Pressable,
   ScrollView,
@@ -13,6 +12,7 @@ import {
   View,
 } from "react-native";
 
+import { COLORS, sharedStyles } from "../app/sharedStyles";
 import ScreenContainer from "../src/components/ScreenContainer";
 import { useGameStore } from "../src/state/gameStore";
 import type { Challenge } from "../src/types/game";
@@ -55,6 +55,15 @@ function createCustomChallenge(input: {
   };
 }
 
+function getChallengeGroupLabel(challenge: Challenge): string {
+  if (challenge.presentationType === "minigame") return "Minigames";
+  if (challenge.logicType === "status_effect") return "Status Challenges";
+  if (challenge.logicType === "pool_prompt") return "Prompt Challenges";
+  if (challenge.logicType === "range") return "Variable Challenges";
+  if (challenge.logicType === "timer") return "Timed Challenges";
+  return "Standard Challenges";
+}
+
 export default function Custom1Screen() {
   const {
     challenges,
@@ -65,11 +74,32 @@ export default function Custom1Screen() {
     setCustomModeEnabledCategories,
     setCustomModeDisabledChallengeIds,
   } = useGameStore();
+
   const [createModalVisible, setCreateModalVisible] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [newDescription, setNewDescription] = useState("");
   const [newDifficulty, setNewDifficulty] = useState<Difficulty>("normal");
   const [newCategories, setNewCategories] = useState<string[]>([]);
+
+  const [collapsedGroups, setCollapsedGroups] = useState<
+    Record<string, boolean>
+  >({
+    Minigames: false,
+    "Status Challenges": false,
+    "Prompt Challenges": false,
+    "Variable Challenges": false,
+    "Timed Challenges": false,
+    "Standard Challenges": false,
+  });
+
+  const [enabledGroups, setEnabledGroups] = useState<Record<string, boolean>>({
+    Minigames: true,
+    "Status Challenges": true,
+    "Prompt Challenges": true,
+    "Variable Challenges": true,
+    "Timed Challenges": true,
+    "Standard Challenges": true,
+  });
 
   const visibleChallenges = useMemo(() => {
     return challenges.filter((challenge) =>
@@ -78,6 +108,36 @@ export default function Custom1Screen() {
       ),
     );
   }, [challenges, customModeEnabledCategories]);
+
+  const groupedChallenges = useMemo(() => {
+    const groups: Record<string, Challenge[]> = {};
+
+    for (const challenge of visibleChallenges) {
+      const group = getChallengeGroupLabel(challenge);
+
+      if (!groups[group]) {
+        groups[group] = [];
+      }
+
+      groups[group].push(challenge);
+    }
+
+    return groups;
+  }, [visibleChallenges]);
+
+  const toggleGroupCollapsed = (groupName: string) => {
+    setCollapsedGroups((prev) => ({
+      ...prev,
+      [groupName]: !prev[groupName],
+    }));
+  };
+
+  const toggleGroupEnabled = (groupName: string) => {
+    setEnabledGroups((prev) => ({
+      ...prev,
+      [groupName]: !prev[groupName],
+    }));
+  };
 
   const toggleChallengeEnabled = (challengeId: string) => {
     setCustomModeDisabledChallengeIds((prev) =>
@@ -94,6 +154,7 @@ export default function Custom1Screen() {
         : [...prev, category],
     );
   };
+
   const toggleNewCategory = (category: string) => {
     setNewCategories((prev) =>
       prev.includes(category)
@@ -161,6 +222,7 @@ export default function Custom1Screen() {
       item.id,
     );
     const isEnabledForCustom = !isDisabledForCustom && !isGloballyDisabled;
+
     return (
       <View
         style={[
@@ -180,20 +242,20 @@ export default function Custom1Screen() {
             value={isEnabledForCustom}
             onValueChange={() => toggleChallengeEnabled(item.id)}
             disabled={isGloballyDisabled}
+            trackColor={{ false: "#2a2a2a", true: COLORS.purpleDark }}
+            thumbColor="#ffffff"
           />
         </View>
 
         <Text style={styles.challengeDescription}>{item.description}</Text>
 
         <View style={styles.challengeFooter}>
-         
-
           {item.isCustom && (
             <Pressable
-              style={styles.deleteButton}
+              style={sharedStyles.dangerButton}
               onPress={() => deleteCustomChallenge(item.id)}
             >
-              <Text style={styles.deleteButtonText}>Delete</Text>
+              <Text style={sharedStyles.dangerButtonText}>Delete</Text>
             </Pressable>
           )}
         </View>
@@ -203,28 +265,34 @@ export default function Custom1Screen() {
 
   return (
     <ScreenContainer>
-      <View style={styles.topBar}>
-        <View>
-          <Text style={styles.title}>Custom Mode</Text>
+      <View style={sharedStyles.topBar}>
+        <View style={styles.titleWrap}>
+          <Text style={sharedStyles.title}>Custom Mode</Text>
           <Pressable onPress={() => router.push("/settings")}>
             <Text style={styles.globalDisclaimerLink}>
-              Some challenges are disabled in Settings. Tap here to manage them.
+              Some challenges are disabled in Settings.
+            </Text>
+            <Text style={styles.globalDisclaimerLink}>
+              Tap here to manage them.
             </Text>
           </Pressable>
         </View>
 
         <Pressable
-          style={styles.nextButton}
+          style={sharedStyles.smallActionButton}
           onPress={() => router.push("/custom2")}
         >
-          <Text style={styles.nextButtonText}>Next</Text>
+          <Text style={sharedStyles.smallActionButtonText}>Next</Text>
         </Pressable>
       </View>
 
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Categories</Text>
+            <Text style={sharedStyles.sectionTitle}>Categories</Text>
           </View>
 
           <View style={styles.categoryWrap}>
@@ -234,13 +302,10 @@ export default function Custom1Screen() {
               return (
                 <Pressable
                   key={category}
-                  style={[
-                    styles.categoryChip,
-                    active && styles.categoryChipActive,
-                  ]}
+                  style={[sharedStyles.chip, active && sharedStyles.chipActive]}
                   onPress={() => toggleCategory(category)}
                 >
-                  <Text style={styles.categoryChipText}>{category}</Text>
+                  <Text style={sharedStyles.chipText}>{category}</Text>
                 </Pressable>
               );
             })}
@@ -249,31 +314,77 @@ export default function Custom1Screen() {
 
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Challenges</Text>
+            <Text style={sharedStyles.sectionTitle}>Challenges</Text>
 
             <Pressable
-              style={styles.addCustomButton}
+              style={sharedStyles.smallActionButton}
               onPress={() => setCreateModalVisible(true)}
             >
-              <Text style={styles.addCustomButtonText}>Add Challenge</Text>
+              <Text style={sharedStyles.smallActionButtonText}>
+                Add Challenge
+              </Text>
             </Pressable>
+          </View>
+
+          <View style={styles.groupToggleWrap}>
+            {Object.keys(enabledGroups).map((groupName) => {
+              const active = enabledGroups[groupName];
+
+              return (
+                <Pressable
+                  key={groupName}
+                  style={[sharedStyles.chip, active && sharedStyles.chipActive]}
+                  onPress={() => toggleGroupEnabled(groupName)}
+                >
+                  <Text style={sharedStyles.chipText}>{groupName}</Text>
+                </Pressable>
+              );
+            })}
           </View>
 
           {visibleChallenges.length === 0 ? (
             <View style={styles.emptyState}>
-              <Text style={styles.emptyStateTitle}>No visible challenges</Text>
-              <Text style={styles.emptyStateText}>
+              <Text style={sharedStyles.emptyStateTitle}>
+                No visible challenges
+              </Text>
+              <Text style={sharedStyles.emptyStateText}>
                 Enable more categories or create a custom challenge.
               </Text>
             </View>
           ) : (
-            <FlatList
-              data={visibleChallenges}
-              keyExtractor={(item) => item.id}
-              renderItem={renderChallengeItem}
-              scrollEnabled={false}
-              contentContainerStyle={styles.challengeList}
-            />
+            <View style={styles.challengeGroups}>
+              {Object.entries(groupedChallenges)
+                .filter(([groupName]) => enabledGroups[groupName] ?? true)
+                .map(([groupName, items]) => {
+                  const isCollapsed = collapsedGroups[groupName] ?? false;
+
+                  return (
+                    <View key={groupName} style={styles.challengeGroupSection}>
+                      <Pressable
+                        style={styles.challengeGroupHeader}
+                        onPress={() => toggleGroupCollapsed(groupName)}
+                      >
+                        <Text style={styles.challengeGroupTitle}>
+                          {groupName} ({items.length})
+                        </Text>
+                        <Text style={styles.challengeGroupArrow}>
+                          {isCollapsed ? "▸" : "▾"}
+                        </Text>
+                      </Pressable>
+
+                      {!isCollapsed && (
+                        <View style={styles.challengeGroupList}>
+                          {items.map((item) => (
+                            <View key={item.id}>
+                              {renderChallengeItem({ item })}
+                            </View>
+                          ))}
+                        </View>
+                      )}
+                    </View>
+                  );
+                })}
+            </View>
           )}
         </View>
       </ScrollView>
@@ -284,36 +395,42 @@ export default function Custom1Screen() {
         transparent
         onRequestClose={() => setCreateModalVisible(false)}
       >
-        <View style={styles.modalBackdrop}>
+        <View style={sharedStyles.modalBackdrop}>
           <View style={styles.modalCard}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Create Custom Challenge</Text>
+            <View style={sharedStyles.modalHeader}>
+              <Text style={sharedStyles.modalTitle}>
+                Create Custom Challenge
+              </Text>
               <Pressable onPress={() => setCreateModalVisible(false)}>
-                <Text style={styles.modalCloseText}>Close</Text>
+                <Text style={sharedStyles.modalCloseText}>Close</Text>
               </Pressable>
             </View>
 
             <ScrollView showsVerticalScrollIndicator={false}>
-              <Text style={styles.inputLabel}>Title</Text>
+              <Text style={sharedStyles.inputLabel}>Title</Text>
               <TextInput
                 value={newTitle}
                 onChangeText={setNewTitle}
                 placeholder="Challenge name"
                 placeholderTextColor="#8b8b8b"
-                style={styles.input}
+                style={sharedStyles.input}
               />
 
-              <Text style={styles.inputLabel}>Description</Text>
+              <Text style={sharedStyles.inputLabel}>Description</Text>
               <TextInput
                 value={newDescription}
                 onChangeText={setNewDescription}
                 placeholder="What should the player do?"
                 placeholderTextColor="#8b8b8b"
-                style={[styles.input, styles.textArea]}
+                style={[
+                  sharedStyles.input,
+                  sharedStyles.textArea,
+                  styles.textArea,
+                ]}
                 multiline
               />
 
-              <Text style={styles.inputLabel}>Difficulty</Text>
+              <Text style={sharedStyles.inputLabel}>Difficulty</Text>
               <View style={styles.difficultyRow}>
                 {(["easy", "normal", "hard", "brutal"] as Difficulty[]).map(
                   (level) => {
@@ -323,19 +440,20 @@ export default function Custom1Screen() {
                       <Pressable
                         key={level}
                         style={[
+                          sharedStyles.chip,
                           styles.difficultyButton,
-                          selected && styles.difficultyButtonActive,
+                          selected && sharedStyles.chipActive,
                         ]}
                         onPress={() => setNewDifficulty(level)}
                       >
-                        <Text style={styles.difficultyButtonText}>{level}</Text>
+                        <Text style={sharedStyles.chipText}>{level}</Text>
                       </Pressable>
                     );
                   },
                 )}
               </View>
 
-              <Text style={styles.inputLabel}>Categories</Text>
+              <Text style={sharedStyles.inputLabel}>Categories</Text>
               <View style={styles.categoryWrap}>
                 {ALL_CATEGORIES.map((category) => {
                   const selected = newCategories.includes(category);
@@ -344,22 +462,24 @@ export default function Custom1Screen() {
                     <Pressable
                       key={category}
                       style={[
-                        styles.categoryChip,
-                        selected && styles.categoryChipActive,
+                        sharedStyles.chip,
+                        selected && sharedStyles.chipActive,
                       ]}
                       onPress={() => toggleNewCategory(category)}
                     >
-                      <Text style={styles.categoryChipText}>{category}</Text>
+                      <Text style={sharedStyles.chipText}>{category}</Text>
                     </Pressable>
                   );
                 })}
               </View>
 
               <Pressable
-                style={styles.createButton}
+                style={[sharedStyles.primaryButton, styles.createButton]}
                 onPress={handleCreateChallenge}
               >
-                <Text style={styles.createButtonText}>Create Challenge</Text>
+                <Text style={sharedStyles.primaryButtonText}>
+                  Create Challenge
+                </Text>
               </Pressable>
             </ScrollView>
           </View>
@@ -370,104 +490,46 @@ export default function Custom1Screen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#111111",
-    paddingHorizontal: 18,
-  },
   scrollContent: {
     paddingBottom: 20,
   },
-  topBar: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    gap: 12,
-    marginBottom: 20,
+
+  titleWrap: {
+    flex: 1,
+    paddingRight: 12,
   },
-  title: {
-    fontSize: 30,
-    fontWeight: "800",
-    color: "#ffffff",
-  },
-  subtitle: {
-    marginTop: 6,
-    fontSize: 14,
-    lineHeight: 20,
-    color: "#b5b5b5",
-    maxWidth: 260,
-  },
-  nextButton: {
-    backgroundColor: "#8b5cf6",
-    borderRadius: 12,
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-  },
-  nextButtonText: {
-    color: "#ffffff",
-    fontSize: 14,
-    fontWeight: "800",
-  },
+
   section: {
     marginBottom: 22,
   },
+
   sectionHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 14,
+    gap: 12,
   },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: "800",
-    color: "#ffffff",
-  },
-  addCustomButton: {
-    backgroundColor: "#1f1f1f",
-    borderWidth: 1,
-    borderColor: "#333333",
-    borderRadius: 12,
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-  },
-  addCustomButtonText: {
-    color: "#ffffff",
-    fontSize: 14,
-    fontWeight: "700",
-  },
+
   categoryWrap: {
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 10,
   },
-  categoryChip: {
-    backgroundColor: "#1d1d1d",
-    borderWidth: 1,
-    borderColor: "#313131",
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-    borderRadius: 999,
-  },
-  categoryChipActive: {
-    backgroundColor: "#2b2144",
-    borderColor: "#8b5cf6",
-  },
-  categoryChipText: {
-    color: "#ffffff",
-    fontSize: 14,
-    fontWeight: "700",
-  },
-  challengeList: {
-    gap: 12,
-  },
+
   challengeCard: {
-    backgroundColor: "#1b1b1b",
+    backgroundColor: COLORS.black,
     borderWidth: 1,
-    borderColor: "#2e2e2e",
+    borderColor: COLORS.purple,
     borderRadius: 16,
     padding: 14,
-    marginBottom: 12,
+    marginBottom: 4,
   },
+
+  challengeCardGloballyDisabled: {
+    opacity: 0.55,
+  },
+
   challengeHeader: {
     flexDirection: "row",
     alignItems: "center",
@@ -475,165 +537,123 @@ const styles = StyleSheet.create({
     gap: 10,
     marginBottom: 10,
   },
+
   challengeHeaderText: {
     flex: 1,
   },
+
   challengeTitle: {
     color: "#ffffff",
     fontSize: 17,
     fontWeight: "800",
     marginBottom: 4,
   },
+
   challengeMeta: {
     color: "#aaaaaa",
     fontSize: 12,
   },
+
   challengeDescription: {
     color: "#d0d0d0",
     fontSize: 14,
     lineHeight: 20,
   },
+
   challengeFooter: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "flex-end",
     alignItems: "center",
     marginTop: 12,
   },
-  challengeStatus: {
-    color: "#8b8b8b",
-    fontSize: 13,
-    fontWeight: "700",
-  },
-  deleteButton: {
-    backgroundColor: "#3a1c1c",
-    borderWidth: 1,
-    borderColor: "#6b2b2b",
-    borderRadius: 10,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-  },
-  deleteButtonText: {
-    color: "#ffffff",
-    fontSize: 13,
-    fontWeight: "700",
-  },
+
   emptyState: {
-    backgroundColor: "#171717",
+    backgroundColor: COLORS.black,
     borderWidth: 1,
-    borderColor: "#2a2a2a",
+    borderColor: COLORS.purple,
     borderRadius: 16,
     paddingVertical: 28,
     paddingHorizontal: 18,
     alignItems: "center",
   },
-  emptyStateTitle: {
-    color: "#ffffff",
-    fontSize: 18,
-    fontWeight: "800",
-    marginBottom: 8,
-  },
-  emptyStateText: {
-    color: "#aaaaaa",
-    fontSize: 14,
-    lineHeight: 20,
-    textAlign: "center",
-  },
-  modalBackdrop: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.72)",
-    justifyContent: "center",
-    padding: 18,
-  },
+
   modalCard: {
     maxHeight: "85%",
-    backgroundColor: "#151515",
+    backgroundColor: COLORS.black,
     borderRadius: 18,
     borderWidth: 1,
-    borderColor: "#303030",
+    borderColor: COLORS.purple,
     padding: 16,
   },
-  modalHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 14,
-  },
-  modalTitle: {
-    color: "#ffffff",
-    fontSize: 20,
-    fontWeight: "800",
-  },
-  modalCloseText: {
-    color: "#8b5cf6",
-    fontSize: 15,
-    fontWeight: "700",
-  },
-  inputLabel: {
-    color: "#ffffff",
-    fontSize: 14,
-    fontWeight: "700",
-    marginBottom: 8,
-    marginTop: 10,
-  },
-  input: {
-    backgroundColor: "#1b1b1b",
-    borderWidth: 1,
-    borderColor: "#313131",
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 14,
-    color: "#ffffff",
-    fontSize: 16,
-  },
+
   textArea: {
     minHeight: 100,
-    textAlignVertical: "top",
   },
+
   difficultyRow: {
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 10,
   },
+
   difficultyButton: {
-    backgroundColor: "#1d1d1d",
-    borderWidth: 1,
-    borderColor: "#313131",
     borderRadius: 12,
-    paddingVertical: 10,
-    paddingHorizontal: 14,
   },
-  difficultyButtonActive: {
-    backgroundColor: "#2b2144",
-    borderColor: "#8b5cf6",
-  },
-  difficultyButtonText: {
-    color: "#ffffff",
-    fontSize: 14,
-    fontWeight: "700",
-  },
+
   createButton: {
     marginTop: 18,
-    backgroundColor: "#8b5cf6",
-    borderRadius: 12,
-    paddingVertical: 14,
-    alignItems: "center",
   },
-  createButtonText: {
+
+  globalDisclaimerLink: {
+    color: "#a78bfa",
+    fontSize: 12,
+    lineHeight: 18,
+    marginTop: 6,
+    maxWidth: 280,
+    textDecorationLine: "underline",
+  },
+
+  challengeGroups: {
+    gap: 6,
+  },
+
+  challengeGroupSection: {
+    marginBottom: 2,
+  },
+
+  challengeGroupHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: COLORS.black,
+    borderWidth: 1,
+    borderColor: COLORS.purple,
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+  },
+
+  challengeGroupTitle: {
     color: "#ffffff",
     fontSize: 15,
     fontWeight: "800",
   },
-  globalDisclaimerLink: {
-    color: "#60a5fa",
-    fontSize: 12,
-    lineHeight: 18,
-    textAlign: "center",
-    marginBottom: 10,
-    paddingHorizontal: 12,
-    textDecorationLine: "underline",
+
+  challengeGroupArrow: {
+    color: "#9ca3af",
+    fontSize: 16,
+    fontWeight: "800",
   },
-  challengeCardGloballyDisabled: {
-    opacity: 0.55,
-    borderColor: "#5b5b5b",
+
+  challengeGroupList: {
+    marginTop: 8,
+    gap: 8,
+  },
+
+  groupToggleWrap: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+    marginBottom: 12,
   },
 });

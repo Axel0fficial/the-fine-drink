@@ -10,6 +10,7 @@ import {
   View,
 } from "react-native";
 
+import { COLORS, sharedStyles } from "../app/sharedStyles";
 import ScreenContainer from "../src/components/ScreenContainer";
 import { useGameStore } from "../src/state/gameStore";
 import type {
@@ -22,7 +23,7 @@ import type {
 const TEAM_ORDER: TeamColor[] = ["none", "red", "blue", "green", "yellow"];
 
 const TEAM_COLORS: Record<TeamColor, string> = {
-  none: "#3a3a3a",
+  none: "#1a1a1a",
   red: "#ef4444",
   blue: "#3b82f6",
   green: "#22c55e",
@@ -301,16 +302,17 @@ export default function PlayerScreen() {
 
           <View style={styles.existingPlayerCardActions}>
             <Pressable
-              style={styles.profileEditButton}
+              style={sharedStyles.smallActionButton}
               onPress={() => openEditProfile(item)}
             >
-              <Text style={styles.profileEditButtonText}>Edit</Text>
+              <Text style={sharedStyles.smallActionButtonText}>Edit</Text>
             </Pressable>
           </View>
         </View>
       </Pressable>
     );
   };
+
   const renderPlayerRow = ({
     item,
     index,
@@ -346,10 +348,10 @@ export default function PlayerScreen() {
         </View>
 
         <Pressable
-          style={styles.removeButton}
+          style={sharedStyles.smallActionButton}
           onPress={() => removePlayer(item.id)}
         >
-          <Text style={styles.removeButtonText}>Remove</Text>
+          <Text style={sharedStyles.smallActionButtonText}>Remove</Text>
         </Pressable>
       </View>
     );
@@ -357,27 +359,29 @@ export default function PlayerScreen() {
 
   return (
     <ScreenContainer>
-      <Text style={styles.title}>Players</Text>
-      <Text style={styles.subtitle}>
+      <Text style={sharedStyles.title}>Players</Text>
+      <Text style={sharedStyles.subtitle}>
         Add players, recover old profiles, and organize teams.
       </Text>
 
-      <View style={styles.topNav}>
+      <View style={sharedStyles.topNav}>
         <Pressable
-          style={styles.topNavButton}
+          style={sharedStyles.topNavButton}
           onPress={() => setExistingPlayersModalVisible(true)}
         >
-          <Text style={styles.topNavButtonText}>Add Existing Players</Text>
+          <Text style={sharedStyles.topNavButtonText}>
+            Add Existing Players
+          </Text>
         </Pressable>
 
         <Pressable
           style={[
-            styles.topNavButton,
-            teamModeEnabled && styles.topNavButtonActive,
+            sharedStyles.topNavButton,
+            teamModeEnabled && sharedStyles.topNavButtonActive,
           ]}
           onPress={handleToggleTeams}
         >
-          <Text style={styles.topNavButtonText}>
+          <Text style={sharedStyles.topNavButtonText}>
             {teamModeEnabled ? "Teams: On" : "Teams"}
           </Text>
         </Pressable>
@@ -389,26 +393,21 @@ export default function PlayerScreen() {
           onChangeText={setPlayerName}
           placeholder="Write a player name"
           placeholderTextColor="#8b8b8b"
-          style={styles.input}
+          style={[sharedStyles.input, styles.inputFlex]}
           onSubmitEditing={addPlayerByName}
           returnKeyType="done"
         />
 
         <Pressable style={styles.addButton} onPress={addPlayerByName}>
-          <Text style={styles.addButtonText}>Add</Text>
+          <Text style={sharedStyles.primaryButtonText}>Add</Text>
         </Pressable>
-      </View>
-
-      <View style={styles.listHeader}>
-        <Text style={styles.sectionTitle}>Current Players</Text>
-        <Text style={styles.playerCount}>{players.length} added</Text>
       </View>
 
       <View style={styles.playersListWrapper}>
         {players.length === 0 ? (
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyStateTitle}>No players yet</Text>
-            <Text style={styles.emptyStateText}>
+          <View style={sharedStyles.emptyState}>
+            <Text style={sharedStyles.emptyStateTitle}>No players yet</Text>
+            <Text style={sharedStyles.emptyStateText}>
               Add new players with the input or recover existing ones from the
               modal.
             </Text>
@@ -423,26 +422,27 @@ export default function PlayerScreen() {
         )}
       </View>
 
-      <View style={styles.bottomActions}>
+      <View style={sharedStyles.bottomActions}>
         <Pressable
-          style={styles.secondaryButton}
+          style={[sharedStyles.secondaryButton, styles.actionButtonFlex]}
           onPress={assignRandomTeamsEvenly}
         >
-          <Text style={styles.secondaryButtonText}>Random Teams</Text>
+          <Text style={sharedStyles.secondaryButtonText}>Random Teams</Text>
         </Pressable>
 
         <Pressable
           style={[
-            styles.primaryButton,
-            !canContinue && styles.primaryButtonDisabled,
+            sharedStyles.primaryButton,
+            styles.actionButtonFlex,
+            !canContinue && sharedStyles.primaryButtonDisabled,
           ]}
           onPress={continueToMenu}
           disabled={!canContinue}
         >
           <Text
             style={[
-              styles.primaryButtonText,
-              !canContinue && styles.primaryButtonTextDisabled,
+              sharedStyles.primaryButtonText,
+              !canContinue && sharedStyles.primaryButtonTextDisabled,
             ]}
           >
             Continue
@@ -456,19 +456,19 @@ export default function PlayerScreen() {
         transparent
         onRequestClose={() => setExistingPlayersModalVisible(false)}
       >
-        <View style={styles.modalBackdrop}>
-          <View style={styles.modalCard}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Player Profiles</Text>
+        <View style={sharedStyles.modalBackdrop}>
+          <View style={sharedStyles.modalCard}>
+            <View style={sharedStyles.modalHeader}>
+              <Text style={sharedStyles.modalTitle}>Player Profiles</Text>
               <Pressable onPress={() => setExistingPlayersModalVisible(false)}>
-                <Text style={styles.modalCloseText}>Close</Text>
+                <Text style={sharedStyles.modalCloseText}>Close</Text>
               </Pressable>
             </View>
 
             {sortedProfiles.length === 0 ? (
               <View style={styles.modalEmptyState}>
-                <Text style={styles.modalEmptyTitle}>No profiles</Text>
-                <Text style={styles.modalEmptyText}>
+                <Text style={sharedStyles.emptyStateTitle}>No profiles</Text>
+                <Text style={sharedStyles.emptyStateText}>
                   Create a player with the input to start building reusable
                   profiles.
                 </Text>
@@ -494,14 +494,15 @@ export default function PlayerScreen() {
         transparent
         onRequestClose={closeEditProfile}
       >
-        <View style={styles.modalBackdrop}>
+        <View style={sharedStyles.modalBackdrop}>
           <View style={styles.editModalCard}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Edit Profile</Text>
+            <View style={sharedStyles.modalHeader}>
+              <Text style={sharedStyles.modalTitle}>Edit Profile</Text>
               <Pressable onPress={closeEditProfile}>
-                <Text style={styles.modalCloseText}>Close</Text>
+                <Text style={sharedStyles.modalCloseText}>Close</Text>
               </Pressable>
             </View>
+
             {editingProfile && (
               <View style={styles.profileSummaryCard}>
                 <Text style={styles.profileSummaryTitle}>Profile Info</Text>
@@ -517,16 +518,16 @@ export default function PlayerScreen() {
               </View>
             )}
 
-            <Text style={styles.inputLabel}>Name</Text>
+            <Text style={sharedStyles.inputLabel}>Name</Text>
             <TextInput
               value={editName}
               onChangeText={setEditName}
               placeholder="Player name"
               placeholderTextColor="#8b8b8b"
-              style={styles.editInput}
+              style={sharedStyles.input}
             />
 
-            <Text style={styles.inputLabel}>Tag</Text>
+            <Text style={[sharedStyles.inputLabel, styles.tagLabel]}>Tag</Text>
             <View style={styles.tagRow}>
               {PLAYER_TAG_OPTIONS.map((option) => {
                 const selected = editTag === option.value;
@@ -535,12 +536,13 @@ export default function PlayerScreen() {
                   <Pressable
                     key={option.value}
                     style={[
+                      sharedStyles.chip,
                       styles.tagButton,
-                      selected && styles.tagButtonActive,
+                      selected && sharedStyles.chipActive,
                     ]}
                     onPress={() => setEditTag(option.value)}
                   >
-                    <Text style={styles.tagButtonText}>{option.label}</Text>
+                    <Text style={sharedStyles.chipText}>{option.label}</Text>
                   </Pressable>
                 );
               })}
@@ -548,17 +550,17 @@ export default function PlayerScreen() {
 
             <View style={styles.editActions}>
               <Pressable
-                style={[styles.editActionButton, styles.deleteProfileButton]}
+                style={[sharedStyles.dangerButton, styles.actionButtonFlex]}
                 onPress={deleteEditedProfile}
               >
-                <Text style={styles.deleteProfileButtonText}>Delete</Text>
+                <Text style={sharedStyles.dangerButtonText}>Delete</Text>
               </Pressable>
 
               <Pressable
-                style={[styles.editActionButton, styles.saveProfileButton]}
+                style={[sharedStyles.primaryButton, styles.actionButtonFlex]}
                 onPress={saveEditedProfile}
               >
-                <Text style={styles.saveProfileButtonText}>Save</Text>
+                <Text style={sharedStyles.primaryButtonText}>Save</Text>
               </Pressable>
             </View>
           </View>
@@ -569,67 +571,21 @@ export default function PlayerScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#111111",
-    paddingHorizontal: 18,
-  },
-  title: {
-    fontSize: 30,
-    fontWeight: "800",
-    color: "#ffffff",
-  },
-  subtitle: {
-    marginTop: 6,
-    fontSize: 14,
-    lineHeight: 20,
-    color: "#b5b5b5",
-  },
-  topNav: {
-    flexDirection: "row",
-    gap: 10,
-    marginTop: 18,
-    marginBottom: 16,
-  },
-  topNavButton: {
-    flex: 1,
-    backgroundColor: "#1f1f1f",
-    borderWidth: 1,
-    borderColor: "#333333",
-    paddingVertical: 12,
-    paddingHorizontal: 12,
-    borderRadius: 12,
-    alignItems: "center",
-  },
-  topNavButtonActive: {
-    borderColor: "#8b5cf6",
-    backgroundColor: "#2b2144",
-  },
-  topNavButtonText: {
-    color: "#ffffff",
-    fontSize: 14,
-    fontWeight: "700",
-    textAlign: "center",
-  },
   inputRow: {
     flexDirection: "row",
     gap: 10,
     alignItems: "center",
-    marginBottom: 18,
+    marginBottom: 14,
   },
-  input: {
+
+  inputFlex: {
     flex: 1,
-    backgroundColor: "#1b1b1b",
-    borderWidth: 1,
-    borderColor: "#313131",
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 14,
-    color: "#ffffff",
-    fontSize: 16,
   },
+
   addButton: {
-    backgroundColor: "#8b5cf6",
+    backgroundColor: COLORS.black,
+    borderWidth: 1,
+    borderColor: COLORS.purple,
     paddingHorizontal: 18,
     paddingVertical: 14,
     borderRadius: 12,
@@ -637,66 +593,32 @@ const styles = StyleSheet.create({
     alignItems: "center",
     minWidth: 82,
   },
-  addButtonText: {
-    color: "#ffffff",
-    fontWeight: "800",
-    fontSize: 15,
-  },
-  listHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 10,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "800",
-    color: "#ffffff",
-  },
-  playerCount: {
-    fontSize: 13,
-    color: "#aaaaaa",
-  },
+
   playersListWrapper: {
     flex: 1,
-    backgroundColor: "#171717",
+    backgroundColor: COLORS.black,
     borderRadius: 16,
-    borderWidth: 1,
-    borderColor: "#2a2a2a",
+    borderWidth: 0,
     padding: 10,
+    marginTop: 8,
   },
+
   playersListContent: {
     paddingBottom: 8,
   },
-  emptyState: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 18,
-  },
-  emptyStateTitle: {
-    fontSize: 18,
-    fontWeight: "800",
-    color: "#ffffff",
-    marginBottom: 8,
-  },
-  emptyStateText: {
-    fontSize: 14,
-    color: "#aaaaaa",
-    textAlign: "center",
-    lineHeight: 20,
-  },
+
   playerRow: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#202020",
+    backgroundColor: COLORS.black,
     borderRadius: 14,
     paddingVertical: 12,
     paddingHorizontal: 12,
     marginBottom: 10,
-    borderWidth: 1,
-    borderColor: "#2f2f2f",
+    borderWidth: 2,
+    borderColor: COLORS.purple,
   },
+
   teamBox: {
     width: 34,
     height: 34,
@@ -705,126 +627,57 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginRight: 12,
   },
+
   teamBoxDisabled: {
     opacity: 0.45,
   },
+
   teamBoxText: {
     color: "#ffffff",
     fontSize: 13,
     fontWeight: "800",
   },
+
   playerInfo: {
     flex: 1,
   },
+
   playerName: {
     color: "#ffffff",
     fontSize: 16,
     fontWeight: "700",
   },
+
   playerSubtext: {
     marginTop: 3,
     color: "#aaaaaa",
     fontSize: 12,
   },
-  removeButton: {
-    marginLeft: 12,
-    backgroundColor: "#2a2a2a",
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 10,
-  },
-  removeButtonText: {
-    color: "#f1f1f1",
-    fontWeight: "700",
-    fontSize: 13,
-  },
-  bottomActions: {
-    flexDirection: "row",
-    gap: 12,
-    marginTop: 16,
-  },
-  secondaryButton: {
+
+  actionButtonFlex: {
     flex: 1,
-    backgroundColor: "#2b2b2b",
-    paddingVertical: 15,
-    borderRadius: 14,
+  },
+
+  modalEmptyState: {
+    paddingVertical: 28,
     alignItems: "center",
     justifyContent: "center",
   },
-  secondaryButtonText: {
-    color: "#ffffff",
-    fontWeight: "800",
-    fontSize: 15,
-  },
-  primaryButton: {
-    flex: 1,
-    backgroundColor: "#8b5cf6",
-    paddingVertical: 15,
-    borderRadius: 14,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  primaryButtonDisabled: {
-    backgroundColor: "#3b3159",
-    opacity: 0.5,
-  },
-  primaryButtonText: {
-    color: "#ffffff",
-    fontWeight: "800",
-    fontSize: 15,
-  },
-  primaryButtonTextDisabled: {
-    color: "#d3cbe9",
-  },
-  modalBackdrop: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.72)",
-    justifyContent: "center",
-    padding: 18,
-  },
-  modalCard: {
-    maxHeight: "80%",
-    backgroundColor: "#151515",
-    borderRadius: 18,
-    borderWidth: 1,
-    borderColor: "#303030",
-    padding: 16,
-  },
-  editModalCard: {
-    backgroundColor: "#151515",
-    borderRadius: 18,
-    borderWidth: 1,
-    borderColor: "#303030",
-    padding: 16,
-  },
-  modalHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 14,
-  },
-  modalTitle: {
-    color: "#ffffff",
-    fontSize: 20,
-    fontWeight: "800",
-  },
-  modalCloseText: {
-    color: "#8b5cf6",
-    fontSize: 15,
-    fontWeight: "700",
-  },
+
   modalGridContent: {
     paddingBottom: 8,
   },
+
   modalGridRow: {
     gap: 12,
     marginBottom: 12,
   },
+
   existingPlayerCard: {
     flex: 1,
-    backgroundColor: "#202020",
+    backgroundColor: COLORS.black,
     borderWidth: 1,
-    borderColor: "#313131",
+    borderColor: COLORS.purple,
     borderRadius: 14,
     paddingVertical: 16,
     paddingHorizontal: 14,
@@ -832,150 +685,38 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 
-  existingPlayerMeta: {
-    color: "#b3b3b3",
-    fontSize: 13,
-    marginTop: 2,
-  },
-  profileCardActions: {
-    flexDirection: "row",
-    gap: 8,
-    marginTop: 14,
-  },
-  profileCardButton: {
-    flex: 1,
-    backgroundColor: "#2b2b2b",
-    borderRadius: 10,
-    paddingVertical: 10,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  profileCardButtonDisabled: {
-    opacity: 0.5,
-  },
-  profileCardButtonText: {
-    color: "#ffffff",
-    fontSize: 13,
-    fontWeight: "800",
-  },
-  profileCardButtonTextDisabled: {
-    color: "#d3cbe9",
-  },
-  modalEmptyState: {
-    paddingVertical: 28,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  modalEmptyTitle: {
-    color: "#ffffff",
-    fontSize: 18,
-    fontWeight: "800",
-    marginBottom: 8,
-  },
-  modalEmptyText: {
-    color: "#aaaaaa",
-    fontSize: 14,
-    textAlign: "center",
-    lineHeight: 20,
-  },
-  inputLabel: {
-    color: "#ffffff",
-    fontSize: 14,
-    fontWeight: "700",
-    marginBottom: 8,
-  },
-  editInput: {
-    backgroundColor: "#1b1b1b",
-    borderWidth: 1,
-    borderColor: "#313131",
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 14,
-    color: "#ffffff",
-    fontSize: 16,
-    marginBottom: 16,
-  },
-  tagRow: {
-    flexDirection: "row",
-    gap: 10,
-    marginBottom: 20,
-  },
-  tagButton: {
-    flex: 1,
-    backgroundColor: "#202020",
-    borderWidth: 1,
-    borderColor: "#313131",
-    borderRadius: 12,
-    paddingVertical: 12,
-    alignItems: "center",
-  },
-  tagButtonActive: {
-    backgroundColor: "#2b2144",
-    borderColor: "#8b5cf6",
-  },
-  tagButtonText: {
-    color: "#ffffff",
-    fontSize: 14,
-    fontWeight: "700",
-  },
-  editActions: {
-    flexDirection: "row",
-    gap: 12,
-  },
-  editActionButton: {
-    flex: 1,
-    paddingVertical: 14,
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  deleteProfileButton: {
-    backgroundColor: "#2a1616",
-    borderWidth: 1,
-    borderColor: "#7f1d1d",
-  },
-  deleteProfileButtonText: {
-    color: "#f0b4b4",
-    fontWeight: "800",
-    fontSize: 15,
-  },
-  saveProfileButton: {
-    backgroundColor: "#8b5cf6",
-  },
-  saveProfileButtonText: {
-    color: "#ffffff",
-    fontWeight: "800",
-    fontSize: 15,
-  },
   existingPlayerCardDisabled: {
     opacity: 0.55,
   },
 
-  existingPlayerHint: {
-    marginTop: 4,
-    fontSize: 13,
-    color: "#9ca3af",
+  existingPlayerCardContent: {
+    gap: 12,
   },
 
-  profileEditButton: {
-    backgroundColor: "#2b2b2b",
-    borderWidth: 1,
-    borderColor: "#3a3a3a",
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-    borderRadius: 12,
+  existingPlayerCardActions: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
   },
 
-  profileEditButtonText: {
+  existingPlayerName: {
     color: "#ffffff",
-    fontSize: 14,
-    fontWeight: "700",
+    fontSize: 16,
+    fontWeight: "800",
+    lineHeight: 22,
+  },
+
+  editModalCard: {
+    backgroundColor: COLORS.black,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: COLORS.purple,
+    padding: 16,
   },
 
   profileSummaryCard: {
-    backgroundColor: "#1b1b1b",
+    backgroundColor: COLORS.black,
     borderWidth: 1,
-    borderColor: "#313131",
+    borderColor: COLORS.purple,
     borderRadius: 14,
     padding: 14,
     marginBottom: 16,
@@ -994,19 +735,25 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     marginBottom: 4,
   },
-  existingPlayerCardContent: {
-    gap: 12,
+
+  tagLabel: {
+    marginTop: 16,
   },
 
-  existingPlayerCardActions: {
+  tagRow: {
     flexDirection: "row",
-    justifyContent: "flex-end",
+    gap: 10,
+    marginBottom: 20,
   },
 
-  existingPlayerName: {
-    color: "#ffffff",
-    fontSize: 16,
-    fontWeight: "800",
-    lineHeight: 22,
+  tagButton: {
+    flex: 1,
+    borderRadius: 12,
+    alignItems: "center",
+  },
+
+  editActions: {
+    flexDirection: "row",
+    gap: 12,
   },
 });

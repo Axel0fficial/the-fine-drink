@@ -2,6 +2,7 @@ import { router } from "expo-router";
 import React, { useMemo, useState } from "react";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 
+import { COLORS, sharedStyles } from "../app/sharedStyles";
 import ScreenContainer from "../src/components/ScreenContainer";
 import { mockGameModes } from "../src/data/mockGameModes";
 import { mockPlayers } from "../src/data/mockPlayers";
@@ -78,70 +79,74 @@ export default function LeaderboardScreen() {
 
   return (
     <ScreenContainer>
-      <View style={styles.topBar}>
+      <View style={sharedStyles.topBar}>
         <View>
-          <Text style={styles.title}>Leaderboard</Text>
-          <Text style={styles.subtitle}>
+          <Text style={sharedStyles.title}>Leaderboard</Text>
+          <Text style={sharedStyles.subtitle}>
             See the top scores by mode and type.
           </Text>
         </View>
 
         <Pressable
-          style={styles.backButton}
+          style={sharedStyles.smallActionButton}
           onPress={() => router.push("/menu")}
         >
-          <Text style={styles.backButtonText}>Menu</Text>
+          <Text style={sharedStyles.smallActionButtonText}>Menu</Text>
         </Pressable>
       </View>
 
       <View style={styles.filterSection}>
         <Text style={styles.filterLabel}>Type</Text>
+
         <View style={styles.toggleRow}>
           <Pressable
             style={[
+              sharedStyles.topNavButton,
               styles.toggleButton,
-              viewType === "solo" && styles.toggleButtonActive,
+              viewType === "solo" && sharedStyles.topNavButtonActive,
             ]}
             onPress={() => setViewType("solo")}
           >
-            <Text style={styles.toggleButtonText}>Solo</Text>
+            <Text style={sharedStyles.topNavButtonText}>Solo</Text>
           </Pressable>
 
           <Pressable
             style={[
+              sharedStyles.topNavButton,
               styles.toggleButton,
-              viewType === "team" && styles.toggleButtonActive,
+              viewType === "team" && sharedStyles.topNavButtonActive,
             ]}
             onPress={() => setViewType("team")}
           >
-            <Text style={styles.toggleButtonText}>Team</Text>
+            <Text style={sharedStyles.topNavButtonText}>Team</Text>
           </Pressable>
         </View>
       </View>
 
       <View style={styles.filterSection}>
         <Text style={styles.filterLabel}>Game Mode</Text>
+
         <View style={styles.modeFilterWrap}>
           <Pressable
             style={[
-              styles.modeChip,
-              modeFilter === "all" && styles.modeChipActive,
+              sharedStyles.chip,
+              modeFilter === "all" && sharedStyles.chipActive,
             ]}
             onPress={() => setModeFilter("all")}
           >
-            <Text style={styles.modeChipText}>All</Text>
+            <Text style={sharedStyles.chipText}>All</Text>
           </Pressable>
 
           {mockGameModes.map((mode) => (
             <Pressable
               key={mode.id}
               style={[
-                styles.modeChip,
-                modeFilter === mode.id && styles.modeChipActive,
+                sharedStyles.chip,
+                modeFilter === mode.id && sharedStyles.chipActive,
               ]}
               onPress={() => setModeFilter(mode.id)}
             >
-              <Text style={styles.modeChipText}>{mode.name}</Text>
+              <Text style={sharedStyles.chipText}>{mode.name}</Text>
             </Pressable>
           ))}
         </View>
@@ -149,9 +154,9 @@ export default function LeaderboardScreen() {
 
       <View style={styles.listSection}>
         {filteredEntries.length === 0 ? (
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyStateTitle}>No entries found</Text>
-            <Text style={styles.emptyStateText}>
+          <View style={sharedStyles.emptyState}>
+            <Text style={sharedStyles.emptyStateTitle}>No entries found</Text>
+            <Text style={sharedStyles.emptyStateText}>
               Try another type or game mode filter.
             </Text>
           </View>
@@ -170,169 +175,104 @@ export default function LeaderboardScreen() {
 }
 
 const styles = StyleSheet.create({
-  topBar: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginBottom: 20,
-    gap: 12,
-  },
-  title: {
-    fontSize: 30,
-    fontWeight: "800",
-    color: "#ffffff",
-  },
-  subtitle: {
-    marginTop: 6,
-    fontSize: 14,
-    lineHeight: 20,
-    color: "#b5b5b5",
-  },
-  backButton: {
-    backgroundColor: "#1f1f1f",
-    borderWidth: 1,
-    borderColor: "#333333",
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-    borderRadius: 12,
-  },
-  backButtonText: {
-    color: "#ffffff",
-    fontSize: 14,
-    fontWeight: "700",
-  },
   filterSection: {
     marginBottom: 18,
   },
+
   filterLabel: {
     fontSize: 16,
     fontWeight: "800",
     color: "#ffffff",
     marginBottom: 10,
   },
+
   toggleRow: {
     flexDirection: "row",
     gap: 10,
   },
+
   toggleButton: {
     flex: 1,
-    backgroundColor: "#1d1d1d",
-    borderWidth: 1,
-    borderColor: "#313131",
-    paddingVertical: 12,
-    borderRadius: 12,
-    alignItems: "center",
   },
-  toggleButtonActive: {
-    backgroundColor: "#2b2144",
-    borderColor: "#8b5cf6",
-  },
-  toggleButtonText: {
-    color: "#ffffff",
-    fontSize: 15,
-    fontWeight: "700",
-  },
+
   modeFilterWrap: {
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 10,
   },
-  modeChip: {
-    backgroundColor: "#1d1d1d",
-    borderWidth: 1,
-    borderColor: "#313131",
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-    borderRadius: 999,
-  },
-  modeChipActive: {
-    backgroundColor: "#2b2144",
-    borderColor: "#8b5cf6",
-  },
-  modeChipText: {
-    color: "#ffffff",
-    fontSize: 14,
-    fontWeight: "700",
-  },
+
   listSection: {
     flex: 1,
-    backgroundColor: "#171717",
+    backgroundColor: COLORS.black,
     borderRadius: 16,
-    borderWidth: 1,
-    borderColor: "#2a2a2a",
+    borderWidth: 0,
     padding: 10,
   },
+
   listContent: {
     paddingBottom: 8,
   },
+
   entryCard: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#202020",
+    backgroundColor: COLORS.black,
     borderRadius: 14,
     paddingVertical: 12,
     paddingHorizontal: 12,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: "#2f2f2f",
+    borderColor: COLORS.purple,
   },
+
   rankBadge: {
     width: 38,
     height: 38,
     borderRadius: 12,
-    backgroundColor: "#8b5cf6",
+    backgroundColor: COLORS.black,
+    borderWidth: 1,
+    borderColor: COLORS.purple,
     justifyContent: "center",
     alignItems: "center",
     marginRight: 12,
   },
+
   rankBadgeText: {
     color: "#ffffff",
     fontSize: 16,
     fontWeight: "800",
   },
+
   entryInfo: {
     flex: 1,
   },
+
   entryName: {
     color: "#ffffff",
     fontSize: 16,
     fontWeight: "800",
     marginBottom: 4,
   },
+
   entryMeta: {
     color: "#aaaaaa",
     fontSize: 12,
   },
+
   entryStats: {
     alignItems: "flex-end",
     marginLeft: 12,
   },
+
   entryScore: {
     color: "#ffffff",
     fontSize: 20,
     fontWeight: "800",
   },
+
   entryWins: {
     color: "#b5b5b5",
     fontSize: 12,
     marginTop: 2,
-  },
-  emptyState: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 20,
-  },
-  emptyStateTitle: {
-    color: "#ffffff",
-    fontSize: 18,
-    fontWeight: "800",
-    marginBottom: 8,
-  },
-  emptyStateText: {
-    color: "#aaaaaa",
-    fontSize: 14,
-    textAlign: "center",
-    lineHeight: 20,
   },
 });

@@ -18,10 +18,13 @@ export const gameSharedStyles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "flex-start",
     marginBottom: 20,
+    gap: 12,
   },
 
   finishButton: {
-    backgroundColor: "#2b2b2b",
+    backgroundColor: "#000000",
+    borderWidth: 1,
+    borderColor: "#8b5cf6",
     borderRadius: 12,
     paddingVertical: 10,
     paddingHorizontal: 16,
@@ -41,9 +44,9 @@ export const gameSharedStyles = StyleSheet.create({
 
   infoCard: {
     flex: 1,
-    backgroundColor: "#171717",
+    backgroundColor: "#000000",
     borderWidth: 1,
-    borderColor: "#2a2a2a",
+    borderColor: "#8b5cf6",
     borderRadius: 14,
     padding: 14,
   },
@@ -69,9 +72,9 @@ export const gameSharedStyles = StyleSheet.create({
   },
 
   scoreCard: {
-    backgroundColor: "#1d1d1d",
+    backgroundColor: "#000000",
     borderWidth: 1,
-    borderColor: "#313131",
+    borderColor: "#8b5cf6",
     borderRadius: 16,
     padding: 16,
     marginBottom: 16,
@@ -100,16 +103,16 @@ export const gameSharedStyles = StyleSheet.create({
 
   challengeToggle: {
     flex: 1,
-    backgroundColor: "#222222",
+    backgroundColor: "#000000",
     borderWidth: 1,
-    borderColor: "#313131",
+    borderColor: "#8b5cf6",
     borderRadius: 12,
     paddingVertical: 12,
     alignItems: "center",
   },
 
   challengeToggleActive: {
-    backgroundColor: "#2b2144",
+    backgroundColor: "#140d22",
     borderColor: "#8b5cf6",
   },
 
@@ -125,9 +128,9 @@ export const gameSharedStyles = StyleSheet.create({
 
   challengeCard: {
     flex: 1,
-    backgroundColor: "#171717",
+    backgroundColor: "#000000",
     borderWidth: 1,
-    borderColor: "#2a2a2a",
+    borderColor: "#8b5cf6",
     borderRadius: 18,
     padding: 18,
     marginBottom: 14,
@@ -154,9 +157,9 @@ export const gameSharedStyles = StyleSheet.create({
   },
 
   statusCard: {
-    backgroundColor: "#171717",
+    backgroundColor: "#000000",
     borderWidth: 1,
-    borderColor: "#2a2a2a",
+    borderColor: "#8b5cf6",
     borderRadius: 14,
     padding: 14,
     marginBottom: 16,
@@ -183,7 +186,9 @@ export const gameSharedStyles = StyleSheet.create({
 
   passButton: {
     flex: 1,
-    backgroundColor: "#2b2b2b",
+    backgroundColor: "#000000",
+    borderWidth: 1,
+    borderColor: "#8b5cf6",
     paddingVertical: 15,
     borderRadius: 14,
     alignItems: "center",
@@ -198,7 +203,9 @@ export const gameSharedStyles = StyleSheet.create({
 
   doneButton: {
     flex: 1,
-    backgroundColor: "#8b5cf6",
+    backgroundColor: "#000000",
+    borderWidth: 1,
+    borderColor: "#8b5cf6",
     paddingVertical: 15,
     borderRadius: 14,
     alignItems: "center",
@@ -206,8 +213,7 @@ export const gameSharedStyles = StyleSheet.create({
   },
 
   doneButtonDisabled: {
-    backgroundColor: "#3b3159",
-    opacity: 0.5,
+    opacity: 0.35,
   },
 
   doneButtonText: {
@@ -224,7 +230,9 @@ export const gameSharedStyles = StyleSheet.create({
 
   backButton: {
     marginTop: 18,
-    backgroundColor: "#2b2b2b",
+    backgroundColor: "#000000",
+    borderWidth: 1,
+    borderColor: "#8b5cf6",
     paddingVertical: 14,
     borderRadius: 12,
     alignItems: "center",
@@ -278,13 +286,13 @@ export const gameSharedStyles = StyleSheet.create({
   },
 
   activeStatusCardGood: {
-    backgroundColor: "#15261b",
-    borderColor: "#2f855a",
+    backgroundColor: "#0f0f0f",
+    borderColor: "#22c55e",
   },
 
   activeStatusCardBad: {
-    backgroundColor: "#2a1717",
-    borderColor: "#c53030",
+    backgroundColor: "#0f0f0f",
+    borderColor: "#ef4444",
   },
 
   activeStatusHeader: {
@@ -306,6 +314,7 @@ export const gameSharedStyles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "700",
   },
+
   challengeNavRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -318,9 +327,9 @@ export const gameSharedStyles = StyleSheet.create({
     width: 34,
     height: 34,
     borderRadius: 17,
-    backgroundColor: "#222222",
+    backgroundColor: "#000000",
     borderWidth: 1,
-    borderColor: "#313131",
+    borderColor: "#8b5cf6",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -334,10 +343,11 @@ export const gameSharedStyles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "900",
   },
+
   statusPanel: {
-    backgroundColor: "#171717",
+    backgroundColor: "#000000",
     borderWidth: 1,
-    borderColor: "#2a2a2a",
+    borderColor: "#8b5cf6",
     borderRadius: 12,
     paddingHorizontal: 12,
     paddingTop: 10,

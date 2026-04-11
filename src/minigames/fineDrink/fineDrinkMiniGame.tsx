@@ -244,7 +244,7 @@ export default function FineDrinkMiniGame({
             </Text>
             <Text style={styles.promptText}>{visibleEffect.text}</Text>
             <Text style={styles.helperText}>
-              Take the deal to reveal the opposite fate.
+              Toma el trato para revelar la letra chica
             </Text>
           </>
         )}
@@ -274,7 +274,7 @@ export default function FineDrinkMiniGame({
             </Animated.View>
 
             <Text style={styles.helperText}>
-              Both effects apply if you continue.
+              Ambos efectos aplican si continuas
             </Text>
           </>
         )}
@@ -284,11 +284,11 @@ export default function FineDrinkMiniGame({
         {phase === "offer" && (
           <View style={styles.buttonRow}>
             <Pressable style={styles.secondaryButton} onPress={handlePass}>
-              <Text style={styles.secondaryButtonText}>Leave It</Text>
+              <Text style={styles.secondaryButtonText}>Dejalo</Text>
             </Pressable>
 
             <Pressable style={styles.primaryButton} onPress={handleTakeDeal}>
-              <Text style={styles.primaryButtonText}>Take It</Text>
+              <Text style={styles.primaryButtonText}>Tomalo</Text>
             </Pressable>
           </View>
         )}
@@ -298,7 +298,7 @@ export default function FineDrinkMiniGame({
             style={styles.primaryButtonSingle}
             onPress={handleAcceptRevealedEffect}
           >
-            <Text style={styles.primaryButtonText}>Continue</Text>
+            <Text style={styles.primaryButtonText}>Continuar</Text>
           </Pressable>
         )}
       </View>

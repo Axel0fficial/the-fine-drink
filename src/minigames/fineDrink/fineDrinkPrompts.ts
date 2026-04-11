@@ -60,7 +60,7 @@ export const FINE_DRINK_BAD_EFFECTS: FineDrinkEffect[] = [
   },
   {
     type: "status",
-    text: "Por 2 rondas todos deben decire salud cunado tomen",
+    text: "Por 2 rondas todos deben decire salud cuando tomen",
     audience: "all",
     tone: "bad",
     scope: "global",
@@ -68,7 +68,7 @@ export const FINE_DRINK_BAD_EFFECTS: FineDrinkEffect[] = [
   },
   {
     type: "status",
-    text: "Por 2 rondas, podras apuntar a algun lugar y si alguien se gira a verlo tomas 2",
+    text: "Por 2 rondas todos deben decire salud cuando tomen",
     audience: "all",
     tone: "bad",
     scope: "global",

@@ -13,6 +13,7 @@ import {
   View,
 } from "react-native";
 
+import { COLORS, sharedStyles } from "../app/sharedStyles";
 import ScreenContainer from "../src/components/ScreenContainer";
 import { useGameStore } from "../src/state/gameStore";
 import type {
@@ -51,12 +52,16 @@ const SCOPE_OPTIONS: ModifierScope[] = [
 const DURATION_OPTIONS: CustomModifierDuration[] = ["turn", "round", "session"];
 
 export default function Custom3Screen() {
-  const { modifiers, setModifiers } = useGameStore();
+  const { modifiers, setModifiers, selectedPlayers } = useGameStore();
 
   const [createModalVisible, setCreateModalVisible] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [newDescription, setNewDescription] = useState("");
   const [newScope, setNewScope] = useState<ModifierScope>("session");
+  const [prankTargetPlayerId, setPrankTargetPlayerId] = useState<string | null>(
+    null,
+  );
+  const [prankIntensity, setPrankIntensity] = useState<1 | 2 | 3>(2);
   const [newDuration, setNewDuration] =
     useState<CustomModifierDuration>("session");
 
@@ -117,6 +122,59 @@ export default function Custom3Screen() {
     setCreateModalVisible(false);
   };
 
+  const prankModifier = useMemo(() => {
+    return (
+      modifiers.find((m) => m.logicConfig?.effect === "prank_mode") ?? null
+    );
+  }, [modifiers]);
+
+  const upsertPrankModifier = () => {
+    if (!prankTargetPlayerId) {
+      Alert.alert("Pick a player", "Select who you want to prank.");
+      return;
+    }
+
+    setModifiers((prev) => {
+      const existingIndex = prev.findIndex(
+        (m) => m.logicConfig?.effect === "prank_mode",
+      );
+
+      const prankConfig = {
+        effect: "prank_mode",
+        targetPlayerId: prankTargetPlayerId,
+        intensity: prankIntensity,
+      };
+
+      if (existingIndex >= 0) {
+        return prev.map((m, i) =>
+          i === existingIndex
+            ? { ...m, enabled: true, logicConfig: prankConfig }
+            : m,
+        );
+      }
+
+      const newModifier: SessionModifier = {
+        id: `mod_prank_${Date.now()}`,
+        title: "Prank Mode",
+        description: "One player gets harder challenges.",
+        type: "leader_penalty",
+        scope: "player",
+        enabled: true,
+        isCustom: true,
+        duration: "session",
+        logicConfig: prankConfig,
+      };
+
+      return [newModifier, ...prev];
+    });
+  };
+
+  const removePrankModifier = () => {
+    setModifiers((prev) =>
+      prev.filter((m) => m.logicConfig?.effect !== "prank_mode"),
+    );
+  };
+
   const getTypeLabel = (type: ModifierType) => {
     switch (type) {
       case "catch_up_bonus":
@@ -158,6 +216,8 @@ export default function Custom3Screen() {
           <Switch
             value={item.enabled}
             onValueChange={() => toggleModifierEnabled(item.id)}
+            trackColor={{ false: "#2a2a2a", true: COLORS.purpleDark }}
+            thumbColor="#ffffff"
           />
         </View>
 
@@ -170,10 +230,10 @@ export default function Custom3Screen() {
 
           {item.isCustom && (
             <Pressable
-              style={styles.deleteButton}
+              style={sharedStyles.dangerButton}
               onPress={() => deleteCustomModifier(item.id)}
             >
-              <Text style={styles.deleteButtonText}>Delete</Text>
+              <Text style={sharedStyles.dangerButtonText}>Delete</Text>
             </Pressable>
           )}
         </View>
@@ -183,45 +243,110 @@ export default function Custom3Screen() {
 
   return (
     <ScreenContainer>
-      <View style={styles.topBar}>
-        <View>
-          <Text style={styles.title}>Custom Mode</Text>
-          <Text style={styles.subtitle}>
+      <View style={sharedStyles.topBar}>
+        <View style={styles.titleWrap}>
+          <Text style={sharedStyles.title}>Custom Mode</Text>
+          <Text style={sharedStyles.subtitle}>
             Add handicaps, catch-up effects, and session rules.
           </Text>
         </View>
 
         <Pressable
-          style={styles.startButton}
+          style={sharedStyles.smallActionButton}
           onPress={() => router.push("/game")}
         >
-          <Text style={styles.startButtonText}>Start</Text>
+          <Text style={sharedStyles.smallActionButtonText}>Start</Text>
         </Pressable>
       </View>
 
       <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>Modifiers</Text>
+        <Text style={sharedStyles.sectionTitle}>Modifiers</Text>
 
         <Pressable
-          style={styles.addModifierButton}
+          style={sharedStyles.smallActionButton}
           onPress={() => setCreateModalVisible(true)}
         >
-          <Text style={styles.addModifierButtonText}>Add Modifier</Text>
+          <Text style={sharedStyles.smallActionButtonText}>Add Modifier</Text>
         </Pressable>
       </View>
 
-      <View style={styles.infoBox}>
-        <Text style={styles.infoBoxText}>
-          Use this page to make the session more chaotic, more balanced, or just
-          weirder.
+      <View style={styles.prankCard}>
+        <Text style={styles.prankTitle}>Prank Mode</Text>
+
+        <Text style={styles.prankDescription}>
+          Select a player to receive harder challenges more often.
         </Text>
+
+        <Text style={styles.prankLabel}>Target</Text>
+        <View style={styles.prankPlayerWrap}>
+          {selectedPlayers.map((player) => {
+            const selected = prankTargetPlayerId === player.id;
+
+            return (
+              <Pressable
+                key={player.id}
+                style={[
+                  sharedStyles.chip,
+                  styles.prankPlayerChip,
+                  selected && sharedStyles.chipActive,
+                ]}
+                onPress={() => setPrankTargetPlayerId(player.id)}
+              >
+                <Text style={sharedStyles.chipText}>{player.name}</Text>
+              </Pressable>
+            );
+          })}
+        </View>
+
+        <Text style={styles.prankLabel}>Intensity</Text>
+        <View style={styles.prankIntensityWrap}>
+          {[1, 2, 3].map((level) => {
+            const selected = prankIntensity === level;
+
+            return (
+              <Pressable
+                key={level}
+                style={[
+                  sharedStyles.chip,
+                  styles.prankIntensityChip,
+                  selected && sharedStyles.chipActive,
+                ]}
+                onPress={() => setPrankIntensity(level as 1 | 2 | 3)}
+              >
+                <Text style={sharedStyles.chipText}>
+                  {level === 1 ? "Mild" : level === 2 ? "Mean" : "Evil"}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
+
+        <View style={styles.prankButtonsRow}>
+          <Pressable
+            style={[sharedStyles.primaryButton, styles.prankApplyButton]}
+            onPress={upsertPrankModifier}
+          >
+            <Text style={sharedStyles.primaryButtonText}>
+              {prankModifier ? "Update" : "Enable"}
+            </Text>
+          </Pressable>
+
+          {!!prankModifier && (
+            <Pressable
+              style={[sharedStyles.secondaryButton, styles.prankRemoveButton]}
+              onPress={removePrankModifier}
+            >
+              <Text style={sharedStyles.secondaryButtonText}>Remove</Text>
+            </Pressable>
+          )}
+        </View>
       </View>
 
       <View style={styles.listWrapper}>
         {sortedModifiers.length === 0 ? (
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyStateTitle}>No modifiers yet</Text>
-            <Text style={styles.emptyStateText}>
+          <View style={sharedStyles.emptyState}>
+            <Text style={sharedStyles.emptyStateTitle}>No modifiers yet</Text>
+            <Text style={sharedStyles.emptyStateText}>
               Add a custom modifier or enable preset ones.
             </Text>
           </View>
@@ -236,19 +361,19 @@ export default function Custom3Screen() {
         )}
       </View>
 
-      <View style={styles.bottomRow}>
+      <View style={sharedStyles.bottomActions}>
         <Pressable
-          style={styles.backButton}
+          style={[sharedStyles.secondaryButton, styles.bottomButton]}
           onPress={() => router.push("/custom2")}
         >
-          <Text style={styles.backButtonText}>Back</Text>
+          <Text style={sharedStyles.secondaryButtonText}>Back</Text>
         </Pressable>
 
         <Pressable
-          style={styles.continueButton}
+          style={[sharedStyles.primaryButton, styles.bottomButton]}
           onPress={() => router.push("/game")}
         >
-          <Text style={styles.continueButtonText}>Start Game</Text>
+          <Text style={sharedStyles.primaryButtonText}>Start Game</Text>
         </Pressable>
       </View>
 
@@ -258,36 +383,40 @@ export default function Custom3Screen() {
         transparent
         onRequestClose={() => setCreateModalVisible(false)}
       >
-        <View style={styles.modalBackdrop}>
+        <View style={sharedStyles.modalBackdrop}>
           <View style={styles.modalCard}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Create Modifier</Text>
+            <View style={sharedStyles.modalHeader}>
+              <Text style={sharedStyles.modalTitle}>Create Modifier</Text>
               <Pressable onPress={() => setCreateModalVisible(false)}>
-                <Text style={styles.modalCloseText}>Close</Text>
+                <Text style={sharedStyles.modalCloseText}>Close</Text>
               </Pressable>
             </View>
 
             <ScrollView showsVerticalScrollIndicator={false}>
-              <Text style={styles.inputLabel}>Title</Text>
+              <Text style={sharedStyles.inputLabel}>Title</Text>
               <TextInput
                 value={newTitle}
                 onChangeText={setNewTitle}
                 placeholder="Modifier name"
                 placeholderTextColor="#8b8b8b"
-                style={styles.input}
+                style={sharedStyles.input}
               />
 
-              <Text style={styles.inputLabel}>Description</Text>
+              <Text style={sharedStyles.inputLabel}>Description</Text>
               <TextInput
                 value={newDescription}
                 onChangeText={setNewDescription}
                 placeholder="Describe the rule or effect"
                 placeholderTextColor="#8b8b8b"
-                style={[styles.input, styles.textArea]}
+                style={[
+                  sharedStyles.input,
+                  sharedStyles.textArea,
+                  styles.textArea,
+                ]}
                 multiline
               />
 
-              <Text style={styles.inputLabel}>Scope</Text>
+              <Text style={sharedStyles.inputLabel}>Scope</Text>
               <View style={styles.optionWrap}>
                 {SCOPE_OPTIONS.map((scope) => {
                   const selected = newScope === scope;
@@ -296,12 +425,12 @@ export default function Custom3Screen() {
                     <Pressable
                       key={scope}
                       style={[
-                        styles.optionChip,
-                        selected && styles.optionChipActive,
+                        sharedStyles.chip,
+                        selected && sharedStyles.chipActive,
                       ]}
                       onPress={() => setNewScope(scope)}
                     >
-                      <Text style={styles.optionChipText}>
+                      <Text style={sharedStyles.chipText}>
                         {scope === "last_place" ? "last place" : scope}
                       </Text>
                     </Pressable>
@@ -309,7 +438,7 @@ export default function Custom3Screen() {
                 })}
               </View>
 
-              <Text style={styles.inputLabel}>Duration</Text>
+              <Text style={sharedStyles.inputLabel}>Duration</Text>
               <View style={styles.optionWrap}>
                 {DURATION_OPTIONS.map((duration) => {
                   const selected = newDuration === duration;
@@ -318,22 +447,24 @@ export default function Custom3Screen() {
                     <Pressable
                       key={duration}
                       style={[
-                        styles.optionChip,
-                        selected && styles.optionChipActive,
+                        sharedStyles.chip,
+                        selected && sharedStyles.chipActive,
                       ]}
                       onPress={() => setNewDuration(duration)}
                     >
-                      <Text style={styles.optionChipText}>{duration}</Text>
+                      <Text style={sharedStyles.chipText}>{duration}</Text>
                     </Pressable>
                   );
                 })}
               </View>
 
               <Pressable
-                style={styles.createButton}
+                style={[sharedStyles.primaryButton, styles.createButton]}
                 onPress={handleCreateModifier}
               >
-                <Text style={styles.createButtonText}>Create Modifier</Text>
+                <Text style={sharedStyles.primaryButtonText}>
+                  Create Modifier
+                </Text>
               </Pressable>
             </ScrollView>
           </View>
@@ -344,98 +475,122 @@ export default function Custom3Screen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
+  titleWrap: {
     flex: 1,
-    backgroundColor: "#111111",
-    paddingHorizontal: 18,
+    paddingRight: 12,
   },
-  topBar: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    gap: 12,
-    marginBottom: 20,
-  },
-  title: {
-    fontSize: 30,
-    fontWeight: "800",
-    color: "#ffffff",
-  },
-  subtitle: {
-    marginTop: 6,
-    fontSize: 14,
-    lineHeight: 20,
-    color: "#b5b5b5",
-    maxWidth: 250,
-  },
-  startButton: {
-    backgroundColor: "#8b5cf6",
-    borderRadius: 12,
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-  },
-  startButtonText: {
-    color: "#ffffff",
-    fontSize: 14,
-    fontWeight: "800",
-  },
+
   sectionHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 14,
+    gap: 12,
   },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: "800",
-    color: "#ffffff",
-  },
-  addModifierButton: {
-    backgroundColor: "#1f1f1f",
-    borderWidth: 1,
-    borderColor: "#333333",
-    borderRadius: 12,
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-  },
-  addModifierButtonText: {
-    color: "#ffffff",
-    fontSize: 14,
-    fontWeight: "700",
-  },
+
   infoBox: {
-    backgroundColor: "#181818",
+    backgroundColor: COLORS.black,
     borderWidth: 1,
-    borderColor: "#2d2d2d",
+    borderColor: COLORS.purple,
     borderRadius: 14,
     paddingVertical: 12,
     paddingHorizontal: 14,
     marginBottom: 16,
   },
+
   infoBoxText: {
     color: "#bcbcbc",
     fontSize: 13,
     lineHeight: 19,
   },
+
+  prankCard: {
+    backgroundColor: COLORS.black,
+    borderWidth: 1,
+    borderColor: COLORS.purple,
+    borderRadius: 16,
+    padding: 14,
+    marginBottom: 16,
+  },
+
+  prankTitle: {
+    color: "#ffffff",
+    fontSize: 18,
+    fontWeight: "800",
+    marginBottom: 6,
+  },
+
+  prankDescription: {
+    color: "#aaaaaa",
+    fontSize: 13,
+    lineHeight: 19,
+    marginBottom: 12,
+  },
+
+  prankLabel: {
+    color: "#ffffff",
+    fontWeight: "700",
+    marginBottom: 6,
+  },
+
+  prankPlayerWrap: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+    marginBottom: 12,
+  },
+
+  prankPlayerChip: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+  },
+
+  prankIntensityWrap: {
+    flexDirection: "row",
+    gap: 8,
+    marginBottom: 12,
+  },
+
+  prankIntensityChip: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+  },
+
+  prankButtonsRow: {
+    flexDirection: "row",
+    gap: 10,
+  },
+
+  prankApplyButton: {
+    flex: 1,
+  },
+
+  prankRemoveButton: {
+    minWidth: 110,
+  },
+
   listWrapper: {
     flex: 1,
-    backgroundColor: "#171717",
+    backgroundColor: COLORS.black,
     borderRadius: 16,
-    borderWidth: 1,
-    borderColor: "#2a2a2a",
+    borderWidth: 0,
     padding: 10,
   },
+
   listContent: {
     paddingBottom: 8,
   },
+
   modifierCard: {
-    backgroundColor: "#1b1b1b",
+    backgroundColor: COLORS.black,
     borderWidth: 1,
-    borderColor: "#2e2e2e",
+    borderColor: COLORS.purple,
     borderRadius: 16,
     padding: 14,
     marginBottom: 12,
   },
+
   modifierHeader: {
     flexDirection: "row",
     alignItems: "center",
@@ -443,180 +598,67 @@ const styles = StyleSheet.create({
     gap: 10,
     marginBottom: 10,
   },
+
   modifierHeaderText: {
     flex: 1,
   },
+
   modifierTitle: {
     color: "#ffffff",
     fontSize: 17,
     fontWeight: "800",
     marginBottom: 4,
   },
+
   modifierMeta: {
     color: "#aaaaaa",
     fontSize: 12,
   },
+
   modifierDescription: {
     color: "#d0d0d0",
     fontSize: 14,
     lineHeight: 20,
   },
+
   modifierFooter: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     marginTop: 12,
+    gap: 12,
   },
+
   modifierStatus: {
     color: "#8b8b8b",
     fontSize: 13,
     fontWeight: "700",
   },
-  deleteButton: {
-    backgroundColor: "#3a1c1c",
-    borderWidth: 1,
-    borderColor: "#6b2b2b",
-    borderRadius: 10,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-  },
-  deleteButtonText: {
-    color: "#ffffff",
-    fontSize: 13,
-    fontWeight: "700",
-  },
-  emptyState: {
+
+  bottomButton: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 18,
   },
-  emptyStateTitle: {
-    color: "#ffffff",
-    fontSize: 18,
-    fontWeight: "800",
-    marginBottom: 8,
-  },
-  emptyStateText: {
-    color: "#aaaaaa",
-    fontSize: 14,
-    textAlign: "center",
-    lineHeight: 20,
-  },
-  bottomRow: {
-    flexDirection: "row",
-    gap: 12,
-    marginTop: 16,
-  },
-  backButton: {
-    flex: 1,
-    backgroundColor: "#2b2b2b",
-    paddingVertical: 15,
-    borderRadius: 14,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  backButtonText: {
-    color: "#ffffff",
-    fontWeight: "800",
-    fontSize: 15,
-  },
-  continueButton: {
-    flex: 1,
-    backgroundColor: "#8b5cf6",
-    paddingVertical: 15,
-    borderRadius: 14,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  continueButtonText: {
-    color: "#ffffff",
-    fontWeight: "800",
-    fontSize: 15,
-  },
-  modalBackdrop: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.72)",
-    justifyContent: "center",
-    padding: 18,
-  },
+
   modalCard: {
     maxHeight: "85%",
-    backgroundColor: "#151515",
+    backgroundColor: COLORS.black,
     borderRadius: 18,
     borderWidth: 1,
-    borderColor: "#303030",
+    borderColor: COLORS.purple,
     padding: 16,
   },
-  modalHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 14,
-  },
-  modalTitle: {
-    color: "#ffffff",
-    fontSize: 20,
-    fontWeight: "800",
-  },
-  modalCloseText: {
-    color: "#8b5cf6",
-    fontSize: 15,
-    fontWeight: "700",
-  },
-  inputLabel: {
-    color: "#ffffff",
-    fontSize: 14,
-    fontWeight: "700",
-    marginBottom: 8,
-    marginTop: 10,
-  },
-  input: {
-    backgroundColor: "#1b1b1b",
-    borderWidth: 1,
-    borderColor: "#313131",
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 14,
-    color: "#ffffff",
-    fontSize: 16,
-  },
+
   textArea: {
     minHeight: 100,
-    textAlignVertical: "top",
   },
+
   optionWrap: {
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 10,
   },
-  optionChip: {
-    backgroundColor: "#1d1d1d",
-    borderWidth: 1,
-    borderColor: "#313131",
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-    borderRadius: 999,
-  },
-  optionChipActive: {
-    backgroundColor: "#2b2144",
-    borderColor: "#8b5cf6",
-  },
-  optionChipText: {
-    color: "#ffffff",
-    fontSize: 14,
-    fontWeight: "700",
-  },
+
   createButton: {
     marginTop: 18,
-    backgroundColor: "#8b5cf6",
-    borderRadius: 12,
-    paddingVertical: 14,
-    alignItems: "center",
-  },
-  createButtonText: {
-    color: "#ffffff",
-    fontSize: 15,
-    fontWeight: "800",
   },
 });

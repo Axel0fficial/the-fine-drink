@@ -9,7 +9,7 @@ type Props = {
 
 export default function ScreenContainer({
   children,
-  backgroundColor = "#111111",
+  backgroundColor = "#000000",
 }: Props) {
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor }]}>

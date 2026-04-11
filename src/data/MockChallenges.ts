@@ -31,7 +31,32 @@ export const mockChallenges: Challenge[] = [
       brutal: { min: 5, max: 8 },
     },
   },
-
+  {
+    id: "c22",
+    title: "Toma",
+    description: "Toma {x}",
+    difficulty: "normal",
+    categories: ["casual", "quantity", "drinking"],
+    points: 3,
+    baseChance: 0.4,
+    minChance: 0.2,
+    maxChance: 0.6,
+    cooldownTurns: 5,
+    isUnique: false,
+    isFavorite: false,
+    isCustom: false,
+    enabled: true,
+    logicType: "range",
+    logicConfig: {
+      variable: "x",
+      min: 2,
+      max: 4,
+    },
+    difficultyLogic: {
+      hard: { min: 3, max: 6 },
+      brutal: { min: 5, max: 8 },
+    },
+  },
   {
     id: "c53",
     title: "Speak in Questions",
@@ -156,11 +181,11 @@ export const mockChallenges: Challenge[] = [
 
     logicType: "status_effect",
     logicConfig: {
-  effect: "double_points_next",
-  scope: "player",
-  tone: "good",
-  rounds: 1,
-}
+      effect: "double_points_next",
+      scope: "player",
+      tone: "good",
+      rounds: 1,
+    },
   },
 
   {
@@ -283,7 +308,7 @@ export const mockChallenges: Challenge[] = [
     logicType: "pool_prompt",
     logicConfig: {
       poolRefs: ["drink_penalties"],
-      template: "Your penalty is: {0}.",
+      template: "Elige si quieres {0} o {}",
     },
   },
   {
@@ -315,9 +340,7 @@ export const mockChallenges: Challenge[] = [
     title: "Chingate una cucharada de Aji",
     description: "Chingate una cucharada de Aji",
     difficulty: "brutal",
-    categories: [
-      "casual", "individual"
-    ],
+    categories: ["casual", "individual"],
     points: 3,
     baseChance: 0.4,
     minChance: 0.2,
@@ -327,16 +350,14 @@ export const mockChallenges: Challenge[] = [
     isFavorite: false,
     isCustom: false,
     enabled: true,
-    logicType: "none"
+    logicType: "none",
   },
   {
     id: "c2",
     title: "Condimentate",
     description: "Toma una cucharada de Vinagre o Aceite",
     difficulty: "brutal",
-    categories: [
-      "casual", "individual"
-    ],
+    categories: ["casual", "individual"],
     points: 3,
     baseChance: 0.4,
     minChance: 0.2,
@@ -346,16 +367,14 @@ export const mockChallenges: Challenge[] = [
     isFavorite: false,
     isCustom: false,
     enabled: true,
-    logicType: "none"
+    logicType: "none",
   },
   {
     id: "c3",
     title: "Al Seco",
     description: "Termina tu vaso",
     difficulty: "brutal",
-    categories: [
-      "casual", "drinking", "individual"
-    ],
+    categories: ["casual", "drinking", "individual"],
     points: 3,
     baseChance: 0.4,
     minChance: 0.2,
@@ -365,16 +384,15 @@ export const mockChallenges: Challenge[] = [
     isFavorite: false,
     isCustom: false,
     enabled: true,
-    logicType: "none"
+    logicType: "none",
   },
   {
     id: "c4",
     title: "Bartender Shot",
-    description: "Bartender! El de la derecha te prepara un shot con 3 ingredientes y debes tomarlo",
+    description:
+      "Bartender! El de la derecha te prepara un shot con 3 ingredientes y debes tomarlo",
     difficulty: "hard",
-    categories: [
-      "casual", "drinking"
-    ],
+    categories: ["casual", "drinking"],
     points: 3,
     baseChance: 0.4,
     minChance: 0.2,
@@ -384,16 +402,14 @@ export const mockChallenges: Challenge[] = [
     isFavorite: false,
     isCustom: false,
     enabled: true,
-    logicType: "none"
+    logicType: "none",
   },
   {
     id: "c5",
     title: "Shot Misterioso",
     description: "El resto te prepara un shot sin decir que es",
     difficulty: "hard",
-    categories: [
-      "casual", "drinking"
-    ],
+    categories: ["casual", "drinking"],
     points: 3,
     baseChance: 0.4,
     minChance: 0.2,
@@ -403,16 +419,15 @@ export const mockChallenges: Challenge[] = [
     isFavorite: false,
     isCustom: false,
     enabled: true,
-    logicType: "none"
+    logicType: "none",
   },
   {
     id: "c6",
     title: "Companero de shots",
-    description: "Busca a un compañero de copas para un shot, si nadie acepta toma 2 shots solo",
+    description:
+      "Busca a un compañero de copas para un shot, si nadie acepta toma 2 shots solo",
     difficulty: "normal",
-    categories: [
-      "casual", "drinking", "group"
-    ],
+    categories: ["casual", "drinking", "group"],
     points: 3,
     baseChance: 0.4,
     minChance: 0.2,
@@ -422,16 +437,14 @@ export const mockChallenges: Challenge[] = [
     isFavorite: false,
     isCustom: false,
     enabled: true,
-    logicType: "none"
+    logicType: "none",
   },
   {
     id: "c8",
     title: "Vendedor",
     description: "Vendedor! Vende un producto al grupo (lo que sea)",
     difficulty: "normal",
-    categories: [
-      "casual", "social"
-    ],
+    categories: ["casual", "social"],
     points: 3,
     baseChance: 0.4,
     minChance: 0.2,
@@ -441,16 +454,14 @@ export const mockChallenges: Challenge[] = [
     isFavorite: false,
     isCustom: false,
     enabled: true,
-    logicType: "none"
+    logicType: "none",
   },
   {
     id: "c9",
     title: "Playa!",
     description: "Bebe un vaso de agua salada",
     difficulty: "normal",
-    categories: [
-      "casual", "individual"
-    ],
+    categories: ["casual", "individual"],
     points: 3,
     baseChance: 0.4,
     minChance: 0.2,
@@ -460,16 +471,15 @@ export const mockChallenges: Challenge[] = [
     isFavorite: false,
     isCustom: false,
     enabled: true,
-    logicType: "none"
+    logicType: "none",
   },
   {
     id: "c10",
     title: "Propuesta de Matrimonio",
-    description: "Arrodíllate y pídele románticamente matrimonio al 2ndo más viejo",
+    description:
+      "Arrodíllate y pídele románticamente matrimonio al 2ndo más viejo",
     difficulty: "normal",
-    categories: [
-      "casual", "social"
-    ],
+    categories: ["casual", "social"],
     points: 3,
     baseChance: 0.4,
     minChance: 0.2,
@@ -479,16 +489,14 @@ export const mockChallenges: Challenge[] = [
     isFavorite: false,
     isCustom: false,
     enabled: true,
-    logicType: "none"
+    logicType: "none",
   },
   {
     id: "c11",
     title: "Salud!",
     description: "Haz un brindis, todos toman",
     difficulty: "normal",
-    categories: [
-      "casual", "drinking", "social"
-    ],
+    categories: ["casual", "drinking", "social"],
     points: 3,
     baseChance: 0.4,
     minChance: 0.2,
@@ -498,16 +506,14 @@ export const mockChallenges: Challenge[] = [
     isFavorite: false,
     isCustom: false,
     enabled: true,
-    logicType: "none"
+    logicType: "none",
   },
   {
     id: "c12",
     title: "Poeta",
     description: "Di algo bueno del jugador de tu izquierda (Desafio dificil)",
     difficulty: "hard",
-    categories: [
-      "casual", "social"
-    ],
+    categories: ["casual", "social"],
     points: 3,
     baseChance: 0.4,
     minChance: 0.2,
@@ -517,16 +523,14 @@ export const mockChallenges: Challenge[] = [
     isFavorite: false,
     isCustom: false,
     enabled: true,
-    logicType: "none"
+    logicType: "none",
   },
   {
     id: "c13",
     title: "brindis por Alguien",
     description: "Haz un brindis por alguien en la mesa",
     difficulty: "normal",
-    categories: [
-      "casual", "social"
-    ],
+    categories: ["casual", "social"],
     points: 3,
     baseChance: 0.4,
     minChance: 0.2,
@@ -536,16 +540,14 @@ export const mockChallenges: Challenge[] = [
     isFavorite: false,
     isCustom: false,
     enabled: true,
-    logicType: "none"
+    logicType: "none",
   },
   {
     id: "c14",
     title: "carta_alta",
     description: "Carta Alta",
     difficulty: "normal",
-    categories: [
-      "casual", "individual", "drinking"
-    ],
+    categories: ["casual", "individual", "drinking"],
     points: 3,
     baseChance: 0.4,
     minChance: 0.2,
@@ -555,16 +557,14 @@ export const mockChallenges: Challenge[] = [
     isFavorite: false,
     isCustom: false,
     enabled: true,
-    logicType: "none"
+    logicType: "none",
   },
   {
     id: "c15",
     title: "copa_del_rey",
     description: "Copa del Rey: el que la llene, se la toma",
     difficulty: "normal",
-    categories: [
-      "casual", "drinking"
-    ],
+    categories: ["casual", "drinking"],
     points: 3,
     baseChance: 0.4,
     minChance: 0.2,
@@ -574,16 +574,15 @@ export const mockChallenges: Challenge[] = [
     isFavorite: false,
     isCustom: false,
     enabled: true,
-    logicType: "none"
+    logicType: "none",
   },
   {
     id: "c16",
     title: "cascada",
-    description: "Cascada: comiencen a tomar en cadena. Nadie puede parar hasta que la persona anterior pare.",
+    description:
+      "Cascada: comiencen a tomar en cadena. Nadie puede parar hasta que la persona anterior pare.",
     difficulty: "brutal",
-    categories: [
-      "casual", "drinking"
-    ],
+    categories: ["casual", "drinking"],
     points: 3,
     baseChance: 0.4,
     minChance: 0.2,
@@ -593,16 +592,14 @@ export const mockChallenges: Challenge[] = [
     isFavorite: false,
     isCustom: false,
     enabled: true,
-    logicType: "none"
+    logicType: "none",
   },
   {
     id: "c17",
     title: "no_tocar_telefono",
     description: "Deja tu teléfono en la mesa y no tocarlo",
     difficulty: "normal",
-    categories: [
-      "casual", "individual"
-    ],
+    categories: ["casual", "individual"],
     points: 3,
     baseChance: 0.4,
     minChance: 0.2,
@@ -612,16 +609,15 @@ export const mockChallenges: Challenge[] = [
     isFavorite: false,
     isCustom: false,
     enabled: true,
-    logicType: "none"
+    logicType: "none",
   },
   {
     id: "c18",
     title: "derecha_reto_castigo",
-    description: "El de la derecha puede darte el reto que quiera. Si no aceptas, el resto elige el castigo",
+    description:
+      "El de la derecha puede darte el reto que quiera. Si no aceptas, el resto elige el castigo",
     difficulty: "normal",
-    categories: [
-      "casual", "social"
-    ],
+    categories: ["casual", "social"],
     points: 3,
     baseChance: 0.4,
     minChance: 0.2,
@@ -631,16 +627,15 @@ export const mockChallenges: Challenge[] = [
     isFavorite: false,
     isCustom: false,
     enabled: true,
-    logicType: "none"
+    logicType: "none",
   },
   {
     id: "c19",
     title: "hora_de_rezar",
-    description: "Hora de rezar! Ponte en tus rodillas, abre tu boca y un jugador deberá darte un shot desde 25cm de distancia",
+    description:
+      "Hora de rezar! Ponte en tus rodillas, abre tu boca y un jugador deberá darte un shot desde 25cm de distancia",
     difficulty: "brutal",
-    categories: [
-      "casual", "drinking"
-    ],
+    categories: ["casual", "drinking"],
     points: 3,
     baseChance: 0.4,
     minChance: 0.2,
@@ -650,16 +645,14 @@ export const mockChallenges: Challenge[] = [
     isFavorite: false,
     isCustom: false,
     enabled: true,
-    logicType: "none"
+    logicType: "none",
   },
   {
     id: "c20",
     title: "Abogado",
     description: "Defiende tus creencias y da un discurso sobre {0}",
     difficulty: "normal",
-    categories: [
-      "casual", "social"
-    ],
+    categories: ["casual", "social"],
     points: 3,
     baseChance: 0.4,
     minChance: 0.2,
@@ -671,20 +664,17 @@ export const mockChallenges: Challenge[] = [
     enabled: true,
     logicType: "pool_prompt",
     logicConfig: {
-      poolRefs: [
-        "lawyer"
-      ],
-      template: "Defiende tus creencias y da un discurso sobre {0}"
-    }
+      poolRefs: ["lawyer"],
+      template: "Defiende tus creencias y da un discurso sobre {0}",
+    },
   },
   {
     id: "c21",
     title: "entrevista_trabajo",
-    description: "Entrevista de trabajo: el jugador delante tuyo te entrevistará para ser {0}.",
+    description:
+      "Entrevista de trabajo: el jugador delante tuyo te entrevistará para ser {0}.",
     difficulty: "normal",
-    categories: [
-      "casual", "social"
-    ],
+    categories: ["casual", "social"],
     points: 3,
     baseChance: 0.4,
     minChance: 0.2,
@@ -696,44 +686,18 @@ export const mockChallenges: Challenge[] = [
     enabled: true,
     logicType: "pool_prompt",
     logicConfig: {
-      poolRefs: [
-        "jobs"
-      ],
-      template: "Entrevista de trabajo: el jugador delante tuyo te entrevistará para ser {0}"
-    }
+      poolRefs: ["jobs"],
+      template:
+        "Entrevista de trabajo: el jugador delante tuyo te entrevistará para ser {0}",
+    },
   },
-  {
-    id: "c22",
-    title: "Toma",
-    description: "Toma {x}",
-    difficulty: "normal",
-    categories: [
-      "casual", "drinking"
-    ],
-    points: 3,
-    baseChance: 0.4,
-    minChance: 0.2,
-    maxChance: 0.6,
-    cooldownTurns: 5,
-    isUnique: false,
-    isFavorite: false,
-    isCustom: false,
-    enabled: true,
-    logicType: "range",
-    logicConfig: {
-      variable: "x",
-      min: 2,
-      max: 4
-    }
-  },
+
   {
     id: "c23",
     title: "Regala",
     description: "Regala {x}",
     difficulty: "normal",
-    categories: [
-      "casual"
-    ],
+    categories: ["casual"],
     points: 3,
     baseChance: 0.4,
     minChance: 0.2,
@@ -747,17 +711,19 @@ export const mockChallenges: Challenge[] = [
     logicConfig: {
       variable: "x",
       min: 2,
-      max: 4
-    }
+      max: 4,
+    },
+    difficultyLogic: {
+      hard: { min: 3, max: 6 },
+      brutal: { min: 5, max: 8 },
+    },
   },
   {
     id: "c24",
     title: "Todos toman",
     description: "Todos tomen {x}",
     difficulty: "normal",
-    categories: [
-      "casual", "drinking"
-    ],
+    categories: ["casual", "drinking"],
     points: 3,
     baseChance: 0.4,
     minChance: 0.2,
@@ -771,17 +737,19 @@ export const mockChallenges: Challenge[] = [
     logicConfig: {
       variable: "x",
       min: 2,
-      max: 4
-    }
+      max: 4,
+    },
+    difficultyLogic: {
+      hard: { min: 3, max: 6 },
+      brutal: { min: 5, max: 8 },
+    },
   },
   {
     id: "c25",
     title: "Todos regalan",
     description: "Todos regalan {x}",
     difficulty: "normal",
-    categories: [
-      "casual"
-    ],
+    categories: ["casual"],
     points: 3,
     baseChance: 0.4,
     minChance: 0.2,
@@ -795,17 +763,19 @@ export const mockChallenges: Challenge[] = [
     logicConfig: {
       variable: "x",
       min: 2,
-      max: 4
-    }
+      max: 4,
+    },
+    difficultyLogic: {
+      hard: { min: 3, max: 6 },
+      brutal: { min: 5, max: 8 },
+    },
   },
   {
     id: "c26",
     title: "Cucharadita de licor",
     description: "Bebe {x} cucharadas de licor (desde la cuchara)",
     difficulty: "hard",
-    categories: [
-      "casual", "drinking"
-    ],
+    categories: ["casual", "drinking"],
     points: 3,
     baseChance: 0.4,
     minChance: 0.2,
@@ -819,17 +789,15 @@ export const mockChallenges: Challenge[] = [
     logicConfig: {
       variable: "x",
       min: 2,
-      max: 4
-    }
+      max: 4,
+    },
   },
   {
     id: "c27",
     title: "Shot sin las manos",
     description: "Toma un shot sin las manos o toma {x} shots",
     difficulty: "hard",
-    categories: [
-      "casual", "drinking"
-    ],
+    categories: ["casual", "drinking"],
     points: 3,
     baseChance: 0.4,
     minChance: 0.2,
@@ -843,17 +811,15 @@ export const mockChallenges: Challenge[] = [
     logicConfig: {
       variable: "x",
       min: 1,
-      max: 2
-    }
+      max: 2,
+    },
   },
   {
     id: "c28",
     title: "Anecdota",
     description: "Comparte una anécdota vergonzosa o bebe {x} sorbos",
     difficulty: "normal",
-    categories: [
-      "casual", "drinking"
-    ],
+    categories: ["casual", "drinking"],
     points: 3,
     baseChance: 0.4,
     minChance: 0.2,
@@ -867,17 +833,16 @@ export const mockChallenges: Challenge[] = [
     logicConfig: {
       variable: "x",
       min: 2,
-      max: 4
-    }
+      max: 4,
+    },
   },
   {
     id: "c29",
     title: "Imita a alguien",
-    description: "Imita a alguien de la mesa. Si nadie lo adivina, bebes {x} sorbos",
+    description:
+      "Imita a alguien de la mesa. Si nadie lo adivina, bebes {x} sorbos",
     difficulty: "normal",
-    categories: [
-      "casual", "drinking"
-    ],
+    categories: ["casual", "drinking"],
     points: 3,
     baseChance: 0.4,
     minChance: 0.2,
@@ -891,17 +856,15 @@ export const mockChallenges: Challenge[] = [
     logicConfig: {
       variable: "x",
       min: 2,
-      max: 4
-    }
+      max: 4,
+    },
   },
   {
     id: "c30",
     title: "Si o No",
     description: "Responde {x} preguntas usando solo sí o no",
     difficulty: "normal",
-    categories: [
-      "casual"
-    ],
+    categories: ["casual"],
     points: 3,
     baseChance: 0.4,
     minChance: 0.2,
@@ -915,17 +878,16 @@ export const mockChallenges: Challenge[] = [
     logicConfig: {
       variable: "x",
       min: 1,
-      max: 3
-    }
+      max: 3,
+    },
   },
   {
     id: "c31",
     title: "Chile tiene talento",
-    description: "Demuestra un talento o si no tienes toma {x} el de la derecha es el juez",
+    description:
+      "Demuestra un talento o si no tienes toma {x} el de la derecha es el juez",
     difficulty: "normal",
-    categories: [
-      "casual", "drinking"
-    ],
+    categories: ["casual", "drinking"],
     points: 3,
     baseChance: 0.4,
     minChance: 0.2,
@@ -939,17 +901,16 @@ export const mockChallenges: Challenge[] = [
     logicConfig: {
       variable: "x",
       min: 2,
-      max: 4
-    }
+      max: 4,
+    },
   },
   {
     id: "c32",
     title: "quien_es_mas_probable",
-    description: "¿Quién es más probable? Todos apuntan. El más votado toma {x} sorbos",
+    description:
+      "¿Quién es más probable? Todos apuntan. El más votado toma {x} sorbos",
     difficulty: "normal",
-    categories: [
-      "casual", "drinking"
-    ],
+    categories: ["casual", "drinking"],
     points: 3,
     baseChance: 0.4,
     minChance: 0.2,
@@ -963,17 +924,15 @@ export const mockChallenges: Challenge[] = [
     logicConfig: {
       variable: "x",
       min: 2,
-      max: 4
-    }
+      max: 4,
+    },
   },
   {
     id: "c32a",
     title: "carrera_caracoles",
     description: "Carrera de caracoles: elige tu caracol y hagan la carrera.",
     difficulty: "normal",
-    categories: [
-      "casual", "drinking"
-    ],
+    categories: ["casual", "drinking"],
     points: 3,
     baseChance: 0.4,
     minChance: 0.2,
@@ -983,17 +942,15 @@ export const mockChallenges: Challenge[] = [
     isFavorite: false,
     isCustom: false,
     enabled: true,
-    logicType: "none"
-
+    logicType: "none",
   },
   {
     id: "c33",
     title: "cultura_chupistica_pide",
-    description: "La cultura chupística pide. Si alguien se niega o no se le ocurre nada, toma {x}",
+    description:
+      "La cultura chupística pide. Si alguien se niega o no se le ocurre nada, toma {x}",
     difficulty: "normal",
-    categories: [
-      "casual", "drinking"
-    ],
+    categories: ["casual", "drinking"],
     points: 3,
     baseChance: 0.4,
     minChance: 0.2,
@@ -1007,43 +964,41 @@ export const mockChallenges: Challenge[] = [
     logicConfig: {
       variable: "x",
       min: 2,
-      max: 4
-    }
+      max: 4,
+    },
   },
   {
-  id: "c34",
-  title: "Toma extra",
-  description: "Toma {x} al inicio de tu siguiente turno por {rounds} rondas",
-  difficulty: "normal",
-  categories: ["casual", "status"],
-  points: 3,
-  baseChance: 0.4,
-  minChance: 0.2,
-  maxChance: 0.6,
-  cooldownTurns: 5,
-  isUnique: false,
-  isFavorite: false,
-  isCustom: false,
-  enabled: true,
-  logicType: "status_effect",
-  logicConfig: {
-    effect: "extra_drink_next_turn",
-    scope: "player",
-    tone: "bad",
-    rounds: 3,
-    variable: "x",
-    min: 1,
-    max: 2,
-  }
-},
+    id: "c34",
+    title: "Toma extra",
+    description: "Toma {x} al inicio de tu siguiente turno por {rounds} rondas",
+    difficulty: "normal",
+    categories: ["casual", "status"],
+    points: 3,
+    baseChance: 0.4,
+    minChance: 0.2,
+    maxChance: 0.6,
+    cooldownTurns: 5,
+    isUnique: false,
+    isFavorite: false,
+    isCustom: false,
+    enabled: true,
+    logicType: "status_effect",
+    logicConfig: {
+      effect: "extra_drink_next_turn",
+      scope: "player",
+      tone: "bad",
+      rounds: 3,
+      variable: "x",
+      min: 1,
+      max: 2,
+    },
+  },
   {
     id: "c35",
     title: "No se me ocurrio un nombre",
     description: "Usa tu mano opuesta por {rounds} rondas",
     difficulty: "normal",
-    categories: [
-      "casual", "status"
-    ],
+    categories: ["casual", "status"],
     points: 3,
     baseChance: 0.4,
     minChance: 0.2,
@@ -1059,16 +1014,14 @@ export const mockChallenges: Challenge[] = [
       scope: "player",
       tone: "bad",
       rounds: 3,
-    }
+    },
   },
   {
     id: "c36",
     title: "El pensador",
     description: "Habla solo en forma de pregunta por {rounds} rondas",
     difficulty: "normal",
-    categories: [
-      "casual"
-    ],
+    categories: ["casual"],
     points: 3,
     baseChance: 0.4,
     minChance: 0.2,
@@ -1084,16 +1037,14 @@ export const mockChallenges: Challenge[] = [
       scope: "player",
       tone: "bad",
       rounds: 3,
-    }
+    },
   },
   {
     id: "c37",
     title: "No pronombres",
     description: "No decir pronombres (Ej: el, ellos, tu, yo, esto)",
     difficulty: "normal",
-    categories: [
-      "casual"
-    ],
+    categories: ["casual"],
     points: 3,
     baseChance: 0.4,
     minChance: 0.2,
@@ -1105,20 +1056,18 @@ export const mockChallenges: Challenge[] = [
     enabled: true,
     logicType: "status_effect",
     logicConfig: {
-  effect: "no_pronouns",
-  scope: "player",
-  tone: "bad",
-  rounds: 3,
-}
+      effect: "no_pronouns",
+      scope: "player",
+      tone: "bad",
+      rounds: 3,
+    },
   },
   {
     id: "c38",
     title: "No nombres",
     description: "No decir nombres propios (Hector, Eduardo,)",
     difficulty: "normal",
-    categories: [
-      "casual"
-    ],
+    categories: ["casual"],
     points: 3,
     baseChance: 0.4,
     minChance: 0.2,
@@ -1130,21 +1079,18 @@ export const mockChallenges: Challenge[] = [
     enabled: true,
     logicType: "status_effect",
     logicConfig: {
-  effect: "no_proper_names",
-  scope: "player",
-  tone: "bad",
-  rounds: 3,
-}
-
+      effect: "no_proper_names",
+      scope: "player",
+      tone: "bad",
+      rounds: 3,
+    },
   },
   {
     id: "c39",
     title: "No Si Ni No",
     description: "no decir sí ni no",
     difficulty: "normal",
-    categories: [
-      "casual"
-    ],
+    categories: ["casual"],
     points: 3,
     baseChance: 0.4,
     minChance: 0.2,
@@ -1156,21 +1102,18 @@ export const mockChallenges: Challenge[] = [
     enabled: true,
     logicType: "status_effect",
     logicConfig: {
-  effect: "no_yes_no",
-  scope: "player",
-  tone: "bad",
-  rounds: 3,
-}
-    
+      effect: "no_yes_no",
+      scope: "player",
+      tone: "bad",
+      rounds: 3,
+    },
   },
   {
     id: "c40",
     title: "Acentos",
     description: "hablar con acento exagerado",
     difficulty: "normal",
-    categories: [
-      "casual"
-    ],
+    categories: ["casual"],
     points: 3,
     baseChance: 0.4,
     minChance: 0.2,
@@ -1182,20 +1125,18 @@ export const mockChallenges: Challenge[] = [
     enabled: true,
     logicType: "status_effect",
     logicConfig: {
-  effect: "exaggerated_accent",
-  scope: "player",
-  tone: "bad",
-  rounds: 2,
-}
+      effect: "exaggerated_accent",
+      scope: "player",
+      tone: "bad",
+      rounds: 2,
+    },
   },
   {
     id: "c41",
     title: "Neandertal",
     description: "Habla con monosilabas (Palabras de una silaba)",
     difficulty: "normal",
-    categories: [
-      "casual"
-    ],
+    categories: ["casual"],
     points: 3,
     baseChance: 0.4,
     minChance: 0.2,
@@ -1207,20 +1148,18 @@ export const mockChallenges: Challenge[] = [
     enabled: true,
     logicType: "status_effect",
     logicConfig: {
-  effect: "monosyllables_only",
-  scope: "player",
-  tone: "bad",
-  rounds: 3,
-}
+      effect: "monosyllables_only",
+      scope: "player",
+      tone: "bad",
+      rounds: 3,
+    },
   },
   {
     id: "c42",
     title: "No Apuntar",
     description: "no apuntar con el dedo, solo con la mirada",
     difficulty: "normal",
-    categories: [
-      "casual"
-    ],
+    categories: ["casual"],
     points: 3,
     baseChance: 0.4,
     minChance: 0.2,
@@ -1232,20 +1171,18 @@ export const mockChallenges: Challenge[] = [
     enabled: true,
     logicType: "status_effect",
     logicConfig: {
-  effect: "no_pointing",
-  scope: "player",
-  tone: "bad",
-  rounds: 3,
-}
+      effect: "no_pointing",
+      scope: "player",
+      tone: "bad",
+      rounds: 3,
+    },
   },
   {
     id: "c43",
     title: "Negro",
     description: "Esclavo! obedecer a un compañero de copas elegido",
     difficulty: "normal",
-    categories: [
-      "casual"
-    ],
+    categories: ["casual"],
     points: 3,
     baseChance: 0.4,
     minChance: 0.2,
@@ -1257,20 +1194,18 @@ export const mockChallenges: Challenge[] = [
     enabled: true,
     logicType: "status_effect",
     logicConfig: {
-  effect: "obey_chosen_player",
-  scope: "player",
-  tone: "bad",
-  rounds: 3,
-}
+      effect: "obey_chosen_player",
+      scope: "player",
+      tone: "bad",
+      rounds: 3,
+    },
   },
   {
     id: "c44",
     title: "Regla Global",
     description: "Regla! Crea una regla que todos deban seguir",
     difficulty: "normal",
-    categories: [
-      "casual"
-    ],
+    categories: ["casual"],
     points: 3,
     baseChance: 0.4,
     minChance: 0.2,
@@ -1282,20 +1217,18 @@ export const mockChallenges: Challenge[] = [
     enabled: true,
     logicType: "status_effect",
     logicConfig: {
-  effect: "custom_global_rule",
-  scope: "global",
-  tone: "bad",
-  rounds: 3,
-}
+      effect: "custom_global_rule",
+      scope: "global",
+      tone: "bad",
+      rounds: 3,
+    },
   },
   {
     id: "c45",
     title: "Virus!",
     description: "Pon una regla a un jugador",
     difficulty: "normal",
-    categories: [
-      "casual"
-    ],
+    categories: ["casual"],
     points: 3,
     baseChance: 0.4,
     minChance: 0.2,
@@ -1307,20 +1240,19 @@ export const mockChallenges: Challenge[] = [
     enabled: true,
     logicType: "status_effect",
     logicConfig: {
-  effect: "virus_rule",
-  scope: "global",
-  tone: "bad",
-  rounds: 2,
-}
+      effect: "virus_rule",
+      scope: "global",
+      tone: "bad",
+      rounds: 2,
+    },
   },
   {
     id: "c46",
     title: "Mano al suelo",
-    description: "mantener al menos una mano en el suelo\r\nno_pestanear,no pestañear hasta tu siguiente turno",
+    description:
+      "mantener al menos una mano en el suelo\r\nno_pestanear,no pestañear hasta tu siguiente turno",
     difficulty: "normal",
-    categories: [
-      "casual"
-    ],
+    categories: ["casual"],
     points: 3,
     baseChance: 0.4,
     minChance: 0.2,
@@ -1332,20 +1264,18 @@ export const mockChallenges: Challenge[] = [
     enabled: true,
     logicType: "status_effect",
     logicConfig: {
-  effect: "one_hand_on_floor",
-  scope: "player",
-  tone: "bad",
-  rounds: 1,
-}
+      effect: "one_hand_on_floor",
+      scope: "player",
+      tone: "bad",
+      rounds: 1,
+    },
   },
   {
     id: "c47",
     title: "sin_polera",
     description: "estar sin polera hasta tu siguiente turno",
     difficulty: "normal",
-    categories: [
-      "casual"
-    ],
+    categories: ["casual"],
     points: 3,
     baseChance: 0.4,
     minChance: 0.2,
@@ -1357,20 +1287,18 @@ export const mockChallenges: Challenge[] = [
     enabled: true,
     logicType: "status_effect",
     logicConfig: {
-  effect: "no_shirt",
-  scope: "player",
-  tone: "bad",
-  rounds: 1,
-}
+      effect: "no_shirt",
+      scope: "player",
+      tone: "bad",
+      rounds: 1,
+    },
   },
   {
     id: "c48",
     title: "Silencio",
     description: "comunicarte sin hablar por {rounds} rondas",
     difficulty: "normal",
-    categories: [
-      "casual"
-    ],
+    categories: ["casual"],
     points: 3,
     baseChance: 0.4,
     minChance: 0.2,
@@ -1382,20 +1310,19 @@ export const mockChallenges: Challenge[] = [
     enabled: true,
     logicType: "status_effect",
     logicConfig: {
-  effect: "no_talking",
-  scope: "player",
-  tone: "bad",
-  rounds: 2,
-}
+      effect: "no_talking",
+      scope: "player",
+      tone: "bad",
+      rounds: 2,
+    },
   },
-    {
+  {
     id: "c49",
     title: "Ultimo en llegar",
-    description: "El último en llegar tómese un shot y una tapita para ponerse al día",
+    description:
+      "El último en llegar tómese un shot y una tapita para ponerse al día",
     difficulty: "normal",
-    categories: [
-      "casual"
-    ],
+    categories: ["casual"],
     points: 3,
     baseChance: 0.4,
     minChance: 0.2,
@@ -1405,6 +1332,86 @@ export const mockChallenges: Challenge[] = [
     isFavorite: false,
     isCustom: false,
     enabled: true,
-    logicType: "none"
-  }
+    logicType: "none",
+  },
+  {
+    id: "c55",
+    title: "Fashion",
+    description:
+      "Toma {x} sorbos por cada jugador con el mismo color de ropa que tú",
+    difficulty: "normal",
+    categories: ["casual", "drinking"],
+    points: 3,
+    baseChance: 0.4,
+    minChance: 0.2,
+    maxChance: 0.6,
+    cooldownTurns: 5,
+    isUnique: false,
+    isFavorite: false,
+    isCustom: false,
+    enabled: true,
+    logicType: "range",
+    logicConfig: {
+      variable: "x",
+      min: 2,
+      max: 4,
+    },
+    difficultyLogic: {
+      hard: { min: 3, max: 6 },
+      brutal: { min: 5, max: 8 },
+    },
+  },
+  {
+    id: "c56",
+    title: "Imagina ser venezolano",
+    description: "Toma {x} por cada letra de tu nombre",
+    difficulty: "normal",
+    categories: ["casual", "drinking"],
+    points: 3,
+    baseChance: 0.4,
+    minChance: 0.2,
+    maxChance: 0.6,
+    cooldownTurns: 5,
+    isUnique: false,
+    isFavorite: false,
+    isCustom: false,
+    enabled: true,
+    logicType: "range",
+    logicConfig: {
+      variable: "x",
+      min: 2,
+      max: 4,
+    },
+    difficultyLogic: {
+      hard: { min: 3, max: 6 },
+      brutal: { min: 5, max: 8 },
+    },
+  },
+  {
+    id: "c57",
+    title: "HDP!",
+    description:
+      "Cada vez que alguien diga tu nombre, toma {x} por {rounds} rondas",
+    difficulty: "normal",
+    categories: ["casual", "status", "drinking"],
+    points: 3,
+    baseChance: 0.4,
+    minChance: 0.2,
+    maxChance: 0.6,
+    cooldownTurns: 5,
+    isUnique: false,
+    isFavorite: false,
+    isCustom: false,
+    enabled: true,
+    logicType: "status_effect",
+    logicConfig: {
+      effect: "extra_drink_next_turn",
+      scope: "player",
+      tone: "bad",
+      rounds: 3,
+      variable: "x",
+      min: 1,
+      max: 2,
+    },
+  },
 ];
