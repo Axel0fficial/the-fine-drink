@@ -1,404 +1,148 @@
-import { router } from "expo-router";
-import React, { useEffect, useMemo, useState } from "react";
-import { Alert, Pressable, Text } from "react-native";
+import { useLocalSearchParams } from "expo-router";
+import { useState } from "react";
+import { StyleSheet, View } from "react-native";
 
-import ScreenContainer from "../src/components/ScreenContainer";
-import ActiveStatusesPanel from "../src/components/game/ActiveStatusesPanel";
-import ChallengeView from "../src/components/game/ChallengeView";
-import GameActions from "../src/components/game/GameActions";
-import GameHeader from "../src/components/game/GameHeader";
-import MiniGameHost from "../src/components/game/MiniGameHost";
-import PlayerInfoRow from "../src/components/game/PlayerInfoRow";
-import { gameSharedStyles } from "../src/components/style/gameSharedStyles";
-import {
-  pickTwoChallengesForPlayer,
-  resolveChallenge,
-  type ResolvedChallenge,
-} from "../src/game/gameLogic";
-import type { MatchStatus, MiniGameResult } from "../src/minigames/types";
-import { useGameStore } from "../src/state/gameStore";
+import ChallengeRenderer from "@/components/game/ChallengeRenderer";
+import DrinkyLayer from "@/components/game/DrinkyLayer";
+import GameActions from "@/components/game/GameActions";
+import GameHeader from "@/components/game/GameHeader";
+import StatusBar from "@/components/game/StatusBar";
+
+import { sharedStyles } from "@/style/theme";
+import { Challenge, Player } from "@/types/game";
+
+const sampleChallenges: Challenge[] = [
+  {
+    id: "1",
+    type: "simple",
+    title: "Truth Time",
+    description: "Tell an embarrassing story or take 3 sips.",
+    difficulty: "easy",
+  },
+  {
+    id: "2",
+    type: "simple",
+    title: "Dare",
+    description: "Let the group choose a dare for you.",
+    difficulty: "normal",
+  },
+  {
+    id: "3",
+    type: "simple",
+    title: "Brutal Choice",
+    description: "Take 5 sips or reveal your last search history.",
+    difficulty: "hard",
+  },
+  {
+    id: "4",
+    type: "status",
+    title: "Double Trouble",
+    description: "For 2 rounds, your punishments are doubled.",
+    difficulty: "hard",
+    statusEffect: {
+      id: "double-trouble",
+      name: "Double Trouble",
+      description: "Your punishments are doubled.",
+      remainingRounds: 2,
+    },
+  },
+  {
+    id: "5",
+    type: "status",
+    title: "Silent Curse",
+    description: "You cannot talk for 3 rounds. If you do, drink.",
+    difficulty: "normal",
+    statusEffect: {
+      id: "silent-curse",
+      name: "Silent Curse",
+      description: "You cannot talk. If you talk, drink.",
+      remainingRounds: 3,
+    },
+  },
+  {
+    id: "6",
+    type: "status",
+    title: "Forever Suspicious",
+    description:
+      "For the rest of the session, everyone may question your choices.",
+    difficulty: "brutal",
+    statusEffect: {
+      id: "forever-suspicious",
+      name: "Forever Suspicious",
+      description:
+        "Everyone may question your choices for the rest of the session.",
+      remainingRounds: 99,
+    },
+  },
+];
 
 export default function GameScreen() {
-  const {
-    selectedPlayers,
-    setSelectedPlayers,
-    challenges,
-    selectedRounds,
-    selectedGameModeId,
-    selectedDifficulty,
-    customModeEnabledCategories,
-    customModeDisabledChallengeIds,
-    globallyDisabledChallengeIds,
-    modifiers,
-  } = useGameStore();
+  const params = useLocalSearchParams();
 
-  const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
-  const [currentRound, setCurrentRound] = useState(1);
-  const [primaryChallenge, setPrimaryChallenge] =
-    useState<ResolvedChallenge | null>(null);
-  const [secondaryChallenge, setSecondaryChallenge] =
-    useState<ResolvedChallenge | null>(null);
-  const [selectedChallengeSlot, setSelectedChallengeSlot] = useState<
-    "primary" | "secondary"
-  >("primary");
-  const [statusText, setStatusText] = useState("Start the round.");
-  const [activeStatuses, setActiveStatuses] = useState<MatchStatus[]>([]);
+  const initialPlayers: Player[] = JSON.parse(
+    (params.players as string) || "[]",
+  ).map((player: Player) => ({
+    ...player,
+    statuses: player.statuses ?? [],
+  }));
 
-  const currentPlayer = selectedPlayers[currentPlayerIndex] ?? null;
+  const [players, setPlayers] = useState<Player[]>(initialPlayers);
+  const [turn, setTurn] = useState<number>(0);
+  const [challenge, setChallenge] = useState<Challenge>(sampleChallenges[0]);
 
-  const activeChallenges = useMemo(() => {
-    const globallyAvailableChallenges = challenges.filter(
-      (challenge) => !globallyDisabledChallengeIds.includes(challenge.id),
-    );
+  const currentPlayer = players[turn % players.length];
 
-    if (selectedGameModeId === "custom") {
-      return globallyAvailableChallenges.filter((challenge) => {
-        const categoryAllowed = challenge.categories.some((category) =>
-          customModeEnabledCategories.includes(category),
-        );
+  function applyStatusToCurrentPlayer() {
+    if (!challenge.statusEffect || !currentPlayer) return;
 
-        const enabledForCustom = !customModeDisabledChallengeIds.includes(
-          challenge.id,
-        );
+    setPlayers((currentPlayers) =>
+      currentPlayers.map((player) => {
+        if (player.id !== currentPlayer.id) return player;
 
-        return categoryAllowed && enabledForCustom;
-      });
-    }
-
-    return globallyAvailableChallenges;
-  }, [
-    challenges,
-    globallyDisabledChallengeIds,
-    customModeEnabledCategories,
-    customModeDisabledChallengeIds,
-    selectedGameModeId,
-  ]);
-
-  const shownResolvedChallenge =
-    selectedChallengeSlot === "primary" ? primaryChallenge : secondaryChallenge;
-
-  const shownChallenge = shownResolvedChallenge?.challenge ?? null;
-  const shownDescription =
-    shownResolvedChallenge?.description ??
-    "No challenge available for this player.";
-
-  const isMiniGameChallenge =
-    shownChallenge?.presentationType === "minigame" &&
-    !!shownChallenge.minigameType;
-
-  const isFineDrinkChallenge = shownChallenge?.minigameType === "fine_drink";
-
-  const turnInRound = currentPlayerIndex + 1;
-
-  const getModifierStatusesForPlayer = (): MatchStatus[] => {
-    if (!currentPlayer) return [];
-
-    const activeModifierStatuses: MatchStatus[] = [];
-
-    for (const modifier of modifiers) {
-      if (!modifier.enabled) continue;
-
-      // DOWN WITH THE KING
-      if (modifier.id === "mod_down_with_the_king") {
-        const leader = selectedPlayers.reduce((prev, curr) =>
-          curr.score > prev.score ? curr : prev,
-        );
-
-        if (currentPlayer.id === leader.id) {
-          activeModifierStatuses.push({
-            id: `mod_status_${modifier.id}_${currentPlayer.id}`,
-            scope: "player",
-            playerId: currentPlayer.id,
-            playerName: currentPlayer.name,
-            text: "You are the leader. Everyone is coming for you.",
-            tone: "bad",
-            sourceChallengeId: modifier.id,
-            remainingRounds: null,
-          });
-        }
-      }
-
-      // SHARED PUNISHMENT (global info)
-      if (modifier.id === "mod_shared_punishment") {
-        activeModifierStatuses.push({
-          id: `mod_status_${modifier.id}`,
-          scope: "global",
-          text: "Punishments are shared with everyone.",
-          tone: "bad",
-          sourceChallengeId: modifier.id,
-          remainingRounds: null,
-        });
-      }
-
-      // LAST PLACE BOOST
-      if (modifier.id === "mod_last_place_boost") {
-        const lastPlayer = selectedPlayers.reduce((prev, curr) =>
-          curr.score < prev.score ? curr : prev,
-        );
-
-        if (currentPlayer.id === lastPlayer.id) {
-          activeModifierStatuses.push({
-            id: `mod_status_${modifier.id}_${currentPlayer.id}`,
-            scope: "player",
-            playerId: currentPlayer.id,
-            playerName: currentPlayer.name,
-            text: "You're last place. Boost active.",
-            tone: "good",
-            sourceChallengeId: modifier.id,
-            remainingRounds: null,
-          });
-        }
-      }
-    }
-
-    return activeModifierStatuses;
-  };
-
-  const modifierStatuses = getModifierStatusesForPlayer();
-
-  const visibleStatuses = [...activeStatuses, ...modifierStatuses].filter(
-    (status) => {
-      if (status.scope === "global") return true;
-      if (status.scope === "player") {
-        return status.playerId === currentPlayer?.id;
-      }
-      return false;
-    },
-  );
-
-  const generateTurnChallenges = () => {
-    const [first, second] = pickTwoChallengesForPlayer(
-      activeChallenges,
-      currentPlayer,
-      modifiers,
-      selectedPlayers,
-      selectedDifficulty,
-    );
-
-    const resolvedFirst = resolveChallenge(
-      first,
-      currentPlayer,
-      selectedDifficulty,
-    );
-    const resolvedSecond = resolveChallenge(
-      second,
-      currentPlayer,
-      selectedDifficulty,
-    );
-
-    setPrimaryChallenge(resolvedFirst);
-    setSecondaryChallenge(resolvedSecond);
-    setSelectedChallengeSlot("primary");
-
-    if (!resolvedFirst && !resolvedSecond && currentPlayer) {
-      setStatusText(
-        `${currentPlayer.name} has no eligible challenges with the current rules.`,
-      );
-    }
-  };
-
-  useEffect(() => {
-    if (selectedPlayers.length === 0) return;
-    generateTurnChallenges();
-  }, [selectedPlayers.length, currentPlayerIndex, currentRound]);
-
-  const decrementRoundStatuses = () => {
-    setActiveStatuses((prev) =>
-      prev
-        .map((status) => {
-          if (status.remainingRounds == null) return status;
-
-          return {
-            ...status,
-            remainingRounds: status.remainingRounds - 1,
-          };
-        })
-        .filter(
-          (status) =>
-            status.remainingRounds == null || status.remainingRounds > 0,
-        ),
-    );
-  };
-
-  const goToNextPlayer = () => {
-    if (selectedPlayers.length === 0) return;
-
-    const isLastPlayerInRound =
-      currentPlayerIndex === selectedPlayers.length - 1;
-    const isLastRound = currentRound === selectedRounds;
-
-    if (isLastPlayerInRound && isLastRound) {
-      router.push("/winner");
-      return;
-    }
-
-    if (isLastPlayerInRound) {
-      decrementRoundStatuses();
-      setCurrentPlayerIndex(0);
-      setCurrentRound((prev) => prev + 1);
-    } else {
-      setCurrentPlayerIndex((prev) => prev + 1);
-    }
-  };
-
-  const awardPointsToCurrentPlayer = (points: number) => {
-    if (!currentPlayer || points <= 0) return;
-
-    const updatedPlayers = selectedPlayers.map((player) =>
-      player.id === currentPlayer.id
-        ? { ...player, score: player.score + points }
-        : player,
-    );
-
-    setSelectedPlayers(updatedPlayers);
-  };
-
-  const handleDone = () => {
-    if (!currentPlayer || !shownChallenge) {
-      Alert.alert(
-        "Missing challenge",
-        "No challenge is available for this turn.",
-      );
-      return;
-    }
-
-    awardPointsToCurrentPlayer(shownChallenge.points);
-
-    const generatedStatuses = shownResolvedChallenge?.generatedStatuses;
-    if (generatedStatuses && generatedStatuses.length > 0) {
-      setActiveStatuses((prev) => [...prev, ...generatedStatuses]);
-    }
-
-    setStatusText(
-      `${currentPlayer.name} completed "${shownChallenge.title}" and earned ${shownChallenge.points} point${
-        shownChallenge.points === 1 ? "" : "s"
-      }.`,
-    );
-
-    goToNextPlayer();
-  };
-
-  const handleMiniGameComplete = (result: MiniGameResult) => {
-    if (!currentPlayer || !shownChallenge) return;
-
-    if (result.pointsAwarded && result.pointsAwarded > 0) {
-      awardPointsToCurrentPlayer(result.pointsAwarded);
-    }
-
-    const appliedStatuses = result.appliedStatuses;
-    if (appliedStatuses && appliedStatuses.length > 0) {
-      setActiveStatuses((prev) => [...prev, ...appliedStatuses]);
-    }
-
-    const immediateEffects = result.immediateEffects;
-    const immediateText =
-      immediateEffects && immediateEffects.length > 0
-        ? ` Immediate: ${immediateEffects.map((effect) => effect.text).join(" ")}`
-        : "";
-
-    setStatusText(
-      result.statusText ??
-        `${currentPlayer.name} finished the minigame "${shownChallenge.title}".${immediateText}`,
-    );
-
-    goToNextPlayer();
-  };
-
-  const handlePass = () => {
-    if (!currentPlayer) return;
-
-    setStatusText(`${currentPlayer.name} passed this turn.`);
-    goToNextPlayer();
-  };
-
-  const handleFinishGame = () => {
-    router.push("/winner");
-  };
-
-  if (!currentPlayer) {
-    return (
-      <ScreenContainer>
-        <Text style={gameSharedStyles.title}>Game</Text>
-        <Text style={gameSharedStyles.emptyText}>No players selected.</Text>
-
-        <Pressable
-          style={gameSharedStyles.backButton}
-          onPress={() => router.push("/players")}
-        >
-          <Text style={gameSharedStyles.backButtonText}>Back to Players</Text>
-        </Pressable>
-      </ScreenContainer>
+        return {
+          ...player,
+          statuses: [
+            ...player.statuses,
+            {
+              ...challenge.statusEffect!,
+              id: `${challenge.statusEffect!.id}-${Date.now()}`,
+              sourceChallengeId: challenge.id,
+            },
+          ],
+        };
+      }),
     );
   }
 
-  const canToggle = !!secondaryChallenge;
+  function nextTurn() {
+    if (challenge.type === "status") {
+      applyStatusToCurrentPlayer();
+    }
 
-  if (isFineDrinkChallenge && shownChallenge) {
-    return (
-      <ScreenContainer backgroundColor="#4a0059">
-        <MiniGameHost
-          key={`${currentRound}-${currentPlayer.id}-${shownChallenge.id}-${selectedChallengeSlot}`}
-          challenge={shownChallenge}
-          currentPlayer={currentPlayer}
-          allPlayers={selectedPlayers}
-          onComplete={handleMiniGameComplete}
-          fullScreen
-        />
-      </ScreenContainer>
-    );
+    const randomIndex = Math.floor(Math.random() * sampleChallenges.length);
+    const randomChallenge = sampleChallenges[randomIndex];
+
+    setChallenge(randomChallenge);
+    setTurn((currentTurn) => currentTurn + 1);
   }
 
   return (
-    <ScreenContainer>
-      <GameHeader
-        currentRound={currentRound}
-        turnInRound={turnInRound}
-        totalPlayers={selectedPlayers.length}
-        onFinish={handleFinishGame}
-      />
+    <View style={[sharedStyles.screen, styles.container]}>
+      <GameHeader turn={turn} currentPlayer={currentPlayer} />
 
-      <PlayerInfoRow
-        currentPlayerName={currentPlayer.name}
-        currentScore={currentPlayer.score}
-      />
+      <StatusBar statuses={currentPlayer?.statuses ?? []} />
 
-      {isMiniGameChallenge && shownChallenge ? (
-        <MiniGameHost
-          key={`${currentRound}-${currentPlayer.id}-${shownChallenge.id}-${selectedChallengeSlot}`}
-          challenge={shownChallenge}
-          currentPlayer={currentPlayer}
-          allPlayers={selectedPlayers}
-          onComplete={handleMiniGameComplete}
-        />
-      ) : (
-        <ChallengeView
-          selectedChallengeSlot={selectedChallengeSlot}
-          onSelectPrimary={() => {
-            if (selectedChallengeSlot !== "primary") {
-              setSelectedChallengeSlot("primary");
-            }
-          }}
-          onSelectSecondary={() => {
-            if (selectedChallengeSlot !== "secondary") {
-              setSelectedChallengeSlot("secondary");
-            }
-          }}
-          canToggle={canToggle}
-          shownChallenge={shownChallenge}
-          shownDescription={shownDescription}
-          currentPlayerTag={currentPlayer.tag}
-        />
-      )}
+      <ChallengeRenderer challenge={challenge} />
 
-      <ActiveStatusesPanel statuses={visibleStatuses} />
+      <GameActions onSkip={nextTurn} onDone={nextTurn} />
 
-      {!isMiniGameChallenge && (
-        <GameActions
-          onPass={handlePass}
-          onDone={handleDone}
-          doneDisabled={!shownChallenge}
-        />
-      )}
-    </ScreenContainer>
+      <DrinkyLayer />
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    paddingTop: 70,
+  },
+});

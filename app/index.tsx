@@ -1,17 +1,21 @@
 import { router } from "expo-router";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { sharedStyles } from "../style/theme";
 
 export default function WelcomeScreen() {
   return (
-    <View style={styles.container}>
-      <Image
-        source={require("../assets/images/fdTransparentWhite.png")}
-        style={styles.logo}
-        resizeMode="contain"
-      />
+    <View style={sharedStyles.centeredScreen}>
+      <Text style={sharedStyles.centeredTitle}>The Fine Drink</Text>
 
-      <Pressable style={styles.button} onPress={() => router.push("/players")}>
-        <Text style={styles.buttonText}>Start</Text>
+      <Text style={sharedStyles.subtitle}>
+        Party challenges. Bad decisions. Good stories.
+      </Text>
+
+      <Pressable
+        style={sharedStyles.primaryButton}
+        onPress={() => router.push("/players")}
+      >
+        <Text style={sharedStyles.buttonText}>Start Game</Text>
       </Pressable>
     </View>
   );
@@ -20,31 +24,33 @@ export default function WelcomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#111",
+    backgroundColor: "#000",
     alignItems: "center",
     justifyContent: "center",
     padding: 24,
   },
-  logo: {
-    width: 260,
-    height: 120,
-    marginBottom: 12,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: "#bbb",
-    marginBottom: 30,
+  title: {
+    color: "#fff",
+    fontSize: 42,
+    fontWeight: "bold",
     textAlign: "center",
   },
+  subtitle: {
+    color: "#aaa",
+    fontSize: 16,
+    textAlign: "center",
+    marginTop: 12,
+    marginBottom: 40,
+  },
   button: {
-    backgroundColor: "#8b5cf6",
-    paddingVertical: 14,
-    paddingHorizontal: 28,
-    borderRadius: 12,
+    backgroundColor: "#510996",
+    paddingVertical: 16,
+    paddingHorizontal: 36,
+    borderRadius: 14,
   },
   buttonText: {
     color: "#fff",
     fontSize: 18,
-    fontWeight: "600",
+    fontWeight: "bold",
   },
 });
