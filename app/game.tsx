@@ -7,9 +7,10 @@ import DrinkyLayer from "@/components/game/DrinkyLayer";
 import GameActions from "@/components/game/GameActions";
 import GameHeader from "@/components/game/GameHeader";
 import StatusBar from "@/components/game/StatusBar";
+import { resolveChallenge } from "@/utils/challengeResolver";
 
 import { sharedStyles } from "@/style/theme";
-import { Challenge, Player } from "@/types/game";
+import { Challenge, Player, PlayerStatus } from "@/types/game";
 
 const sampleChallenges: Challenge[] = [
   {
@@ -74,6 +75,58 @@ const sampleChallenges: Challenge[] = [
       remainingRounds: 99,
     },
   },
+  {
+    id: "7",
+    type: "simple",
+    title: "Exercise Tax",
+    description: "Do {x} {y} or drink {z} sips.",
+    difficulty: "easy",
+    variables: [
+      {
+        type: "number",
+        key: "x",
+        min: 5,
+        max: 15,
+      },
+      {
+        type: "pool",
+        key: "y",
+        pools: ["exercises"],
+      },
+      {
+        type: "number",
+        key: "z",
+        min: 1,
+        max: 3,
+      },
+    ],
+  },
+  {
+    id: "8",
+    type: "simple",
+    title: "FMK",
+    description: "Fuck, Marry, Kill: {x}, {y}, {z}.",
+    difficulty: "normal",
+    variables: [
+      {
+        type: "poolGroup",
+        keys: ["x", "y", "z"],
+        allowedPools: ["attractivePeople", "villains", "lovablePeople"],
+        allowRepeats: false,
+      },
+    ],
+  },
+  {
+    id: "9",
+    type: "minigame",
+    title: "The Fine Drink",
+    description: "A mysterious offer appears.",
+    difficulty: "brutal",
+    minigameType: "fineDrink",
+    fineDrinkData: {
+      offerNature: "random",
+    },
+  },
 ];
 
 export default function GameScreen() {
@@ -88,7 +141,9 @@ export default function GameScreen() {
 
   const [players, setPlayers] = useState<Player[]>(initialPlayers);
   const [turn, setTurn] = useState<number>(0);
-  const [challenge, setChallenge] = useState<Challenge>(sampleChallenges[0]);
+  const [challenge, setChallenge] = useState<Challenge>(
+    resolveChallenge(sampleChallenges[0]),
+  );
 
   const currentPlayer = players[turn % players.length];
 
@@ -114,16 +169,51 @@ export default function GameScreen() {
     );
   }
 
+  function applyStatusesToCurrentPlayer(statuses: PlayerStatus[]) {
+    if (!currentPlayer) return;
+
+    setPlayers((currentPlayers) =>
+      currentPlayers.map((player) => {
+        if (player.id !== currentPlayer.id) return player;
+
+        return {
+          ...player,
+          statuses: [
+            ...player.statuses,
+            ...statuses.map((status) => ({
+              ...status,
+              id: `${status.id}-${Date.now()}-${Math.random()}`,
+              sourceChallengeId: challenge.id,
+            })),
+          ],
+        };
+      }),
+    );
+  }
+
+  function goToNextChallenge() {
+    const randomIndex = Math.floor(Math.random() * sampleChallenges.length);
+    const randomChallenge = resolveChallenge(sampleChallenges[randomIndex]);
+
+    setChallenge(randomChallenge);
+    setTurn((currentTurn) => currentTurn + 1);
+  }
+
   function nextTurn() {
     if (challenge.type === "status") {
       applyStatusToCurrentPlayer();
     }
 
-    const randomIndex = Math.floor(Math.random() * sampleChallenges.length);
-    const randomChallenge = sampleChallenges[randomIndex];
-
-    setChallenge(randomChallenge);
-    setTurn((currentTurn) => currentTurn + 1);
+    goToNextChallenge();
+  }
+  if (challenge.type === "minigame") {
+    return (
+      <ChallengeRenderer
+        challenge={challenge}
+        onFinishMinigame={goToNextChallenge}
+        onApplyStatuses={applyStatusesToCurrentPlayer}
+      />
+    );
   }
 
   return (

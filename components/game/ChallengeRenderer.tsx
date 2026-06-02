@@ -1,25 +1,40 @@
-import { Challenge } from "@/types/game";
+import { resolveFineDrinkStatuses } from "@/utils/fineDrinkResolver";
+import { useMemo } from "react";
 import ChallengeCard from "./ChallengeCard";
+import FineDrinkMinigame from "./minigames/FineDrinkMinigame";
+
+import { Challenge, PlayerStatus } from "@/types/game";
 
 type ChallengeRendererProps = {
   challenge: Challenge;
+  onFinishMinigame?: () => void;
+  onApplyStatuses?: (statuses: PlayerStatus[]) => void;
 };
 
 export default function ChallengeRenderer({
   challenge,
+  onFinishMinigame,
+  onApplyStatuses,
 }: ChallengeRendererProps) {
-  switch (challenge.type) {
-    case "minigame":
-      return <ChallengeCard challenge={challenge} />;
+  if (challenge.type === "minigame") {
+    if (challenge.minigameType === "fineDrink" && challenge.fineDrinkData) {
+      const resolvedFineDrinkData = useMemo(
+        () => resolveFineDrinkStatuses(challenge.fineDrinkData!),
+        [challenge.id],
+      );
 
-    case "status":
-      return <ChallengeCard challenge={challenge} />;
-
-    case "custom":
-      return <ChallengeCard challenge={challenge} />;
-
-    case "simple":
-    default:
-      return <ChallengeCard challenge={challenge} />;
+      return (
+        <FineDrinkMinigame
+          data={resolvedFineDrinkData}
+          onDecline={onFinishMinigame ?? (() => {})}
+          onAccept={(statuses) => {
+            onApplyStatuses?.(statuses);
+            onFinishMinigame?.();
+          }}
+        />
+      );
+    }
   }
+
+  return <ChallengeCard challenge={challenge} />;
 }
