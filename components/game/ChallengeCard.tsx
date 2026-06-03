@@ -1,14 +1,23 @@
 import { colors, radius, spacing } from "@/style/theme";
 import { Challenge } from "@/types/game";
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
 type ChallengeCardProps = {
   challenge: Challenge;
+  onToggleFavorite?: () => void;
 };
 
-export default function ChallengeCard({ challenge }: ChallengeCardProps) {
+export default function ChallengeCard({
+  challenge,
+  onToggleFavorite,
+}: ChallengeCardProps) {
   return (
     <View style={styles.card}>
+      <Pressable style={styles.favoriteButton} onPress={onToggleFavorite}>
+        <Text style={styles.favoriteText}>
+          {challenge.isFavorite ? "★ Favorite" : "☆ Favorite"}
+        </Text>
+      </Pressable>
       <Text style={styles.title}>{challenge.title}</Text>
 
       <Text style={styles.difficulty}>
@@ -29,6 +38,15 @@ const styles = StyleSheet.create({
     padding: spacing.xl,
     minHeight: 260,
     justifyContent: "center",
+  },
+  favoriteButton: {
+    position: "absolute",
+    top: spacing.md,
+    right: spacing.md,
+  },
+  favoriteText: {
+    color: colors.primaryLight,
+    fontWeight: "bold",
   },
   title: {
     color: colors.text,

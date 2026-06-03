@@ -30,6 +30,15 @@ export type Challenge = {
   title: string;
   description: string;
   difficulty: Difficulty;
+
+  baseChance: number;
+  minChance: number;
+  maxChance: number;
+
+  isFavorite: boolean;
+  likes: number;
+  dislikes: number;
+
   statusEffect?: PlayerStatus;
   variables?: ChallengeVariable[];
 

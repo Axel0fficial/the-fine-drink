@@ -19,6 +19,12 @@ const sampleChallenges: Challenge[] = [
     title: "Truth Time",
     description: "Tell an embarrassing story or take 3 sips.",
     difficulty: "easy",
+    baseChance: 1,
+    minChance: 0.2,
+    maxChance: 2,
+    isFavorite: false,
+    likes: 0,
+    dislikes: 0,
   },
   {
     id: "2",
@@ -26,6 +32,12 @@ const sampleChallenges: Challenge[] = [
     title: "Dare",
     description: "Let the group choose a dare for you.",
     difficulty: "normal",
+    baseChance: 1,
+    minChance: 0.2,
+    maxChance: 2,
+    isFavorite: false,
+    likes: 0,
+    dislikes: 0,
   },
   {
     id: "3",
@@ -33,6 +45,12 @@ const sampleChallenges: Challenge[] = [
     title: "Brutal Choice",
     description: "Take 5 sips or reveal your last search history.",
     difficulty: "hard",
+    baseChance: 1,
+    minChance: 0.2,
+    maxChance: 2,
+    isFavorite: false,
+    likes: 0,
+    dislikes: 0,
   },
   {
     id: "4",
@@ -40,6 +58,12 @@ const sampleChallenges: Challenge[] = [
     title: "Double Trouble",
     description: "For 2 rounds, your punishments are doubled.",
     difficulty: "hard",
+    baseChance: 1,
+    minChance: 0.2,
+    maxChance: 2,
+    isFavorite: false,
+    likes: 0,
+    dislikes: 0,
     statusEffect: {
       id: "double-trouble",
       name: "Double Trouble",
@@ -53,6 +77,12 @@ const sampleChallenges: Challenge[] = [
     title: "Silent Curse",
     description: "You cannot talk for 3 rounds. If you do, drink.",
     difficulty: "normal",
+    baseChance: 1,
+    minChance: 0.2,
+    maxChance: 2,
+    isFavorite: false,
+    likes: 0,
+    dislikes: 0,
     statusEffect: {
       id: "silent-curse",
       name: "Silent Curse",
@@ -67,6 +97,12 @@ const sampleChallenges: Challenge[] = [
     description:
       "For the rest of the session, everyone may question your choices.",
     difficulty: "brutal",
+    baseChance: 1,
+    minChance: 0.2,
+    maxChance: 2,
+    isFavorite: false,
+    likes: 0,
+    dislikes: 0,
     statusEffect: {
       id: "forever-suspicious",
       name: "Forever Suspicious",
@@ -81,6 +117,12 @@ const sampleChallenges: Challenge[] = [
     title: "Exercise Tax",
     description: "Do {x} {y} or drink {z} sips.",
     difficulty: "easy",
+    baseChance: 1,
+    minChance: 0.2,
+    maxChance: 2,
+    isFavorite: false,
+    likes: 0,
+    dislikes: 0,
     variables: [
       {
         type: "number",
@@ -107,6 +149,12 @@ const sampleChallenges: Challenge[] = [
     title: "FMK",
     description: "Fuck, Marry, Kill: {x}, {y}, {z}.",
     difficulty: "normal",
+    baseChance: 1,
+    minChance: 0.2,
+    maxChance: 2,
+    isFavorite: false,
+    likes: 0,
+    dislikes: 0,
     variables: [
       {
         type: "poolGroup",
@@ -122,6 +170,12 @@ const sampleChallenges: Challenge[] = [
     title: "The Fine Drink",
     description: "A mysterious offer appears.",
     difficulty: "brutal",
+    baseChance: 1,
+    minChance: 0.2,
+    maxChance: 2,
+    isFavorite: false,
+    likes: 0,
+    dislikes: 0,
     minigameType: "fineDrink",
     fineDrinkData: {
       offerNature: "random",
@@ -144,8 +198,54 @@ export default function GameScreen() {
   const [challenge, setChallenge] = useState<Challenge>(
     resolveChallenge(sampleChallenges[0]),
   );
+  const [challenges, setChallenges] = useState<Challenge[]>(sampleChallenges);
+  const [feedbackUsed, setFeedbackUsed] = useState(false);
 
   const currentPlayer = players[turn % players.length];
+  function updateChallengeById(
+    challengeId: string,
+    updater: (challenge: Challenge) => Challenge,
+  ) {
+    setChallenges((currentChallenges) =>
+      currentChallenges.map((item) =>
+        item.id === challengeId ? updater(item) : item,
+      ),
+    );
+
+    setChallenge((currentChallenge) =>
+      currentChallenge.id === challengeId
+        ? updater(currentChallenge)
+        : currentChallenge,
+    );
+  }
+  function handleToggleFavorite() {
+    updateChallengeById(challenge.id, (item) => ({
+      ...item,
+      isFavorite: !item.isFavorite,
+    }));
+  }
+
+  function handleLike() {
+    if (feedbackUsed) return;
+
+    updateChallengeById(challenge.id, (item) => ({
+      ...item,
+      likes: item.likes + 1,
+    }));
+
+    setFeedbackUsed(true);
+  }
+
+  function handleDislike() {
+    if (feedbackUsed) return;
+
+    updateChallengeById(challenge.id, (item) => ({
+      ...item,
+      dislikes: item.dislikes + 1,
+    }));
+
+    setFeedbackUsed(true);
+  }
 
   function applyStatusToCurrentPlayer() {
     if (!challenge.statusEffect || !currentPlayer) return;
@@ -192,10 +292,11 @@ export default function GameScreen() {
   }
 
   function goToNextChallenge() {
-    const randomIndex = Math.floor(Math.random() * sampleChallenges.length);
-    const randomChallenge = resolveChallenge(sampleChallenges[randomIndex]);
+    const randomIndex = Math.floor(Math.random() * challenges.length);
+    const randomChallenge = resolveChallenge(challenges[randomIndex]);
 
     setChallenge(randomChallenge);
+    setFeedbackUsed(false);
     setTurn((currentTurn) => currentTurn + 1);
   }
 
@@ -222,9 +323,18 @@ export default function GameScreen() {
 
       <StatusBar statuses={currentPlayer?.statuses ?? []} />
 
-      <ChallengeRenderer challenge={challenge} />
+      <ChallengeRenderer
+        challenge={challenge}
+        onToggleFavorite={handleToggleFavorite}
+      />
 
-      <GameActions onSkip={nextTurn} onDone={nextTurn} />
+      <GameActions
+        onSkip={nextTurn}
+        onDone={nextTurn}
+        onLike={handleLike}
+        onDislike={handleDislike}
+        feedbackUsed={feedbackUsed}
+      />
 
       <DrinkyLayer />
     </View>

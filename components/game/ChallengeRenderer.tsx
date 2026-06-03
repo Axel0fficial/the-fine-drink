@@ -7,12 +7,14 @@ import { Challenge, PlayerStatus } from "@/types/game";
 
 type ChallengeRendererProps = {
   challenge: Challenge;
+  onToggleFavorite?: () => void;
   onFinishMinigame?: () => void;
   onApplyStatuses?: (statuses: PlayerStatus[]) => void;
 };
 
 export default function ChallengeRenderer({
   challenge,
+  onToggleFavorite,
   onFinishMinigame,
   onApplyStatuses,
 }: ChallengeRendererProps) {
@@ -36,5 +38,7 @@ export default function ChallengeRenderer({
     }
   }
 
-  return <ChallengeCard challenge={challenge} />;
+  return (
+    <ChallengeCard challenge={challenge} onToggleFavorite={onToggleFavorite} />
+  );
 }
