@@ -12,12 +12,14 @@ export default function MenuScreen() {
   const params = useLocalSearchParams();
 
   const players: Player[] = JSON.parse((params.players as string) || "[]");
+  const teamsEnabled = JSON.parse((params.teamsEnabled as string) || "false");
 
   function startGame() {
     router.push({
       pathname: "/game",
       params: {
         players: JSON.stringify(players),
+        teamsEnabled: JSON.stringify(teamsEnabled),
       },
     });
   }

@@ -1,5 +1,5 @@
 import { PoolKey, variablePools } from "@/data/pools";
-import { Challenge, ChallengeVariable } from "@/types/game";
+import { Challenge, ChallengeVariable, Player, TeamColor } from "@/types/game";
 
 function randomNumber(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -21,6 +21,17 @@ function pickFromPool(pool: PoolKey) {
 function pickFromAllowedPools(pools: PoolKey[]) {
   const selectedPool = randomFromArray(pools);
   return pickFromPool(selectedPool);
+}
+function getActiveTeams(players: Player[]): TeamColor[] {
+  const teams = players
+    .map((player) => player.team)
+    .filter((team) => team !== "none");
+
+  return Array.from(new Set(teams));
+}
+
+function formatTeamName(team: TeamColor) {
+  return `${team.charAt(0).toUpperCase()}${team.slice(1)} Team`;
 }
 
 function pickMultipleFromSamePool(
@@ -48,31 +59,30 @@ function pickMultipleFromSamePool(
   return results;
 }
 
-export function resolveChallenge(challenge: Challenge): Challenge {
+export function resolveChallenge(
+  challenge: Challenge,
+  players: Player[] = [],
+): Challenge {
   let resolvedDescription = challenge.description;
 
   challenge.variables?.forEach((variable: ChallengeVariable) => {
     if (variable.type === "number") {
       const value = randomNumber(variable.min, variable.max).toString();
-
       resolvedDescription = replaceVariable(
         resolvedDescription,
         variable.key,
         value,
       );
-
       return;
     }
 
     if (variable.type === "pool") {
       const value = pickFromAllowedPools(variable.pools);
-
       resolvedDescription = replaceVariable(
         resolvedDescription,
         variable.key,
         value,
       );
-
       return;
     }
 
@@ -92,6 +102,20 @@ export function resolveChallenge(challenge: Challenge): Challenge {
           values[index] ?? "???",
         );
       });
+
+      return;
+    }
+
+    if (variable.type === "team") {
+      const activeTeams = getActiveTeams(players);
+      const selectedTeam =
+        activeTeams.length > 0 ? randomFromArray(activeTeams) : "none";
+
+      resolvedDescription = replaceVariable(
+        resolvedDescription,
+        variable.key,
+        selectedTeam === "none" ? "No Team" : formatTeamName(selectedTeam),
+      );
     }
   });
 

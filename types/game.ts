@@ -2,6 +2,27 @@ import { PoolKey } from "@/data/pools";
 export type Difficulty = "easy" | "normal" | "hard" | "brutal";
 export type MinigameType = "fineDrink";
 
+export type PlayerPreference = {
+  nonDrinker: boolean;
+};
+
+export type TeamColor = "none" | "red" | "blue" | "green" | "yellow" | "purple";
+
+export type SavedPlayer = {
+  id: string;
+  name: string;
+  preferences: PlayerPreference;
+};
+
+export type Player = {
+  id: string;
+  name: string;
+  score: number;
+  statuses: PlayerStatus[];
+  preferences: PlayerPreference;
+  team: TeamColor;
+};
+
 export type PlayerStatus = {
   id: string;
   name: string;
@@ -11,18 +32,13 @@ export type PlayerStatus = {
   nature?: "good" | "bad";
 };
 
-export type Player = {
-  id: string;
-  name: string;
-  score: number;
-  statuses: PlayerStatus[];
-};
-
 export type ChallengeType = "simple" | "status" | "minigame" | "custom";
 
 export type FineDrinkData = {
   offerNature: "good" | "bad" | "random";
 };
+
+export type ChallengeTag = "drinking" | "nonDrinkerSafe" | "teams";
 
 export type Challenge = {
   id: string;
@@ -30,6 +46,8 @@ export type Challenge = {
   title: string;
   description: string;
   difficulty: Difficulty;
+
+  tags: ChallengeTag[];
 
   baseChance: number;
   minChance: number;
@@ -63,4 +81,8 @@ export type ChallengeVariable =
       keys: string[];
       allowedPools: PoolKey[];
       allowRepeats?: boolean;
+    }
+  | {
+      type: "team";
+      key: string;
     };

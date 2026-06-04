@@ -1,5 +1,12 @@
 import { useLocalSearchParams } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+import {
+  applyChallengePreferences,
+  loadChallengePreferences,
+  saveChallengePreferences,
+} from "@/utils/challengeStorage";
+
 import { StyleSheet, View } from "react-native";
 
 import ChallengeRenderer from "@/components/game/ChallengeRenderer";
@@ -7,6 +14,8 @@ import DrinkyLayer from "@/components/game/DrinkyLayer";
 import GameActions from "@/components/game/GameActions";
 import GameHeader from "@/components/game/GameHeader";
 import StatusBar from "@/components/game/StatusBar";
+import { getAvailableChallengesForPlayer } from "@/utils/challengeFilters";
+import { pickWeightedChallenge } from "@/utils/challengePicker";
 import { resolveChallenge } from "@/utils/challengeResolver";
 
 import { sharedStyles } from "@/style/theme";
@@ -19,6 +28,7 @@ const sampleChallenges: Challenge[] = [
     title: "Truth Time",
     description: "Tell an embarrassing story or take 3 sips.",
     difficulty: "easy",
+    tags: ["drinking"],
     baseChance: 1,
     minChance: 0.2,
     maxChance: 2,
@@ -32,6 +42,7 @@ const sampleChallenges: Challenge[] = [
     title: "Dare",
     description: "Let the group choose a dare for you.",
     difficulty: "normal",
+    tags: ["drinking"],
     baseChance: 1,
     minChance: 0.2,
     maxChance: 2,
@@ -45,6 +56,7 @@ const sampleChallenges: Challenge[] = [
     title: "Brutal Choice",
     description: "Take 5 sips or reveal your last search history.",
     difficulty: "hard",
+    tags: ["drinking"],
     baseChance: 1,
     minChance: 0.2,
     maxChance: 2,
@@ -58,6 +70,7 @@ const sampleChallenges: Challenge[] = [
     title: "Double Trouble",
     description: "For 2 rounds, your punishments are doubled.",
     difficulty: "hard",
+    tags: ["drinking"],
     baseChance: 1,
     minChance: 0.2,
     maxChance: 2,
@@ -77,6 +90,7 @@ const sampleChallenges: Challenge[] = [
     title: "Silent Curse",
     description: "You cannot talk for 3 rounds. If you do, drink.",
     difficulty: "normal",
+    tags: ["drinking"],
     baseChance: 1,
     minChance: 0.2,
     maxChance: 2,
@@ -97,6 +111,7 @@ const sampleChallenges: Challenge[] = [
     description:
       "For the rest of the session, everyone may question your choices.",
     difficulty: "brutal",
+    tags: ["drinking"],
     baseChance: 1,
     minChance: 0.2,
     maxChance: 2,
@@ -117,6 +132,7 @@ const sampleChallenges: Challenge[] = [
     title: "Exercise Tax",
     description: "Do {x} {y} or drink {z} sips.",
     difficulty: "easy",
+    tags: ["drinking"],
     baseChance: 1,
     minChance: 0.2,
     maxChance: 2,
@@ -149,6 +165,7 @@ const sampleChallenges: Challenge[] = [
     title: "FMK",
     description: "Fuck, Marry, Kill: {x}, {y}, {z}.",
     difficulty: "normal",
+    tags: ["drinking"],
     baseChance: 1,
     minChance: 0.2,
     maxChance: 2,
@@ -170,6 +187,7 @@ const sampleChallenges: Challenge[] = [
     title: "The Fine Drink",
     description: "A mysterious offer appears.",
     difficulty: "brutal",
+    tags: ["drinking"],
     baseChance: 1,
     minChance: 0.2,
     maxChance: 2,
@@ -180,6 +198,47 @@ const sampleChallenges: Challenge[] = [
     fineDrinkData: {
       offerNature: "random",
     },
+  },
+  {
+    id: "10",
+    type: "simple",
+    title: "Human Tower",
+    description:
+      "{team} must make a human pyramid or everyone in that team drinks 2 sips.",
+    difficulty: "normal",
+    tags: ["teams", "drinking"],
+    baseChance: 1,
+    minChance: 0.2,
+    maxChance: 2,
+    isFavorite: false,
+    likes: 0,
+    dislikes: 0,
+    variables: [
+      {
+        type: "team",
+        key: "team",
+      },
+    ],
+  },
+  {
+    id: "11",
+    type: "simple",
+    title: "Team Pose",
+    description: "{team} must recreate a movie poster.",
+    difficulty: "easy",
+    tags: ["teams", "nonDrinkerSafe"],
+    baseChance: 1,
+    minChance: 0.2,
+    maxChance: 2,
+    isFavorite: false,
+    likes: 0,
+    dislikes: 0,
+    variables: [
+      {
+        type: "team",
+        key: "team",
+      },
+    ],
   },
 ];
 
@@ -196,12 +255,15 @@ export default function GameScreen() {
   const [players, setPlayers] = useState<Player[]>(initialPlayers);
   const [turn, setTurn] = useState<number>(0);
   const [challenge, setChallenge] = useState<Challenge>(
-    resolveChallenge(sampleChallenges[0]),
+    resolveChallenge(sampleChallenges[0], initialPlayers),
   );
   const [challenges, setChallenges] = useState<Challenge[]>(sampleChallenges);
+  const [preferencesLoaded, setPreferencesLoaded] = useState(false);
   const [feedbackUsed, setFeedbackUsed] = useState(false);
+  const teamsEnabled = JSON.parse((params.teamsEnabled as string) || "false");
 
   const currentPlayer = players[turn % players.length];
+
   function updateChallengeById(
     challengeId: string,
     updater: (challenge: Challenge) => Challenge,
@@ -214,7 +276,7 @@ export default function GameScreen() {
 
     setChallenge((currentChallenge) =>
       currentChallenge.id === challengeId
-        ? updater(currentChallenge)
+        ? resolveChallenge(updater(currentChallenge))
         : currentChallenge,
     );
   }
@@ -292,10 +354,41 @@ export default function GameScreen() {
   }
 
   function goToNextChallenge() {
-    const randomIndex = Math.floor(Math.random() * challenges.length);
-    const randomChallenge = resolveChallenge(challenges[randomIndex]);
+    if (!currentPlayer) return;
 
-    setChallenge(randomChallenge);
+    const availableChallenges = getAvailableChallengesForPlayer(
+      challenges,
+      currentPlayer,
+      { teamsEnabled },
+    );
+
+    const pickedChallenge = pickWeightedChallenge(availableChallenges);
+
+    if (!pickedChallenge) {
+      setChallenge(
+        resolveChallenge(
+          {
+            id: "fallback",
+            type: "simple",
+            title: "No Challenge Available",
+            description: "No valid challenge was found for this player.",
+            difficulty: "easy",
+            tags: ["nonDrinkerSafe"],
+            baseChance: 1,
+            minChance: 1,
+            maxChance: 1,
+            isFavorite: false,
+            likes: 0,
+            dislikes: 0,
+          },
+          players,
+        ),
+      );
+
+      return;
+    }
+
+    setChallenge(resolveChallenge(pickedChallenge, players));
     setFeedbackUsed(false);
     setTurn((currentTurn) => currentTurn + 1);
   }
@@ -307,6 +400,29 @@ export default function GameScreen() {
 
     goToNextChallenge();
   }
+  useEffect(() => {
+    async function loadSavedData() {
+      const savedPreferences = await loadChallengePreferences();
+
+      const updatedChallenges = applyChallengePreferences(
+        sampleChallenges,
+        savedPreferences,
+      );
+
+      setChallenges(updatedChallenges);
+      setChallenge(resolveChallenge(updatedChallenges[0]));
+      setPreferencesLoaded(true);
+    }
+
+    loadSavedData();
+  }, []);
+
+  useEffect(() => {
+    if (!preferencesLoaded) return;
+
+    saveChallengePreferences(challenges);
+  }, [challenges, preferencesLoaded]);
+
   if (challenge.type === "minigame") {
     return (
       <ChallengeRenderer
