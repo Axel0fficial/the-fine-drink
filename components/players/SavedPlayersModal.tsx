@@ -1,13 +1,13 @@
 import { useState } from "react";
 import {
-    FlatList,
-    Modal,
-    Pressable,
-    StyleSheet,
-    Switch,
-    Text,
-    TextInput,
-    View,
+  FlatList,
+  Modal,
+  Pressable,
+  StyleSheet,
+  Switch,
+  Text,
+  TextInput,
+  View,
 } from "react-native";
 
 import { colors, radius, sharedStyles, spacing } from "@/style/theme";
@@ -43,6 +43,7 @@ export default function SavedPlayersModal({
     setEditingNonDrinker(player.preferences.nonDrinker);
     setMode("edit");
   }
+
   function cancelEdit() {
     setEditingPlayer(null);
     setEditingName("");
@@ -79,7 +80,9 @@ export default function SavedPlayersModal({
     <Modal visible={visible} transparent animationType="fade">
       <View style={styles.overlay}>
         <View style={styles.modalBox}>
-          <Text style={styles.title}>Saved Players</Text>
+          <Text style={styles.title}>
+            {mode === "select" ? "Saved Players" : "Edit Player"}
+          </Text>
 
           {mode === "select" && (
             <>
@@ -105,21 +108,12 @@ export default function SavedPlayersModal({
                           {selected ? "✓ " : ""}
                           {item.name}
                         </Text>
-                        <View style={styles.preferenceRow}>
-                          <View>
-                            <Text style={styles.preferenceTitle}>
-                              Non-drinker
-                            </Text>
-                            <Text style={styles.preferenceSubtitle}>
-                              Avoid drinking challenges for this player.
-                            </Text>
-                          </View>
 
-                          <Switch
-                            value={editingNonDrinker}
-                            onValueChange={setEditingNonDrinker}
-                          />
-                        </View>
+                        <Text style={styles.playerPreferenceText}>
+                          {item.preferences.nonDrinker
+                            ? "Non-drinker"
+                            : "Drinker"}
+                        </Text>
                       </Pressable>
 
                       <Pressable
@@ -151,6 +145,20 @@ export default function SavedPlayersModal({
                 onChangeText={setEditingName}
               />
 
+              <View style={styles.preferenceRow}>
+                <View style={styles.preferenceTextBox}>
+                  <Text style={styles.preferenceTitle}>Non-drinker</Text>
+                  <Text style={styles.preferenceSubtitle}>
+                    Avoid drinking challenges for this player.
+                  </Text>
+                </View>
+
+                <Switch
+                  value={editingNonDrinker}
+                  onValueChange={setEditingNonDrinker}
+                />
+              </View>
+
               <View style={styles.actions}>
                 <Pressable style={styles.secondaryButton} onPress={cancelEdit}>
                   <Text style={sharedStyles.buttonText}>Cancel</Text>
@@ -181,26 +189,6 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.75)",
     justifyContent: "center",
     padding: spacing.xl,
-  },
-  preferenceRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    backgroundColor: colors.surfaceLight,
-    borderRadius: radius.md,
-    padding: spacing.lg,
-    marginTop: spacing.lg,
-    gap: spacing.md,
-  },
-  preferenceTitle: {
-    color: colors.text,
-    fontWeight: "bold",
-    fontSize: 16,
-  },
-  preferenceSubtitle: {
-    color: colors.mutedText,
-    marginTop: 4,
-    maxWidth: 220,
   },
   modalBox: {
     backgroundColor: colors.surface,
@@ -242,6 +230,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 16,
   },
+  playerPreferenceText: {
+    color: colors.mutedText,
+    marginTop: 4,
+    fontSize: 13,
+  },
   editSmallButton: {
     backgroundColor: colors.primary,
     paddingHorizontal: spacing.md,
@@ -251,6 +244,28 @@ const styles = StyleSheet.create({
   editSmallText: {
     color: colors.text,
     fontWeight: "bold",
+  },
+  preferenceRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: colors.surfaceLight,
+    borderRadius: radius.md,
+    padding: spacing.lg,
+    marginTop: spacing.lg,
+    gap: spacing.md,
+  },
+  preferenceTextBox: {
+    flex: 1,
+  },
+  preferenceTitle: {
+    color: colors.text,
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  preferenceSubtitle: {
+    color: colors.mutedText,
+    marginTop: 4,
   },
   actions: {
     flexDirection: "row",

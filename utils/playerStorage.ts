@@ -14,6 +14,9 @@ export async function loadSavedPlayers(): Promise<SavedPlayer[]> {
 export async function saveSavedPlayers(players: SavedPlayer[]) {
   await AsyncStorage.setItem(SAVED_PLAYERS_KEY, JSON.stringify(players));
 }
+export async function clearSavedPlayers() {
+  await AsyncStorage.removeItem(SAVED_PLAYERS_KEY);
+}
 export function savedPlayerToSessionPlayer(savedPlayer: SavedPlayer): Player {
   return {
     id: savedPlayer.id,

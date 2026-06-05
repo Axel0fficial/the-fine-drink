@@ -33,6 +33,7 @@ export default function PlayersScreen() {
     "purple",
   ];
   const [teamsEnabled, setTeamsEnabled] = useState(false);
+  const [roundLimit, setRoundLimit] = useState("10");
   useEffect(() => {
     async function loadPlayers() {
       const loadedPlayers = await loadSavedPlayers();
@@ -184,6 +185,7 @@ export default function PlayersScreen() {
       params: {
         players: JSON.stringify(players),
         teamsEnabled: JSON.stringify(teamsEnabled),
+        roundLimit: roundLimit || "10",
       },
     });
   }
@@ -211,6 +213,14 @@ export default function PlayersScreen() {
       >
         <Text style={sharedStyles.buttonText}>Saved Players</Text>
       </Pressable>
+      <Text style={styles.label}>Rounds</Text>
+
+      <TextInput
+        style={[sharedStyles.input, styles.roundInput]}
+        keyboardType="number-pad"
+        value={roundLimit}
+        onChangeText={setRoundLimit}
+      />
       <Pressable
         style={[
           sharedStyles.secondaryButton,
@@ -315,6 +325,15 @@ const styles = StyleSheet.create({
   },
   playerCard: {
     flex: 1,
+  },
+  label: {
+    color: colors.mutedText,
+    marginTop: spacing.lg,
+    marginBottom: spacing.sm,
+    fontWeight: "bold",
+  },
+  roundInput: {
+    marginBottom: spacing.md,
   },
   input: {
     marginTop: spacing.xl,

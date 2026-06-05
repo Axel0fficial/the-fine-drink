@@ -1,246 +1,30 @@
+import ChallengeRenderer from "@/components/game/ChallengeRenderer";
+import DrinkyLayer from "@/components/game/DrinkyLayer";
+import GameActions from "@/components/game/GameActions";
+import GameHeader from "@/components/game/GameHeader";
+import GameOverModal from "@/components/game/GameOverModal";
+import GameSettingsModal from "@/components/game/GameSettingsModal";
+import StatusBar from "@/components/game/StatusBar";
+import { DrinkyEvent } from "@/types/game";
+import { pickDrinkyEvent } from "@/utils/drinkyPicker";
+import { loadDrinkyEnabled } from "@/utils/drinkyStorage";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
+import { challenges as defaultChallenges } from "@/data/challenges";
+import { colors, sharedStyles, spacing } from "@/style/theme";
+import { Challenge, Player, PlayerStatus } from "@/types/game";
+
+import { getAvailableChallengesForPlayer } from "@/utils/challengeFilters";
+import { pickWeightedChallenge } from "@/utils/challengePicker";
+import { resolveChallenge } from "@/utils/challengeResolver";
 import {
   applyChallengePreferences,
   loadChallengePreferences,
   saveChallengePreferences,
 } from "@/utils/challengeStorage";
-
-import { StyleSheet, View } from "react-native";
-
-import ChallengeRenderer from "@/components/game/ChallengeRenderer";
-import DrinkyLayer from "@/components/game/DrinkyLayer";
-import GameActions from "@/components/game/GameActions";
-import GameHeader from "@/components/game/GameHeader";
-import StatusBar from "@/components/game/StatusBar";
-import { getAvailableChallengesForPlayer } from "@/utils/challengeFilters";
-import { pickWeightedChallenge } from "@/utils/challengePicker";
-import { resolveChallenge } from "@/utils/challengeResolver";
-
-import { sharedStyles } from "@/style/theme";
-import { Challenge, Player, PlayerStatus } from "@/types/game";
-
-const sampleChallenges: Challenge[] = [
-  {
-    id: "1",
-    type: "simple",
-    title: "Truth Time",
-    description: "Tell an embarrassing story or take 3 sips.",
-    difficulty: "easy",
-    tags: ["drinking"],
-    baseChance: 1,
-    minChance: 0.2,
-    maxChance: 2,
-    isFavorite: false,
-    likes: 0,
-    dislikes: 0,
-  },
-  {
-    id: "2",
-    type: "simple",
-    title: "Dare",
-    description: "Let the group choose a dare for you.",
-    difficulty: "normal",
-    tags: ["drinking"],
-    baseChance: 1,
-    minChance: 0.2,
-    maxChance: 2,
-    isFavorite: false,
-    likes: 0,
-    dislikes: 0,
-  },
-  {
-    id: "3",
-    type: "simple",
-    title: "Brutal Choice",
-    description: "Take 5 sips or reveal your last search history.",
-    difficulty: "hard",
-    tags: ["drinking"],
-    baseChance: 1,
-    minChance: 0.2,
-    maxChance: 2,
-    isFavorite: false,
-    likes: 0,
-    dislikes: 0,
-  },
-  {
-    id: "4",
-    type: "status",
-    title: "Double Trouble",
-    description: "For 2 rounds, your punishments are doubled.",
-    difficulty: "hard",
-    tags: ["drinking"],
-    baseChance: 1,
-    minChance: 0.2,
-    maxChance: 2,
-    isFavorite: false,
-    likes: 0,
-    dislikes: 0,
-    statusEffect: {
-      id: "double-trouble",
-      name: "Double Trouble",
-      description: "Your punishments are doubled.",
-      remainingRounds: 2,
-    },
-  },
-  {
-    id: "5",
-    type: "status",
-    title: "Silent Curse",
-    description: "You cannot talk for 3 rounds. If you do, drink.",
-    difficulty: "normal",
-    tags: ["drinking"],
-    baseChance: 1,
-    minChance: 0.2,
-    maxChance: 2,
-    isFavorite: false,
-    likes: 0,
-    dislikes: 0,
-    statusEffect: {
-      id: "silent-curse",
-      name: "Silent Curse",
-      description: "You cannot talk. If you talk, drink.",
-      remainingRounds: 3,
-    },
-  },
-  {
-    id: "6",
-    type: "status",
-    title: "Forever Suspicious",
-    description:
-      "For the rest of the session, everyone may question your choices.",
-    difficulty: "brutal",
-    tags: ["drinking"],
-    baseChance: 1,
-    minChance: 0.2,
-    maxChance: 2,
-    isFavorite: false,
-    likes: 0,
-    dislikes: 0,
-    statusEffect: {
-      id: "forever-suspicious",
-      name: "Forever Suspicious",
-      description:
-        "Everyone may question your choices for the rest of the session.",
-      remainingRounds: 99,
-    },
-  },
-  {
-    id: "7",
-    type: "simple",
-    title: "Exercise Tax",
-    description: "Do {x} {y} or drink {z} sips.",
-    difficulty: "easy",
-    tags: ["drinking"],
-    baseChance: 1,
-    minChance: 0.2,
-    maxChance: 2,
-    isFavorite: false,
-    likes: 0,
-    dislikes: 0,
-    variables: [
-      {
-        type: "number",
-        key: "x",
-        min: 5,
-        max: 15,
-      },
-      {
-        type: "pool",
-        key: "y",
-        pools: ["exercises"],
-      },
-      {
-        type: "number",
-        key: "z",
-        min: 1,
-        max: 3,
-      },
-    ],
-  },
-  {
-    id: "8",
-    type: "simple",
-    title: "FMK",
-    description: "Fuck, Marry, Kill: {x}, {y}, {z}.",
-    difficulty: "normal",
-    tags: ["drinking"],
-    baseChance: 1,
-    minChance: 0.2,
-    maxChance: 2,
-    isFavorite: false,
-    likes: 0,
-    dislikes: 0,
-    variables: [
-      {
-        type: "poolGroup",
-        keys: ["x", "y", "z"],
-        allowedPools: ["attractivePeople", "villains", "lovablePeople"],
-        allowRepeats: false,
-      },
-    ],
-  },
-  {
-    id: "9",
-    type: "minigame",
-    title: "The Fine Drink",
-    description: "A mysterious offer appears.",
-    difficulty: "brutal",
-    tags: ["drinking"],
-    baseChance: 1,
-    minChance: 0.2,
-    maxChance: 2,
-    isFavorite: false,
-    likes: 0,
-    dislikes: 0,
-    minigameType: "fineDrink",
-    fineDrinkData: {
-      offerNature: "random",
-    },
-  },
-  {
-    id: "10",
-    type: "simple",
-    title: "Human Tower",
-    description:
-      "{team} must make a human pyramid or everyone in that team drinks 2 sips.",
-    difficulty: "normal",
-    tags: ["teams", "drinking"],
-    baseChance: 1,
-    minChance: 0.2,
-    maxChance: 2,
-    isFavorite: false,
-    likes: 0,
-    dislikes: 0,
-    variables: [
-      {
-        type: "team",
-        key: "team",
-      },
-    ],
-  },
-  {
-    id: "11",
-    type: "simple",
-    title: "Team Pose",
-    description: "{team} must recreate a movie poster.",
-    difficulty: "easy",
-    tags: ["teams", "nonDrinkerSafe"],
-    baseChance: 1,
-    minChance: 0.2,
-    maxChance: 2,
-    isFavorite: false,
-    likes: 0,
-    dislikes: 0,
-    variables: [
-      {
-        type: "team",
-        key: "team",
-      },
-    ],
-  },
-];
+import { getChallengeScore } from "@/utils/scoreUtils";
 
 export default function GameScreen() {
   const params = useLocalSearchParams();
@@ -252,17 +36,117 @@ export default function GameScreen() {
     statuses: player.statuses ?? [],
   }));
 
+  const teamsEnabled = JSON.parse((params.teamsEnabled as string) || "false");
+  const roundLimit = Number(params.roundLimit || 10);
+
   const [players, setPlayers] = useState<Player[]>(initialPlayers);
-  const [turn, setTurn] = useState<number>(0);
+  const [challenges, setChallenges] = useState<Challenge[]>(defaultChallenges);
+
+  const [turn, setTurn] = useState(0);
   const [challenge, setChallenge] = useState<Challenge>(
-    resolveChallenge(sampleChallenges[0], initialPlayers),
+    resolveChallenge(defaultChallenges[0], initialPlayers),
   );
-  const [challenges, setChallenges] = useState<Challenge[]>(sampleChallenges);
+
   const [preferencesLoaded, setPreferencesLoaded] = useState(false);
   const [feedbackUsed, setFeedbackUsed] = useState(false);
-  const teamsEnabled = JSON.parse((params.teamsEnabled as string) || "false");
+  const [settingsVisible, setSettingsVisible] = useState(false);
+  const [gameOverVisible, setGameOverVisible] = useState(false);
 
+  const totalTurns = players.length * roundLimit;
+  const currentRound = Math.floor(turn / players.length) + 1;
   const currentPlayer = players[turn % players.length];
+
+  const [drinkyEnabled, setDrinkyEnabled] = useState(true);
+  const [drinkyEvent, setDrinkyEvent] = useState<DrinkyEvent | null>(null);
+  const [drinkyHidden, setDrinkyHidden] = useState(false);
+  const [drinkyAppearances, setDrinkyAppearances] = useState(0);
+
+  useEffect(() => {
+    async function loadSavedData() {
+      const savedPreferences = await loadChallengePreferences();
+
+      const updatedChallenges = applyChallengePreferences(
+        defaultChallenges,
+        savedPreferences,
+      );
+
+      setChallenges(updatedChallenges);
+      setChallenge(resolveChallenge(updatedChallenges[0], initialPlayers));
+      setPreferencesLoaded(true);
+    }
+
+    loadSavedData();
+  }, []);
+
+  useEffect(() => {
+    if (!preferencesLoaded) return;
+
+    saveChallengePreferences(challenges);
+  }, [challenges, preferencesLoaded]);
+
+  useEffect(() => {
+    async function loadDrinkySetting() {
+      const enabled = await loadDrinkyEnabled();
+      setDrinkyEnabled(enabled);
+    }
+
+    loadDrinkySetting();
+  }, []);
+
+  function maybeShowDrinky(nextPlayer: Player, nextChallenge: Challenge) {
+    if (!drinkyEnabled) return;
+    if (nextChallenge.type === "minigame") return;
+
+    const turnsLeft = totalTurns - turn;
+    const needsMoreAppearances = drinkyAppearances < 2;
+    const forceChance = needsMoreAppearances && turnsLeft <= 4;
+    const randomChance = Math.random() < 0.25;
+
+    if (!forceChance && !randomChance) {
+      setDrinkyEvent(null);
+      return;
+    }
+
+    const event = pickDrinkyEvent(
+      nextPlayer,
+      nextChallenge,
+      challenges,
+      players,
+      teamsEnabled,
+    );
+
+    if (!event) {
+      setDrinkyEvent(null);
+      return;
+    }
+
+    setDrinkyEvent(event);
+    setDrinkyHidden(false);
+    setDrinkyAppearances((current) => current + 1);
+  }
+  function handleAcceptDrinkyStatus() {
+    if (!drinkyEvent?.statusEffect || !currentPlayer) return;
+
+    setPlayers((currentPlayers) =>
+      currentPlayers.map((player) => {
+        if (player.id !== currentPlayer.id) return player;
+
+        return {
+          ...player,
+          statuses: [
+            ...player.statuses,
+            {
+              ...drinkyEvent.statusEffect!,
+              id: `${drinkyEvent.statusEffect!.id}-${Date.now()}-${Math.random()}`,
+              sourceChallengeId: drinkyEvent.id,
+            },
+          ],
+        };
+      }),
+    );
+
+    setDrinkyEvent(null);
+  }
 
   function updateChallengeById(
     challengeId: string,
@@ -276,10 +160,11 @@ export default function GameScreen() {
 
     setChallenge((currentChallenge) =>
       currentChallenge.id === challengeId
-        ? resolveChallenge(updater(currentChallenge))
+        ? resolveChallenge(updater(currentChallenge), players)
         : currentChallenge,
     );
   }
+
   function handleToggleFavorite() {
     updateChallengeById(challenge.id, (item) => ({
       ...item,
@@ -307,6 +192,23 @@ export default function GameScreen() {
     }));
 
     setFeedbackUsed(true);
+  }
+
+  function addScoreToCurrentPlayer() {
+    if (!currentPlayer) return;
+
+    const points = getChallengeScore(challenge);
+
+    setPlayers((currentPlayers) =>
+      currentPlayers.map((player) =>
+        player.id === currentPlayer.id
+          ? {
+              ...player,
+              score: player.score + points,
+            }
+          : player,
+      ),
+    );
   }
 
   function applyStatusToCurrentPlayer() {
@@ -340,6 +242,7 @@ export default function GameScreen() {
 
         return {
           ...player,
+          score: player.score + getChallengeScore(challenge),
           statuses: [
             ...player.statuses,
             ...statuses.map((status) => ({
@@ -353,89 +256,112 @@ export default function GameScreen() {
     );
   }
 
-  function goToNextChallenge() {
-    if (!currentPlayer) return;
+  function getFallbackChallenge(): Challenge {
+    return {
+      id: "fallback",
+      type: "simple",
+      title: "No Challenge Available",
+      description: "No valid challenge was found for this player.",
+      difficulty: "easy",
+      tags: ["nonDrinkerSafe"],
+      baseChance: 1,
+      minChance: 1,
+      maxChance: 1,
+      isFavorite: false,
+      likes: 0,
+      dislikes: 0,
+    };
+  }
+
+  function pickNextChallenge(nextTurnValue: number) {
+    const nextPlayer = players[nextTurnValue % players.length];
+
+    if (!nextPlayer) {
+      setChallenge(resolveChallenge(getFallbackChallenge(), players));
+      return;
+    }
 
     const availableChallenges = getAvailableChallengesForPlayer(
       challenges,
-      currentPlayer,
+      nextPlayer,
       { teamsEnabled },
     );
 
     const pickedChallenge = pickWeightedChallenge(availableChallenges);
 
     if (!pickedChallenge) {
-      setChallenge(
-        resolveChallenge(
-          {
-            id: "fallback",
-            type: "simple",
-            title: "No Challenge Available",
-            description: "No valid challenge was found for this player.",
-            difficulty: "easy",
-            tags: ["nonDrinkerSafe"],
-            baseChance: 1,
-            minChance: 1,
-            maxChance: 1,
-            isFavorite: false,
-            likes: 0,
-            dislikes: 0,
-          },
-          players,
-        ),
-      );
+      setChallenge(resolveChallenge(getFallbackChallenge(), players));
+      return;
+    }
+    const resolvedChallenge = resolveChallenge(pickedChallenge, players);
 
+    setChallenge(resolvedChallenge);
+    maybeShowDrinky(nextPlayer, resolvedChallenge);
+    setChallenge(resolveChallenge(pickedChallenge, players));
+    const fallback = resolveChallenge(getFallbackChallenge(), players);
+    setChallenge(fallback);
+    maybeShowDrinky(nextPlayer, fallback);
+  }
+
+  function finishTurn(shouldScore: boolean) {
+    if (shouldScore) {
+      addScoreToCurrentPlayer();
+
+      if (challenge.type === "status") {
+        applyStatusToCurrentPlayer();
+      }
+    }
+
+    const nextTurnValue = turn + 1;
+
+    if (nextTurnValue >= totalTurns) {
+      setGameOverVisible(true);
       return;
     }
 
-    setChallenge(resolveChallenge(pickedChallenge, players));
+    pickNextChallenge(nextTurnValue);
     setFeedbackUsed(false);
-    setTurn((currentTurn) => currentTurn + 1);
+    setTurn(nextTurnValue);
   }
 
-  function nextTurn() {
-    if (challenge.type === "status") {
-      applyStatusToCurrentPlayer();
-    }
-
-    goToNextChallenge();
+  function handleDone() {
+    finishTurn(true);
   }
-  useEffect(() => {
-    async function loadSavedData() {
-      const savedPreferences = await loadChallengePreferences();
 
-      const updatedChallenges = applyChallengePreferences(
-        sampleChallenges,
-        savedPreferences,
-      );
-
-      setChallenges(updatedChallenges);
-      setChallenge(resolveChallenge(updatedChallenges[0]));
-      setPreferencesLoaded(true);
-    }
-
-    loadSavedData();
-  }, []);
-
-  useEffect(() => {
-    if (!preferencesLoaded) return;
-
-    saveChallengePreferences(challenges);
-  }, [challenges, preferencesLoaded]);
+  function handleSkip() {
+    finishTurn(false);
+  }
 
   if (challenge.type === "minigame") {
     return (
-      <ChallengeRenderer
-        challenge={challenge}
-        onFinishMinigame={goToNextChallenge}
-        onApplyStatuses={applyStatusesToCurrentPlayer}
-      />
+      <>
+        <ChallengeRenderer
+          challenge={challenge}
+          onFinishMinigame={() => finishTurn(false)}
+          onApplyStatuses={applyStatusesToCurrentPlayer}
+        />
+
+        <GameOverModal visible={gameOverVisible} players={players} />
+      </>
     );
   }
 
   return (
     <View style={[sharedStyles.screen, styles.container]}>
-      <GameHeader turn={turn} currentPlayer={currentPlayer} />
+      <View style={styles.topRow}>
+        <Pressable
+          style={styles.settingsButton}
+          onPress={() => setSettingsVisible(true)}
+        >
+          <Text style={styles.settingsText}>⚙</Text>
+        </Pressable>
+      </View>
+
+      <GameHeader
+        turn={turn}
+        round={currentRound}
+        currentPlayer={currentPlayer}
+      />
 
       <StatusBar statuses={currentPlayer?.statuses ?? []} />
 
@@ -445,20 +371,51 @@ export default function GameScreen() {
       />
 
       <GameActions
-        onSkip={nextTurn}
-        onDone={nextTurn}
+        onSkip={handleSkip}
+        onDone={handleDone}
         onLike={handleLike}
         onDislike={handleDislike}
         feedbackUsed={feedbackUsed}
       />
 
-      <DrinkyLayer />
+      <DrinkyLayer
+        event={drinkyEvent}
+        hidden={drinkyHidden}
+        onHide={() => setDrinkyHidden(true)}
+        onShow={() => setDrinkyHidden(false)}
+        onAcceptStatus={handleAcceptDrinkyStatus}
+      />
+
+      <GameSettingsModal
+        visible={settingsVisible}
+        onClose={() => setSettingsVisible(false)}
+        roundLimit={roundLimit}
+        currentRound={Math.min(currentRound, roundLimit)}
+      />
+
+      <GameOverModal visible={gameOverVisible} players={players} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    paddingTop: 70,
+    paddingTop: 50,
+  },
+  topRow: {
+    alignItems: "flex-end",
+    marginBottom: spacing.md,
+  },
+  settingsButton: {
+    backgroundColor: colors.surfaceLight,
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  settingsText: {
+    color: colors.text,
+    fontSize: 22,
   },
 });

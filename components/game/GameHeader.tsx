@@ -4,13 +4,14 @@ import { Player } from "../../types/game";
 
 type GameHeaderProps = {
   turn: number;
+  round: number;
   currentPlayer?: Player;
 };
 
-export default function GameHeader({ turn, currentPlayer }: GameHeaderProps) {
+export default function GameHeader({ round, currentPlayer }: GameHeaderProps) {
   return (
     <View>
-      <Text style={styles.round}>Round {turn + 1}</Text>
+      <Text style={styles.round}>Round {round}</Text>
       <Text style={styles.player}>{currentPlayer?.name}'s turn</Text>
     </View>
   );

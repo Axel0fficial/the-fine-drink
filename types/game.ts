@@ -86,3 +86,24 @@ export type ChallengeVariable =
       type: "team";
       key: string;
     };
+
+export type DrinkyEventType =
+  | "nonsense"
+  | "joke"
+  | "flirt"
+  | "challengeModifier"
+  | "pushChallenge"
+  | "secondChallenge"
+  | "easierChallenge"
+  | "grantStatus";
+
+export type DrinkyEvent = {
+  id: string;
+  type: DrinkyEventType;
+  text: string;
+  tags: ChallengeTag[];
+  image: any;
+
+  statusEffect?: PlayerStatus;
+  extraChallenge?: Challenge;
+};
