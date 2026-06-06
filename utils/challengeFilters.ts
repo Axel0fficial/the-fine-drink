@@ -9,15 +9,19 @@ export function canPlayerReceiveChallenge(
   player: Player,
   options: ChallengeFilterOptions,
 ) {
-  if (player.preferences.nonDrinker && challenge.tags.includes("drinking")) {
+  const playerIsNonDrinker = player.preferences?.nonDrinker ?? false;
+  const playerTeam = player.team ?? "none";
+  const challengeTags = challenge.tags ?? [];
+
+  if (playerIsNonDrinker && challengeTags.includes("drinking")) {
     return false;
   }
 
-  if (!options.teamsEnabled && challenge.tags.includes("teams")) {
+  if (!options.teamsEnabled && challengeTags.includes("teams")) {
     return false;
   }
 
-  if (challenge.tags.includes("teams") && player.team === "none") {
+  if (challengeTags.includes("teams") && playerTeam === "none") {
     return false;
   }
 

@@ -33,7 +33,12 @@ export default function GameScreen() {
     (params.players as string) || "[]",
   ).map((player: Player) => ({
     ...player,
+    score: player.score ?? 0,
     statuses: player.statuses ?? [],
+    preferences: {
+      nonDrinker: player.preferences?.nonDrinker ?? false,
+    },
+    team: player.team ?? "none",
   }));
 
   const teamsEnabled = JSON.parse((params.teamsEnabled as string) || "false");
@@ -277,7 +282,8 @@ export default function GameScreen() {
     const nextPlayer = players[nextTurnValue % players.length];
 
     if (!nextPlayer) {
-      setChallenge(resolveChallenge(getFallbackChallenge(), players));
+      const fallback = resolveChallenge(getFallbackChallenge(), players);
+      setChallenge(fallback);
       return;
     }
 
@@ -287,22 +293,25 @@ export default function GameScreen() {
       { teamsEnabled },
     );
 
+    console.log("Next player:", nextPlayer.name);
+    console.log("Non drinker:", nextPlayer.preferences?.nonDrinker);
+    console.log("Teams enabled:", teamsEnabled);
+    console.log("Available challenges:", availableChallenges.length);
+
     const pickedChallenge = pickWeightedChallenge(availableChallenges);
 
     if (!pickedChallenge) {
-      setChallenge(resolveChallenge(getFallbackChallenge(), players));
+      const fallback = resolveChallenge(getFallbackChallenge(), players);
+      setChallenge(fallback);
+      maybeShowDrinky(nextPlayer, fallback);
       return;
     }
+
     const resolvedChallenge = resolveChallenge(pickedChallenge, players);
 
     setChallenge(resolvedChallenge);
     maybeShowDrinky(nextPlayer, resolvedChallenge);
-    setChallenge(resolveChallenge(pickedChallenge, players));
-    const fallback = resolveChallenge(getFallbackChallenge(), players);
-    setChallenge(fallback);
-    maybeShowDrinky(nextPlayer, fallback);
   }
-
   function finishTurn(shouldScore: boolean) {
     if (shouldScore) {
       addScoreToCurrentPlayer();
