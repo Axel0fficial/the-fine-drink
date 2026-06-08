@@ -1,42 +1,45 @@
 import { DrinkyEvent } from "@/types/game";
 
-const defaultDrinkyImage = require("@/assets/images/passedout.png");
-
+const passout = require("@/assets/images/passedout.png");
+const gifts = require("@/assets/images/gifts.png");
+const ignores = require("@/assets/images/ignores.png");
+const looms = require("@/assets/images/looms.png");
+const leans = require("@/assets/images/leans.png");
 export const drinkyEvents: DrinkyEvent[] = [
   {
     id: "nonsense-1",
     type: "nonsense",
-    text: "I have no idea what is happening, but I support chaos.",
+    text: "Я пьяна (YA tak p'yan)",
     tags: ["nonDrinkerSafe"],
-    image: defaultDrinkyImage,
+    image: passout,
   },
   {
     id: "joke-1",
     type: "joke",
     text: "Statistically speaking, someone here is about to make a terrible choice.",
     tags: ["nonDrinkerSafe"],
-    image: defaultDrinkyImage,
+    image: looms,
   },
   {
     id: "modifier-1",
     type: "challengeModifier",
     text: "Double the challenge. If you succeed, choose another player to do the original version.",
     tags: ["nonDrinkerSafe"],
-    image: defaultDrinkyImage,
+    image: leans,
   },
   {
     id: "push-1",
     type: "pushChallenge",
     text: "You may push this challenge to another player. But they get to complain dramatically.",
     tags: ["nonDrinkerSafe"],
-    image: defaultDrinkyImage,
+    image: leans,
   },
   {
     id: "drink-modifier-1",
     type: "challengeModifier",
     text: "Double the punishment. I believe in you. Badly.",
     tags: ["drinking"],
-    image: defaultDrinkyImage,
+    image: passout,
   },
 
   {
@@ -44,14 +47,14 @@ export const drinkyEvents: DrinkyEvent[] = [
     type: "secondChallenge",
     text: "I brought you another challenge because I care. Or because I’m bored.",
     tags: ["nonDrinkerSafe"],
-    image: defaultDrinkyImage,
+    image: ignores,
   },
   {
     id: "status-gift-1",
     type: "grantStatus",
     text: "Congratulations, I have gifted you a suspicious status.",
     tags: ["nonDrinkerSafe"],
-    image: defaultDrinkyImage,
+    image: gifts,
     statusEffect: {
       id: "drinky-spotlight",
       name: "Drinky Spotlight",
@@ -66,7 +69,7 @@ export const drinkyEvents: DrinkyEvent[] = [
     type: "grantStatus",
     text: "Fine. I’ll help. Take this before I change my mind.",
     tags: ["nonDrinkerSafe"],
-    image: defaultDrinkyImage,
+    image: gifts,
     statusEffect: {
       id: "drinky-favor",
       name: "Drinky Favor",

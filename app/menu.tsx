@@ -56,8 +56,8 @@ export default function MenuScreen() {
   }
 
   const backgroundImage = drinkyEnabled
-    ? require("@/assets/images/menu-drinky-on.png")
-    : require("@/assets/images/menu-drinky-off.png");
+    ? require("@/assets/images/chibi.png")
+    : require("@/assets/images/out.png");
 
   return (
     <ImageBackground
