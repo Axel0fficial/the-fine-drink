@@ -203,36 +203,45 @@ export default function PlayersScreen() {
         onSubmitEditing={addPlayer}
       />
 
-      <Pressable style={sharedStyles.primaryButton} onPress={addPlayer}>
-        <Text style={sharedStyles.buttonText}>Add Player</Text>
-      </Pressable>
+      <View style={styles.actionRow}>
+        <Pressable
+          style={[sharedStyles.primaryButton, styles.rowButton]}
+          onPress={addPlayer}
+        >
+          <Text style={sharedStyles.buttonText}>Add Player</Text>
+        </Pressable>
 
-      <Pressable
-        style={[sharedStyles.secondaryButton, styles.savedPlayersButton]}
-        onPress={() => setModalVisible(true)}
-      >
-        <Text style={sharedStyles.buttonText}>Saved Players</Text>
-      </Pressable>
-      <Text style={styles.label}>Rounds</Text>
+        <Pressable
+          style={[sharedStyles.secondaryButton, styles.rowButton]}
+          onPress={() => setModalVisible(true)}
+        >
+          <Text style={sharedStyles.buttonText}>Saved Players</Text>
+        </Pressable>
+      </View>
+      <View style={styles.settingsRow}>
+        <Pressable
+          style={[
+            styles.teamsButton,
+            teamsEnabled && styles.teamsEnabledButton,
+          ]}
+          onPress={toggleTeams}
+        >
+          <Text style={sharedStyles.buttonText}>
+            Teams: {teamsEnabled ? "On" : "Off"}
+          </Text>
+        </Pressable>
 
-      <TextInput
-        style={[sharedStyles.input, styles.roundInput]}
-        keyboardType="number-pad"
-        value={roundLimit}
-        onChangeText={setRoundLimit}
-      />
-      <Pressable
-        style={[
-          sharedStyles.secondaryButton,
-          styles.savedPlayersButton,
-          teamsEnabled && styles.teamsEnabledButton,
-        ]}
-        onPress={toggleTeams}
-      >
-        <Text style={sharedStyles.buttonText}>
-          Teams: {teamsEnabled ? "On" : "Off"}
-        </Text>
-      </Pressable>
+        <View style={styles.roundBox}>
+          <Text style={styles.roundLabel}>Rounds</Text>
+
+          <TextInput
+            style={styles.roundInput}
+            keyboardType="number-pad"
+            value={roundLimit}
+            onChangeText={setRoundLimit}
+          />
+        </View>
+      </View>
 
       <FlatList
         style={styles.list}
@@ -295,6 +304,60 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     marginBottom: 10,
   },
+  actionRow: {
+    flexDirection: "row",
+    gap: spacing.md,
+    marginTop: spacing.md,
+  },
+
+  rowButton: {
+    flex: 1,
+  },
+
+  settingsRow: {
+    flexDirection: "row",
+    gap: spacing.md,
+    marginTop: spacing.lg,
+    alignItems: "stretch",
+  },
+
+  teamsButton: {
+    flex: 1,
+    backgroundColor: colors.surfaceLight,
+    padding: spacing.lg,
+    borderRadius: 14,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+
+  teamsEnabledButton: {
+    borderColor: colors.primaryLight,
+    backgroundColor: colors.primary,
+  },
+
+  roundBox: {
+    width: 110,
+  },
+
+  roundLabel: {
+    color: colors.mutedText,
+    fontWeight: "bold",
+    marginBottom: spacing.sm,
+    textAlign: "center",
+  },
+
+  roundInput: {
+    backgroundColor: colors.surface,
+    color: colors.text,
+    borderColor: colors.primary,
+    borderWidth: 1,
+    borderRadius: 12,
+    padding: spacing.md,
+    textAlign: "center",
+    fontSize: 16,
+  },
   teamBox: {
     width: 38,
     borderRadius: 10,
@@ -319,10 +382,6 @@ const styles = StyleSheet.create({
   team_purple: {
     backgroundColor: "#8e44ad",
   },
-  teamsEnabledButton: {
-    borderColor: colors.primaryLight,
-    borderWidth: 1,
-  },
   playerCard: {
     flex: 1,
   },
@@ -331,9 +390,6 @@ const styles = StyleSheet.create({
     marginTop: spacing.lg,
     marginBottom: spacing.sm,
     fontWeight: "bold",
-  },
-  roundInput: {
-    marginBottom: spacing.md,
   },
   input: {
     marginTop: spacing.xl,

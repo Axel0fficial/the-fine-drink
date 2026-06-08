@@ -1,56 +1,63 @@
 import { router } from "expo-router";
-import { Pressable, StyleSheet, Text, View } from "react-native";
-import { sharedStyles } from "../style/theme";
+import { useEffect } from "react";
+import {
+  ActivityIndicator,
+  ImageBackground,
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+  View,
+} from "react-native";
 
 export default function WelcomeScreen() {
+  const { width, height } = useWindowDimensions();
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      router.replace("/players");
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
-    <View style={sharedStyles.centeredScreen}>
-      <Text style={sharedStyles.centeredTitle}>The Fine Drink</Text>
+    <ImageBackground
+      source={require("@/assets/images/welcome-bg.png")}
+      style={[styles.background, { width, height }]}
+      resizeMode="cover"
+    >
+      <View style={styles.overlay}>
+        <Text style={styles.title}>The Fine Drink</Text>
+        <Text style={styles.subtitle}>Preparing bad decisions...</Text>
 
-      <Text style={sharedStyles.subtitle}>
-        Party challenges. Bad decisions. Good stories.
-      </Text>
-
-      <Pressable
-        style={sharedStyles.primaryButton}
-        onPress={() => router.push("/players")}
-      >
-        <Text style={sharedStyles.buttonText}>Start Game</Text>
-      </Pressable>
-    </View>
+        <ActivityIndicator size="large" color="#EDE7FF" />
+      </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  background: {
     flex: 1,
-    backgroundColor: "#000",
+  },
+  overlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.45)",
     alignItems: "center",
     justifyContent: "center",
     padding: 24,
   },
   title: {
-    color: "#fff",
+    color: "#EDE7FF",
     fontSize: 42,
     fontWeight: "bold",
     textAlign: "center",
+    marginBottom: 12,
   },
   subtitle: {
-    color: "#aaa",
+    color: "#B8A9E6",
     fontSize: 16,
     textAlign: "center",
-    marginTop: 12,
-    marginBottom: 40,
-  },
-  button: {
-    backgroundColor: "#510996",
-    paddingVertical: 16,
-    paddingHorizontal: 36,
-    borderRadius: 14,
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "bold",
+    marginBottom: 32,
   },
 });

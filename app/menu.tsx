@@ -1,12 +1,16 @@
-import { router, useLocalSearchParams } from "expo-router";
-import { Pressable, StyleSheet, Text, View } from "react-native";
-import { colors, radius, sharedStyles, spacing } from "../style/theme";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
+import { useCallback, useState } from "react";
+import {
+  ImageBackground,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
-type Player = {
-  id: string;
-  name: string;
-  score: number;
-};
+import { colors, radius, spacing } from "@/style/theme";
+import { Player } from "@/types/game";
+import { loadDrinkyEnabled } from "@/utils/drinkyStorage";
 
 export default function MenuScreen() {
   const params = useLocalSearchParams();
@@ -15,9 +19,34 @@ export default function MenuScreen() {
   const teamsEnabled = JSON.parse((params.teamsEnabled as string) || "false");
   const roundLimit = Number(params.roundLimit || 10);
 
+  const [drinkyEnabled, setDrinkyEnabled] = useState(true);
+
+  useFocusEffect(
+    useCallback(() => {
+      async function loadSettings() {
+        const enabled = await loadDrinkyEnabled();
+        setDrinkyEnabled(enabled);
+      }
+
+      loadSettings();
+    }, []),
+  );
+
   function startGame() {
     router.push({
       pathname: "/game",
+      params: {
+        players: JSON.stringify(players),
+        teamsEnabled: JSON.stringify(teamsEnabled),
+        roundLimit: String(roundLimit),
+        gameMode: "standard",
+      },
+    });
+  }
+
+  function startCustomMode() {
+    router.push({
+      pathname: "/custom",
       params: {
         players: JSON.stringify(players),
         teamsEnabled: JSON.stringify(teamsEnabled),
@@ -26,62 +55,157 @@ export default function MenuScreen() {
     });
   }
 
+  const backgroundImage = drinkyEnabled
+    ? require("@/assets/images/menu-drinky-on.png")
+    : require("@/assets/images/menu-drinky-off.png");
+
   return (
-    <View style={sharedStyles.centeredScreen}>
-      <Text style={sharedStyles.title}>Game Menu</Text>
+    <ImageBackground
+      source={backgroundImage}
+      style={styles.background}
+      resizeMode="cover"
+    >
+      <View style={styles.overlay}>
+        <View style={styles.topRow}>
+          <Pressable
+            style={styles.settingsButton}
+            onPress={() => router.push("/settings")}
+          >
+            <Text style={styles.settingsText}>⚙</Text>
+          </Pressable>
+        </View>
 
-      <Text style={styles.subtitle}>
-        {players.length} players ready · {roundLimit} rounds · Teams{" "}
-        {teamsEnabled ? "On" : "Off"}
-      </Text>
+        <View style={styles.content}>
+          <Text style={styles.title}>The Fine Drink</Text>
 
-      <Pressable style={sharedStyles.primaryButton} onPress={startGame}>
-        <Text style={sharedStyles.buttonText}>Play</Text>
-      </Pressable>
+          <Text style={styles.subtitle}>
+            {players.length} players · {roundLimit} rounds · Teams{" "}
+            {teamsEnabled ? "On" : "Off"}
+          </Text>
 
-      <Pressable style={styles.editButton} onPress={() => router.back()}>
-        <Text style={styles.editText}>Edit Players</Text>
-      </Pressable>
-      <Pressable
-        style={styles.secondaryButton}
-        onPress={() => router.push("/settings")}
-      >
-        <Text style={styles.secondaryText}>Settings</Text>
-      </Pressable>
-    </View>
+          <View style={styles.gameModes}>
+            <Text style={styles.sectionLabel}>Game Modes</Text>
+
+            <Pressable style={styles.primaryModeButton} onPress={startGame}>
+              <Text style={styles.primaryModeText}>Standard Play</Text>
+              <Text style={styles.modeDescription}>
+                Default chaos. No questions asked.
+              </Text>
+            </Pressable>
+
+            <Pressable style={styles.modeButton} onPress={startCustomMode}>
+              <Text style={styles.modeText}>Custom Play</Text>
+              <Text style={styles.modeDescription}>
+                Use custom challenges and toggle the list.
+              </Text>
+            </Pressable>
+          </View>
+        </View>
+
+        <Pressable
+          style={styles.editPlayersButton}
+          onPress={() => router.back()}
+        >
+          <Text style={styles.editPlayersText}>Edit Players</Text>
+        </Pressable>
+      </View>
+    </ImageBackground>
   );
 }
+
 const styles = StyleSheet.create({
-  subtitle: {
-    color: colors.mutedText,
-    fontSize: 18,
-    textAlign: "center",
-    marginTop: spacing.sm,
-    marginBottom: spacing.xxl,
+  background: {
+    flex: 1,
   },
-  editButton: {
-    marginTop: spacing.lg,
-    padding: spacing.lg,
-    alignItems: "center",
+  overlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.42)",
+    padding: spacing.xl,
+    paddingTop: 58,
   },
-  editText: {
-    color: colors.mutedText,
-    fontSize: 16,
+  topRow: {
+    alignItems: "flex-end",
   },
-  secondaryButton: {
-    backgroundColor: colors.surfaceLight,
-    borderRadius: radius.lg,
-    padding: spacing.lg,
+  settingsButton: {
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    backgroundColor: "rgba(0,0,0,0.55)",
+    borderColor: colors.primaryLight,
+    borderWidth: 1,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: spacing.md,
-    borderWidth: 1,
-    borderColor: colors.border,
   },
-
-  secondaryText: {
+  settingsText: {
     color: colors.text,
-    fontSize: 16,
+    fontSize: 22,
+  },
+  content: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "flex-start",
+  },
+  title: {
+    color: colors.text,
+    fontSize: 42,
     fontWeight: "bold",
+    marginBottom: spacing.sm,
+  },
+  subtitle: {
+    color: colors.mutedText,
+    fontSize: 15,
+    marginBottom: spacing.xxl,
+  },
+  gameModes: {
+    width: "100%",
+    alignItems: "flex-start",
+  },
+  sectionLabel: {
+    color: colors.primaryLight,
+    fontWeight: "bold",
+    fontSize: 14,
+    marginBottom: spacing.md,
+    textTransform: "uppercase",
+    letterSpacing: 1,
+  },
+  primaryModeButton: {
+    width: "78%",
+    backgroundColor: colors.primary,
+    borderRadius: radius.xl,
+    padding: spacing.lg,
+    marginBottom: spacing.md,
+  },
+  primaryModeText: {
+    color: colors.text,
+    fontSize: 22,
+    fontWeight: "bold",
+  },
+  modeButton: {
+    width: "78%",
+    backgroundColor: "rgba(0,0,0,0.55)",
+    borderColor: colors.border,
+    borderWidth: 1,
+    borderRadius: radius.xl,
+    padding: spacing.lg,
+  },
+  modeText: {
+    color: colors.text,
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  modeDescription: {
+    color: colors.mutedText,
+    marginTop: 6,
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  editPlayersButton: {
+    alignSelf: "center",
+    padding: spacing.lg,
+  },
+  editPlayersText: {
+    color: colors.mutedText,
+    fontWeight: "bold",
+    fontSize: 16,
   },
 });

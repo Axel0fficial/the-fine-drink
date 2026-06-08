@@ -81,7 +81,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     zIndex: 50,
   },
-
   imageFrame: {
     width: "100%",
     aspectRatio: 16 / 9,
@@ -94,15 +93,12 @@ const styles = StyleSheet.create({
 
   textBox: {
     position: "absolute",
-
-    // aligned to the black box in the PNG
-    left: "2%",
-    right: "2%",
-    bottom: "4%",
-    height: "18%",
-
+    left: "6%",
+    right: "6%",
+    bottom: "6%",
+    height: "40%",
     paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
+    paddingVertical: spacing.md,
     justifyContent: "center",
   },
   text: {

@@ -1,6 +1,6 @@
 import { DrinkyEvent } from "@/types/game";
 
-const defaultDrinkyImage = require("@/assets/images/drinkpassedout.png");
+const defaultDrinkyImage = require("@/assets/images/passedout.png");
 
 export const drinkyEvents: DrinkyEvent[] = [
   {

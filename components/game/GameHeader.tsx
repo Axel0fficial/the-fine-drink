@@ -1,33 +1,67 @@
 import { StyleSheet, Text, View } from "react-native";
-import { colors } from "../../style/theme";
-import { Player } from "../../types/game";
+
+import { GamePalette } from "@/style/theme";
+import { Player } from "@/types/game";
 
 type GameHeaderProps = {
-  turn: number;
   round: number;
   currentPlayer?: Player;
+  palette: GamePalette;
+  rightAction?: React.ReactNode;
+  statusAction?: React.ReactNode;
 };
 
-export default function GameHeader({ round, currentPlayer }: GameHeaderProps) {
+export default function GameHeader({
+  round,
+  currentPlayer,
+  palette,
+  rightAction,
+  statusAction,
+}: GameHeaderProps) {
   return (
-    <View>
-      <Text style={styles.round}>Round {round}</Text>
-      <Text style={styles.player}>{currentPlayer?.name}'s turn</Text>
+    <View style={styles.container}>
+      <View style={styles.topRow}>
+        <Text style={[styles.player, { color: palette.text }]}>
+          {currentPlayer?.name}'s turn
+        </Text>
+
+        {rightAction}
+      </View>
+
+      <View style={styles.bottomRow}>
+        <Text style={[styles.round, { color: palette.accent }]}>
+          Round {round}
+        </Text>
+
+        {statusAction}
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  round: {
-    color: colors.mutedText,
-    textAlign: "right",
-    fontSize: 16,
+  container: {
+    marginBottom: 24,
+  },
+  topRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  bottomRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginTop: 10,
   },
   player: {
-    color: colors.text,
-    fontSize: 30,
+    fontSize: 28,
     fontWeight: "bold",
-    marginTop: 20,
-    marginBottom: 24,
+    flex: 1,
+    paddingRight: 12,
+  },
+  round: {
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });

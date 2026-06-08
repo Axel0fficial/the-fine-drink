@@ -1,5 +1,47 @@
+import { Difficulty } from "@/types/game";
 import { StyleSheet } from "react-native";
 
+export const basePalette = {
+  background: "#0B0B10",
+  primary: "#7B3FE4",
+  text: "#EDE7FF",
+  mutedText: "#B8A9E6",
+  border: "#7B3FE4",
+};
+
+export type GamePalette = {
+  background: string;
+  primary: string;
+  accent: string;
+  text: string;
+};
+
+export const difficultyPalettes: Record<Difficulty, GamePalette> = {
+  easy: {
+    background: "#102012",
+    primary: "#2ECC71",
+    accent: "#F1C40F",
+    text: "#E9F7EF",
+  },
+  normal: {
+    background: "#1B1308",
+    primary: "#E67E22",
+    accent: "#3498DB",
+    text: "#FFF1E0",
+  },
+  hard: {
+    background: "#1A0A0A",
+    primary: "#E74C3C",
+    accent: "#F5B7B1",
+    text: "#FDEDEC",
+  },
+  brutal: {
+    background: basePalette.background,
+    primary: basePalette.primary,
+    accent: basePalette.primary,
+    text: basePalette.text,
+  },
+};
 export const colors = {
   background: "#000",
   surface: "#111",

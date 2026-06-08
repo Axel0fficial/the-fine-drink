@@ -1,19 +1,27 @@
 import { router } from "expo-router";
 import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
 
-import { colors, radius, sharedStyles, spacing } from "@/style/theme";
+import {
+  colors,
+  GamePalette,
+  radius,
+  sharedStyles,
+  spacing,
+} from "@/style/theme";
 
 type GameSettingsModalProps = {
   visible: boolean;
   onClose: () => void;
   roundLimit: number;
   currentRound: number;
+  palette: GamePalette;
 };
 
 export default function GameSettingsModal({
   visible,
   onClose,
   roundLimit,
+  palette,
   currentRound,
 }: GameSettingsModalProps) {
   function leaveGame() {
@@ -23,14 +31,22 @@ export default function GameSettingsModal({
   return (
     <Modal visible={visible} transparent animationType="fade">
       <View style={styles.overlay}>
-        <View style={styles.modalBox}>
-          <Text style={styles.title}>Game Settings</Text>
+        <View style={[styles.modalBox, { borderColor: palette.primary }]}>
+          <Text style={[styles.title, { color: palette.text }]}>
+            Game Settings
+          </Text>
 
           <Text style={styles.infoText}>
             Round {currentRound} of {roundLimit}
           </Text>
 
-          <Pressable style={sharedStyles.primaryButton} onPress={onClose}>
+          <Pressable
+            style={[
+              sharedStyles.primaryButton,
+              { backgroundColor: palette.primary },
+            ]}
+            onPress={onClose}
+          >
             <Text style={sharedStyles.buttonText}>Resume</Text>
           </Pressable>
 
@@ -54,7 +70,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderRadius: radius.xl,
     padding: spacing.xl,
-    borderColor: colors.primary,
     borderWidth: 1,
   },
   title: {

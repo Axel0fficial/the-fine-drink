@@ -7,9 +7,17 @@ import { Challenge, PlayerStatus } from "@/types/game";
 
 type ChallengeRendererProps = {
   challenge: Challenge;
+  currentPlayerName?: string;
   onToggleFavorite?: () => void;
   onFinishMinigame?: () => void;
   onApplyStatuses?: (statuses: PlayerStatus[]) => void;
+  palette?: {
+    background: string;
+    primary: string;
+    accent: string;
+
+    text: string;
+  };
 };
 
 export default function ChallengeRenderer({
@@ -17,6 +25,8 @@ export default function ChallengeRenderer({
   onToggleFavorite,
   onFinishMinigame,
   onApplyStatuses,
+  palette,
+  currentPlayerName,
 }: ChallengeRendererProps) {
   if (challenge.type === "minigame") {
     if (challenge.minigameType === "fineDrink" && challenge.fineDrinkData) {
@@ -28,10 +38,10 @@ export default function ChallengeRenderer({
       return (
         <FineDrinkMinigame
           data={resolvedFineDrinkData}
+          playerName={currentPlayerName ?? "Player"}
           onDecline={onFinishMinigame ?? (() => {})}
           onAccept={(statuses) => {
             onApplyStatuses?.(statuses);
-            onFinishMinigame?.();
           }}
         />
       );
@@ -39,6 +49,10 @@ export default function ChallengeRenderer({
   }
 
   return (
-    <ChallengeCard challenge={challenge} onToggleFavorite={onToggleFavorite} />
+    <ChallengeCard
+      challenge={challenge}
+      onToggleFavorite={onToggleFavorite}
+      palette={palette}
+    />
   );
 }

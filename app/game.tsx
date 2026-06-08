@@ -5,16 +5,26 @@ import GameHeader from "@/components/game/GameHeader";
 import GameOverModal from "@/components/game/GameOverModal";
 import GameSettingsModal from "@/components/game/GameSettingsModal";
 import StatusBar from "@/components/game/StatusBar";
-import { DrinkyEvent } from "@/types/game";
+import { challenges as defaultChallenges } from "@/data/challenges";
+import { colors, difficultyPalettes, sharedStyles } from "@/style/theme";
+import {
+  Challenge,
+  DrinkyEvent,
+  GameMode,
+  Player,
+  PlayerStatus,
+} from "@/types/game";
+import {
+  applyChallengeEnabledSettings,
+  loadChallengeEnabledSettings,
+} from "@/utils/challengeEnabledStorage";
+import { loadCustomChallenges } from "@/utils/customChallengeStorage";
 import { pickDrinkyEvent } from "@/utils/drinkyPicker";
 import { loadDrinkyEnabled } from "@/utils/drinkyStorage";
+import { tickPlayerStatuses } from "@/utils/statusUtils";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-
-import { challenges as defaultChallenges } from "@/data/challenges";
-import { colors, sharedStyles, spacing } from "@/style/theme";
-import { Challenge, Player, PlayerStatus } from "@/types/game";
 
 import { getAvailableChallengesForPlayer } from "@/utils/challengeFilters";
 import { pickWeightedChallenge } from "@/utils/challengePicker";
@@ -49,9 +59,9 @@ export default function GameScreen() {
 
   const [turn, setTurn] = useState(0);
   const [challenge, setChallenge] = useState<Challenge>(
-    resolveChallenge(defaultChallenges[0], initialPlayers),
+    resolveChallenge(getFallbackChallenge(), initialPlayers),
   );
-
+  const gameMode = ((params.gameMode as string) || "standard") as GameMode;
   const [preferencesLoaded, setPreferencesLoaded] = useState(false);
   const [feedbackUsed, setFeedbackUsed] = useState(false);
   const [settingsVisible, setSettingsVisible] = useState(false);
@@ -65,18 +75,43 @@ export default function GameScreen() {
   const [drinkyEvent, setDrinkyEvent] = useState<DrinkyEvent | null>(null);
   const [drinkyHidden, setDrinkyHidden] = useState(false);
   const [drinkyAppearances, setDrinkyAppearances] = useState(0);
+  const activePalette = difficultyPalettes[challenge.difficulty];
 
   useEffect(() => {
     async function loadSavedData() {
       const savedPreferences = await loadChallengePreferences();
 
+      let playableChallenges = defaultChallenges;
+
+      if (gameMode === "custom") {
+        const customChallenges = await loadCustomChallenges();
+        const enabledSettings = await loadChallengeEnabledSettings();
+
+        const defaultWithSettings = applyChallengeEnabledSettings(
+          defaultChallenges,
+          enabledSettings,
+        );
+
+        playableChallenges = [
+          ...defaultWithSettings,
+          ...customChallenges,
+        ].filter((challenge) => challenge.enabled);
+      }
+
       const updatedChallenges = applyChallengePreferences(
-        defaultChallenges,
+        playableChallenges,
         savedPreferences,
       );
 
       setChallenges(updatedChallenges);
-      setChallenge(resolveChallenge(updatedChallenges[0], initialPlayers));
+
+      const initialChallenge =
+        updatedChallenges.length > 0
+          ? resolveChallenge(updatedChallenges[0], initialPlayers)
+          : resolveChallenge(getFallbackChallenge(), initialPlayers);
+
+      setChallenge(initialChallenge);
+
       setPreferencesLoaded(true);
     }
 
@@ -97,6 +132,16 @@ export default function GameScreen() {
 
     loadDrinkySetting();
   }, []);
+
+  function tickStatusesForCurrentPlayer() {
+    if (!currentPlayer) return;
+
+    setPlayers((currentPlayers) =>
+      currentPlayers.map((player) =>
+        player.id === currentPlayer.id ? tickPlayerStatuses(player) : player,
+      ),
+    );
+  }
 
   function maybeShowDrinky(nextPlayer: Player, nextChallenge: Challenge) {
     if (!drinkyEnabled) return;
@@ -216,6 +261,33 @@ export default function GameScreen() {
     );
   }
 
+  function handleFineDrinkAccept(statuses: PlayerStatus[]) {
+    if (!currentPlayer) return;
+
+    const points = getChallengeScore(challenge);
+
+    setPlayers((currentPlayers) =>
+      currentPlayers.map((player) => {
+        if (player.id !== currentPlayer.id) return player;
+
+        return {
+          ...player,
+          score: player.score + points,
+          statuses: [
+            ...player.statuses,
+            ...statuses.map((status) => ({
+              ...status,
+              id: `${status.id}-${Date.now()}-${Math.random()}`,
+              sourceChallengeId: challenge.id,
+            })),
+          ],
+        };
+      }),
+    );
+
+    finishTurn(false);
+  }
+
   function applyStatusToCurrentPlayer() {
     if (!challenge.statusEffect || !currentPlayer) return;
 
@@ -265,10 +337,11 @@ export default function GameScreen() {
     return {
       id: "fallback",
       type: "simple",
-      title: "No Challenge Available",
-      description: "No valid challenge was found for this player.",
+      title: "Configuration Error",
+      description: "No enabled challenge matched the current game settings.",
       difficulty: "easy",
       tags: ["nonDrinkerSafe"],
+      enabled: true,
       baseChance: 1,
       minChance: 1,
       maxChance: 1,
@@ -321,6 +394,8 @@ export default function GameScreen() {
       }
     }
 
+    tickStatusesForCurrentPlayer();
+
     const nextTurnValue = turn + 1;
 
     if (nextTurnValue >= totalTurns) {
@@ -346,37 +421,58 @@ export default function GameScreen() {
       <>
         <ChallengeRenderer
           challenge={challenge}
+          currentPlayerName={currentPlayer?.name}
           onFinishMinigame={() => finishTurn(false)}
-          onApplyStatuses={applyStatusesToCurrentPlayer}
+          onApplyStatuses={handleFineDrinkAccept}
         />
 
-        <GameOverModal visible={gameOverVisible} players={players} />
+        <GameOverModal
+          visible={gameOverVisible}
+          players={players}
+          palette={activePalette}
+        />
       </>
     );
   }
 
   return (
-    <View style={[sharedStyles.screen, styles.container]}>
-      <View style={styles.topRow}>
-        <Pressable
-          style={styles.settingsButton}
-          onPress={() => setSettingsVisible(true)}
-        >
-          <Text style={styles.settingsText}>⚙</Text>
-        </Pressable>
-      </View>
-
+    <View
+      style={[
+        sharedStyles.screen,
+        styles.container,
+        { backgroundColor: activePalette.background },
+      ]}
+    >
       <GameHeader
-        turn={turn}
         round={currentRound}
         currentPlayer={currentPlayer}
+        palette={activePalette}
+        rightAction={
+          <Pressable
+            style={[
+              styles.settingsButton,
+              { backgroundColor: activePalette.primary },
+            ]}
+            onPress={() => setSettingsVisible(true)}
+          >
+            <Text style={[styles.settingsText, { color: activePalette.text }]}>
+              ⚙
+            </Text>
+          </Pressable>
+        }
+        statusAction={
+          <StatusBar
+            statuses={currentPlayer?.statuses ?? []}
+            palette={activePalette}
+          />
+        }
       />
-
-      <StatusBar statuses={currentPlayer?.statuses ?? []} />
 
       <ChallengeRenderer
         challenge={challenge}
+        currentPlayerName={currentPlayer?.name}
         onToggleFavorite={handleToggleFavorite}
+        palette={activePalette}
       />
 
       <GameActions
@@ -385,6 +481,15 @@ export default function GameScreen() {
         onLike={handleLike}
         onDislike={handleDislike}
         feedbackUsed={feedbackUsed}
+        palette={activePalette}
+      />
+
+      <GameSettingsModal
+        visible={settingsVisible}
+        onClose={() => setSettingsVisible(false)}
+        roundLimit={roundLimit}
+        currentRound={Math.min(currentRound, roundLimit)}
+        palette={activePalette}
       />
 
       <DrinkyLayer
@@ -395,14 +500,11 @@ export default function GameScreen() {
         onAcceptStatus={handleAcceptDrinkyStatus}
       />
 
-      <GameSettingsModal
-        visible={settingsVisible}
-        onClose={() => setSettingsVisible(false)}
-        roundLimit={roundLimit}
-        currentRound={Math.min(currentRound, roundLimit)}
+      <GameOverModal
+        visible={gameOverVisible}
+        players={players}
+        palette={activePalette}
       />
-
-      <GameOverModal visible={gameOverVisible} players={players} />
     </View>
   );
 }
@@ -410,10 +512,6 @@ export default function GameScreen() {
 const styles = StyleSheet.create({
   container: {
     paddingTop: 50,
-  },
-  topRow: {
-    alignItems: "flex-end",
-    marginBottom: spacing.md,
   },
   settingsButton: {
     backgroundColor: colors.surfaceLight,

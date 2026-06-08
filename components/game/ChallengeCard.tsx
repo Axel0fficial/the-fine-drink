@@ -5,22 +5,40 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 type ChallengeCardProps = {
   challenge: Challenge;
   onToggleFavorite?: () => void;
+  palette?: {
+    background: string;
+    primary: string;
+    accent: string;
+    text: string;
+  };
 };
-
 export default function ChallengeCard({
   challenge,
   onToggleFavorite,
+  palette,
 }: ChallengeCardProps) {
   return (
-    <View style={styles.card}>
+    <View
+      style={[
+        styles.card,
+        palette && {
+          borderColor: palette.primary,
+          backgroundColor: palette.background,
+        },
+      ]}
+    >
       <Pressable style={styles.favoriteButton} onPress={onToggleFavorite}>
-        <Text style={styles.favoriteText}>
+        <Text
+          style={[styles.favoriteText, palette && { color: palette.accent }]}
+        >
           {challenge.isFavorite ? "★ Favorite" : "☆ Favorite"}
         </Text>
       </Pressable>
-      <Text style={styles.title}>{challenge.title}</Text>
+      <Text style={[styles.title, palette && { color: palette.text }]}>
+        {challenge.title}
+      </Text>
 
-      <Text style={styles.difficulty}>
+      <Text style={[styles.difficulty, palette && { color: palette.accent }]}>
         {challenge.difficulty.toUpperCase()}
       </Text>
 
@@ -39,6 +57,7 @@ const styles = StyleSheet.create({
     minHeight: 260,
     justifyContent: "center",
   },
+
   favoriteButton: {
     position: "absolute",
     top: spacing.md,

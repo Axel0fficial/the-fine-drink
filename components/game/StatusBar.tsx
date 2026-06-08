@@ -1,27 +1,36 @@
+import {
+  GamePalette,
+  colors,
+  radius,
+  sharedStyles,
+  spacing,
+} from "@/style/theme";
+import { PlayerStatus } from "@/types/game";
 import { useState } from "react";
 import {
-    Modal,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
+  Modal,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
-
-import { colors, radius, sharedStyles, spacing } from "@/style/theme";
-import { PlayerStatus } from "@/types/game";
 
 type StatusBarProps = {
   statuses: PlayerStatus[];
+  palette: GamePalette;
 };
 
-export default function StatusBar({ statuses }: StatusBarProps) {
+export default function StatusBar({ statuses, palette }: StatusBarProps) {
   const [visible, setVisible] = useState(false);
 
   return (
     <>
-      <Pressable style={styles.statusButton} onPress={() => setVisible(true)}>
-        <Text style={styles.statusButtonText}>
+      <Pressable
+        style={[styles.statusButton, { borderColor: palette.primary }]}
+        onPress={() => setVisible(true)}
+      >
+        <Text style={[styles.statusButtonText, { color: palette.text }]}>
           Statuses ({statuses.length})
         </Text>
       </Pressable>
@@ -33,8 +42,10 @@ export default function StatusBar({ statuses }: StatusBarProps) {
         onRequestClose={() => setVisible(false)}
       >
         <View style={styles.overlay}>
-          <View style={styles.modalBox}>
-            <Text style={styles.title}>Current Statuses</Text>
+          <View style={[styles.modalBox, { borderColor: palette.primary }]}>
+            <Text style={[styles.title, { color: palette.text }]}>
+              Current Statuses
+            </Text>
 
             <ScrollView style={styles.list}>
               {statuses.length === 0 ? (
@@ -57,7 +68,10 @@ export default function StatusBar({ statuses }: StatusBarProps) {
             </ScrollView>
 
             <Pressable
-              style={sharedStyles.primaryButton}
+              style={[
+                sharedStyles.primaryButton,
+                { backgroundColor: palette.primary },
+              ]}
               onPress={() => setVisible(false)}
             >
               <Text style={sharedStyles.buttonText}>Close</Text>
@@ -71,12 +85,11 @@ export default function StatusBar({ statuses }: StatusBarProps) {
 
 const styles = StyleSheet.create({
   statusButton: {
-    alignSelf: "flex-start",
-    backgroundColor: colors.surfaceLight,
+    backgroundColor: "rgba(0,0,0,0.25)",
     borderRadius: radius.lg,
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-    marginBottom: spacing.lg,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderWidth: 1,
   },
   statusButtonText: {
     color: colors.text,
@@ -90,12 +103,9 @@ const styles = StyleSheet.create({
     padding: spacing.xl,
   },
   modalBox: {
-    width: "100%",
-    maxHeight: "80%",
     backgroundColor: colors.surface,
     borderRadius: radius.xl,
     padding: spacing.xl,
-    borderColor: colors.primary,
     borderWidth: 1,
   },
   title: {

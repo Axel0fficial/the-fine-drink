@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
-import { colors, radius, sharedStyles, spacing } from "@/style/theme";
+import { colors, radius, spacing } from "@/style/theme";
 import { PlayerStatus } from "@/types/game";
 
 type ResolvedFineDrinkData = {
@@ -11,12 +11,14 @@ type ResolvedFineDrinkData = {
 
 type FineDrinkMinigameProps = {
   data: ResolvedFineDrinkData;
+  playerName: string;
   onDecline: () => void;
   onAccept: (statuses: PlayerStatus[]) => void;
 };
 
 export default function FineDrinkMinigame({
   data,
+  playerName,
   onDecline,
   onAccept,
 }: FineDrinkMinigameProps) {
@@ -32,10 +34,14 @@ export default function FineDrinkMinigame({
 
   return (
     <View style={styles.container}>
-      <Text style={styles.logo}>The Fine Drink</Text>
+      <Image
+        source={require("@/assets/images/the_fine_drink_logo.png")}
+        style={styles.logo}
+        resizeMode="contain"
+      />
 
       <View style={styles.offerBox}>
-        <Text style={styles.label}>The offer:</Text>
+        <Text style={styles.offerIntro}>{playerName}, I offer you:</Text>
 
         <Text style={styles.offerTitle}>{data.offerStatus.name}</Text>
 
@@ -49,7 +55,7 @@ export default function FineDrinkMinigame({
 
         {accepted && (
           <View style={styles.revealBox}>
-            <Text style={styles.label}>But also...</Text>
+            <Text style={styles.revealLabel}>But also...</Text>
 
             <Text style={styles.hiddenTitle}>{data.hiddenStatus.name}</Text>
 
@@ -67,69 +73,72 @@ export default function FineDrinkMinigame({
       {!accepted ? (
         <View style={styles.actions}>
           <Pressable style={styles.declineButton} onPress={onDecline}>
-            <Text style={sharedStyles.buttonText}>Decline</Text>
+            <Text style={styles.declineText}>Decline</Text>
           </Pressable>
 
           <Pressable style={styles.acceptButton} onPress={handleAccept}>
-            <Text style={sharedStyles.buttonText}>Accept</Text>
+            <Text style={styles.acceptText}>Accept</Text>
           </Pressable>
         </View>
       ) : (
         <Pressable style={styles.continueButton} onPress={handleContinue}>
-          <Text style={sharedStyles.buttonText}>Continue</Text>
+          <Text style={styles.continueText}>Continue</Text>
         </Pressable>
       )}
     </View>
   );
 }
 
+const fineDrinkPurple = "#6d00b6";
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.primary,
+    backgroundColor: fineDrinkPurple,
     padding: spacing.xl,
-    paddingTop: 80,
+    paddingTop: 70,
     justifyContent: "space-between",
   },
   logo: {
-    color: colors.text,
-    fontSize: 36,
-    fontWeight: "bold",
-    textAlign: "center",
+    width: "100%",
+    height: 150,
+    alignSelf: "center",
   },
   offerBox: {
-    backgroundColor: "rgba(0,0,0,0.25)",
+    backgroundColor: fineDrinkPurple,
+    borderColor: "rgba(255,255,255,0.22)",
+    borderWidth: 1,
     borderRadius: radius.xl,
     padding: spacing.xl,
   },
-  label: {
-    color: colors.primaryLight,
-    fontSize: 16,
+  offerIntro: {
+    color: colors.text,
+    fontSize: 26,
     fontWeight: "bold",
     textAlign: "center",
-    marginBottom: spacing.md,
+    marginBottom: spacing.xl,
   },
   offerTitle: {
-    color: colors.text,
-    fontSize: 34,
+    color: "#fff",
+    fontSize: 32,
     fontWeight: "bold",
     textAlign: "center",
   },
   hiddenTitle: {
-    color: colors.text,
+    color: "#fff",
     fontSize: 28,
     fontWeight: "bold",
     textAlign: "center",
   },
   offerDescription: {
-    color: colors.text,
+    color: "#fff",
     fontSize: 20,
     textAlign: "center",
     lineHeight: 30,
     marginTop: spacing.lg,
   },
   rounds: {
-    color: colors.mutedText,
+    color: "rgba(255,255,255,0.75)",
     fontSize: 16,
     textAlign: "center",
     marginTop: spacing.lg,
@@ -140,28 +149,52 @@ const styles = StyleSheet.create({
     borderTopColor: "rgba(255,255,255,0.25)",
     borderTopWidth: 1,
   },
+  revealLabel: {
+    color: "#FFD84A",
+    fontSize: 16,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: spacing.md,
+  },
   actions: {
     flexDirection: "row",
     gap: spacing.md,
   },
   declineButton: {
     flex: 1,
-    backgroundColor: colors.surfaceLight,
+    backgroundColor: "rgba(0,0,0,0.25)",
     padding: spacing.lg,
     borderRadius: radius.lg,
     alignItems: "center",
+    borderColor: "rgba(255,255,255,0.3)",
+    borderWidth: 1,
+  },
+  declineText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 18,
   },
   acceptButton: {
     flex: 1,
-    backgroundColor: colors.surface,
+    backgroundColor: "#fff",
     padding: spacing.lg,
     borderRadius: radius.lg,
     alignItems: "center",
   },
+  acceptText: {
+    color: fineDrinkPurple,
+    fontWeight: "bold",
+    fontSize: 18,
+  },
   continueButton: {
-    backgroundColor: colors.surface,
+    backgroundColor: "#fff",
     padding: spacing.lg,
     borderRadius: radius.lg,
     alignItems: "center",
+  },
+  continueText: {
+    color: fineDrinkPurple,
+    fontSize: 18,
+    fontWeight: "bold",
   },
 });

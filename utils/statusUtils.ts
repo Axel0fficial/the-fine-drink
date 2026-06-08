@@ -1,15 +1,13 @@
 import { Player } from "@/types/game";
 
-export function updatePlayerStatuses(player: Player): Player {
-  const updatedStatuses = player.statuses
-    .map((status) => ({
-      ...status,
-      remainingRounds: status.remainingRounds - 1,
-    }))
-    .filter((status) => status.remainingRounds > 0);
-
+export function tickPlayerStatuses(player: Player): Player {
   return {
     ...player,
-    statuses: updatedStatuses,
+    statuses: player.statuses
+      .map((status) => ({
+        ...status,
+        remainingRounds: status.remainingRounds - 1,
+      }))
+      .filter((status) => status.remainingRounds > 0),
   };
 }

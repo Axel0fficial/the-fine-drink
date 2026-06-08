@@ -37,8 +37,7 @@ export type ChallengeType = "simple" | "status" | "minigame" | "custom";
 export type FineDrinkData = {
   offerNature: "good" | "bad" | "random";
 };
-
-export type ChallengeTag = "drinking" | "nonDrinkerSafe" | "teams";
+export type ChallengeTag = "drinking" | "nonDrinkerSafe" | "teams" | "custom";
 
 export type Challenge = {
   id: string;
@@ -51,6 +50,7 @@ export type Challenge = {
 
   baseChance: number;
   minChance: number;
+  enabled: boolean;
   maxChance: number;
 
   isFavorite: boolean;
@@ -63,6 +63,8 @@ export type Challenge = {
   minigameType?: MinigameType;
   fineDrinkData?: FineDrinkData;
 };
+
+export type GameMode = "standard" | "custom";
 
 export type ChallengeVariable =
   | {

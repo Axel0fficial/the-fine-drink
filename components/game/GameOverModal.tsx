@@ -1,16 +1,24 @@
 import { router } from "expo-router";
 import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
 
-import { colors, radius, sharedStyles, spacing } from "@/style/theme";
+import {
+  colors,
+  GamePalette,
+  radius,
+  sharedStyles,
+  spacing,
+} from "@/style/theme";
 import { Player } from "@/types/game";
 
 type GameOverModalProps = {
   visible: boolean;
   players: Player[];
+  palette: GamePalette;
 };
 
 export default function GameOverModal({
   visible,
+  palette,
   players,
 }: GameOverModalProps) {
   const leaderboard = [...players].sort((a, b) => b.score - a.score);
@@ -19,8 +27,8 @@ export default function GameOverModal({
   return (
     <Modal visible={visible} transparent animationType="fade">
       <View style={styles.overlay}>
-        <View style={styles.modalBox}>
-          <Text style={styles.title}>Game Over</Text>
+        <View style={[styles.modalBox, { borderColor: palette.primary }]}>
+          <Text style={[styles.title, { color: palette.text }]}>Game Over</Text>
 
           {winner && (
             <Text style={styles.winner}>
@@ -39,7 +47,10 @@ export default function GameOverModal({
           </View>
 
           <Pressable
-            style={sharedStyles.primaryButton}
+            style={[
+              sharedStyles.primaryButton,
+              { backgroundColor: palette.primary },
+            ]}
             onPress={() => router.replace("/players")}
           >
             <Text style={sharedStyles.buttonText}>Back to Players</Text>
@@ -61,7 +72,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderRadius: radius.xl,
     padding: spacing.xl,
-    borderColor: colors.primary,
     borderWidth: 1,
   },
   title: {

@@ -1,4 +1,9 @@
-import { colors, radius, sharedStyles, spacing } from "@/style/theme";
+import {
+  GamePalette,
+  radius,
+  sharedStyles,
+  spacing
+} from "@/style/theme";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 type GameActionsProps = {
@@ -7,39 +12,66 @@ type GameActionsProps = {
   onLike: () => void;
   onDislike: () => void;
   feedbackUsed: boolean;
+  palette: GamePalette;
 };
 
 export default function GameActions({
   onSkip,
   onDone,
-  onDislike,
   onLike,
+  onDislike,
   feedbackUsed,
+  palette,
 }: GameActionsProps) {
   return (
-    <View style={styles.actions}>
-      <Pressable style={styles.skipButton} onPress={onSkip}>
-        <Text style={sharedStyles.buttonText}>Skip</Text>
-      </Pressable>
-
-      <Pressable style={styles.doneButton} onPress={onDone}>
-        <Text style={sharedStyles.buttonText}>Done</Text>
-      </Pressable>
+    <View style={styles.container}>
       <View style={styles.feedbackRow}>
         <Pressable
-          style={[styles.feedbackButton, feedbackUsed && styles.disabledButton]}
+          style={[
+            styles.feedbackButton,
+            { borderColor: palette.primary },
+            feedbackUsed && styles.disabledButton,
+          ]}
           disabled={feedbackUsed}
           onPress={onLike}
         >
-          <Text style={styles.feedbackText}>Like</Text>
+          <Text style={[styles.feedbackText, { color: palette.text }]}>
+            Like
+          </Text>
         </Pressable>
 
         <Pressable
-          style={[styles.feedbackButton, feedbackUsed && styles.disabledButton]}
+          style={[
+            styles.feedbackButton,
+            { borderColor: palette.primary },
+            feedbackUsed && styles.disabledButton,
+          ]}
           disabled={feedbackUsed}
           onPress={onDislike}
         >
-          <Text style={styles.feedbackText}>Dislike</Text>
+          <Text style={[styles.feedbackText, { color: palette.text }]}>
+            Dislike
+          </Text>
+        </Pressable>
+      </View>
+
+      <View style={styles.actions}>
+        <Pressable
+          style={[styles.skipButton, { borderColor: palette.primary }]}
+          onPress={onSkip}
+        >
+          <Text style={[sharedStyles.buttonText, { color: palette.text }]}>
+            Skip
+          </Text>
+        </Pressable>
+
+        <Pressable
+          style={[styles.doneButton, { backgroundColor: palette.primary }]}
+          onPress={onDone}
+        >
+          <Text style={[sharedStyles.buttonText, { color: palette.text }]}>
+            Done
+          </Text>
         </Pressable>
       </View>
     </View>
@@ -47,42 +79,44 @@ export default function GameActions({
 }
 
 const styles = StyleSheet.create({
-  actions: {
-    flexDirection: "row",
-    gap: spacing.md,
-    marginTop: 32,
-  },
-  skipButton: {
-    flex: 1,
-    backgroundColor: colors.surfaceLight,
-    padding: spacing.lg,
-    borderRadius: radius.lg,
-    alignItems: "center",
-  },
-  doneButton: {
-    flex: 1,
-    backgroundColor: colors.primary,
-    padding: spacing.lg,
-    borderRadius: radius.lg,
-    alignItems: "center",
+  container: {
+    marginTop: 24,
   },
   feedbackRow: {
     flexDirection: "row",
-    gap: spacing.md,
+    justifyContent: "flex-end",
+    gap: spacing.sm,
     marginBottom: spacing.md,
   },
   feedbackButton: {
-    flex: 1,
-    backgroundColor: colors.surface,
-    padding: spacing.md,
+    width: 88,
+    backgroundColor: "rgba(0,0,0,0.25)",
+    paddingVertical: 9,
     borderRadius: radius.lg,
     alignItems: "center",
-    borderColor: colors.border,
     borderWidth: 1,
   },
   feedbackText: {
-    color: colors.text,
     fontWeight: "bold",
+    fontSize: 13,
+  },
+  actions: {
+    flexDirection: "row",
+    gap: spacing.md,
+  },
+  skipButton: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.25)",
+    padding: spacing.lg,
+    borderRadius: radius.lg,
+    alignItems: "center",
+    borderWidth: 1,
+  },
+  doneButton: {
+    flex: 1,
+    padding: spacing.lg,
+    borderRadius: radius.lg,
+    alignItems: "center",
   },
   disabledButton: {
     opacity: 0.4,
