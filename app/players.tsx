@@ -1,3 +1,5 @@
+import { text } from "@/locales/text";
+import { useLanguageStore } from "@/utils/languageStore";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import {
@@ -21,6 +23,8 @@ import {
 } from "@/utils/playerStorage";
 
 export default function PlayersScreen() {
+  const { language, toggleLanguage } = useLanguageStore();
+  const t = text[language];
   const [name, setName] = useState("");
   const [players, setPlayers] = useState<Player[]>([]);
   const [savedPlayers, setSavedPlayers] = useState<SavedPlayer[]>([]);
@@ -205,11 +209,11 @@ export default function PlayersScreen() {
 
   return (
     <View style={[sharedStyles.screen, styles.container]}>
-      <Text style={sharedStyles.title}>Add Players</Text>
+      <Text style={sharedStyles.title}>{t.addPlayerText}</Text>
 
       <TextInput
         style={[sharedStyles.input, styles.input]}
-        placeholder="Player name"
+        placeholder={t.placeholderText}
         placeholderTextColor={colors.darkMutedText}
         value={name}
         onChangeText={setName}
@@ -221,14 +225,14 @@ export default function PlayersScreen() {
           style={[sharedStyles.primaryButton, styles.rowButton]}
           onPress={addPlayer}
         >
-          <Text style={sharedStyles.buttonText}>Add Player</Text>
+          <Text style={sharedStyles.buttonText}>{t.addPlayerText}</Text>
         </Pressable>
 
         <Pressable
           style={[sharedStyles.secondaryButton, styles.rowButton]}
           onPress={() => setModalVisible(true)}
         >
-          <Text style={sharedStyles.buttonText}>Saved Players</Text>
+          <Text style={sharedStyles.buttonText}>{t.SavedPLayersButtonText}</Text>
         </Pressable>
       </View>
       <View style={styles.settingsRow}>
@@ -240,12 +244,12 @@ export default function PlayersScreen() {
           onPress={toggleTeams}
         >
           <Text style={sharedStyles.buttonText}>
-            Teams: {teamsEnabled ? "On" : "Off"}
+            {t.TeamsButtonText}: {teamsEnabled ? "On" : "Off"}
           </Text>
         </Pressable>
 
         <View style={styles.roundBox}>
-          <Text style={styles.roundLabel}>Rounds</Text>
+          <Text style={styles.roundLabel}>{t.roundLabel}</Text>
 
           <TextInput
             style={styles.roundInput}
@@ -261,7 +265,7 @@ export default function PlayersScreen() {
         data={players}
         keyExtractor={(item) => item.id}
         ListEmptyComponent={
-          <Text style={styles.emptyText}>Add at least 2 players.</Text>
+          <Text style={styles.emptyText}>{t.playerMinimun}</Text>
         }
         renderItem={({ item }) => (
           <View style={styles.playerRow}>
@@ -277,7 +281,7 @@ export default function PlayersScreen() {
               onPress={() => removePlayer(item.id)}
             >
               <Text style={styles.playerName}>{item.name}</Text>
-              <Text style={styles.removeText}>Tap to remove</Text>
+              <Text style={styles.removeText}>{t.removePlayerLabel}</Text>
             </Pressable>
           </View>
         )}
@@ -291,7 +295,7 @@ export default function PlayersScreen() {
         disabled={players.length < 2}
         onPress={continueToMenu}
       >
-        <Text style={sharedStyles.buttonText}>Continue</Text>
+        <Text style={sharedStyles.buttonText}>{t.continueLabel}</Text>
       </Pressable>
 
       <SavedPlayersModal

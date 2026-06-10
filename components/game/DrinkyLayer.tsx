@@ -1,3 +1,5 @@
+import { text } from "@/locales/text";
+import { useLanguageStore } from "@/utils/languageStore";
 import {
   ImageBackground,
   Pressable,
@@ -24,6 +26,8 @@ export default function DrinkyLayer({
   onShow,
   onAcceptStatus,
 }: DrinkyLayerProps) {
+  const { language, toggleLanguage } = useLanguageStore();
+  const t = text[language];
   if (!event) return null;
 
   if (hidden) {
@@ -59,12 +63,12 @@ export default function DrinkyLayer({
 
             {event.type === "grantStatus" && event.statusEffect && (
               <Pressable style={styles.acceptButton} onPress={onAcceptStatus}>
-                <Text style={styles.acceptText}>Accept Status</Text>
+                <Text style={styles.acceptText}>{t.StatusAcceptLbl}</Text>
               </Pressable>
             )}
 
             <Pressable style={styles.hideButton} onPress={onHide}>
-              <Text style={styles.hideText}>Hide</Text>
+              <Text style={styles.hideText}>{t.hideLbl}</Text>
             </Pressable>
           </View>
         </ImageBackground>

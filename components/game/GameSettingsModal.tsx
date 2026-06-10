@@ -1,6 +1,4 @@
-import { router } from "expo-router";
-import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
-
+import { text } from "@/locales/text";
 import {
   colors,
   GamePalette,
@@ -8,6 +6,9 @@ import {
   sharedStyles,
   spacing,
 } from "@/style/theme";
+import { useLanguageStore } from "@/utils/languageStore";
+import { router } from "expo-router";
+import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
 
 type GameSettingsModalProps = {
   visible: boolean;
@@ -24,6 +25,8 @@ export default function GameSettingsModal({
   palette,
   currentRound,
 }: GameSettingsModalProps) {
+  const { language, toggleLanguage } = useLanguageStore();
+  const t = text[language];
   function leaveGame() {
     router.replace("/");
   }
@@ -33,11 +36,11 @@ export default function GameSettingsModal({
       <View style={styles.overlay}>
         <View style={[styles.modalBox, { borderColor: palette.primary }]}>
           <Text style={[styles.title, { color: palette.text }]}>
-            Game Settings
+            {t.gamesettingLbl}
           </Text>
 
           <Text style={styles.infoText}>
-            Round {currentRound} of {roundLimit}
+            {t.roundLbl} {currentRound} {t.ofLbl} {roundLimit}
           </Text>
 
           <Pressable
@@ -47,11 +50,11 @@ export default function GameSettingsModal({
             ]}
             onPress={onClose}
           >
-            <Text style={sharedStyles.buttonText}>Resume</Text>
+            <Text style={sharedStyles.buttonText}>{t.resumeLbl}</Text>
           </Pressable>
 
           <Pressable style={styles.leaveButton} onPress={leaveGame}>
-            <Text style={styles.leaveText}>Leave Game</Text>
+            <Text style={styles.leaveText}>{t.LeaveGameLbl}</Text>
           </Pressable>
         </View>
       </View>

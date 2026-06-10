@@ -1,3 +1,5 @@
+import { text } from "@/locales/text";
+import { useLanguageStore } from "@/utils/languageStore";
 import { StyleSheet, Text, View } from "react-native";
 
 import { GamePalette } from "@/style/theme";
@@ -18,11 +20,13 @@ export default function GameHeader({
   rightAction,
   statusAction,
 }: GameHeaderProps) {
+  const { language, toggleLanguage } = useLanguageStore();
+  const t = text[language];
   return (
     <View style={styles.container}>
       <View style={styles.topRow}>
         <Text style={[styles.player, { color: palette.text }]}>
-          {currentPlayer?.name}'s turn
+          {currentPlayer?.name}{t.playersturn}
         </Text>
 
         {rightAction}
@@ -30,7 +34,7 @@ export default function GameHeader({
 
       <View style={styles.bottomRow}>
         <Text style={[styles.round, { color: palette.accent }]}>
-          Round {round}
+          {t.roundLbl} {round}
         </Text>
 
         {statusAction}

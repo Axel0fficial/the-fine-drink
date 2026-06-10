@@ -1,3 +1,5 @@
+import { text } from "@/locales/text";
+import { useLanguageStore } from "@/utils/languageStore";
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { useCallback, useState } from "react";
 import {
@@ -14,7 +16,8 @@ import { loadDrinkyEnabled } from "@/utils/drinkyStorage";
 
 export default function MenuScreen() {
   const params = useLocalSearchParams();
-
+  const { language, toggleLanguage } = useLanguageStore();
+  const t = text[language];
   const players: Player[] = JSON.parse((params.players as string) || "[]");
   const teamsEnabled = JSON.parse((params.teamsEnabled as string) || "false");
   const roundLimit = Number(params.roundLimit || 10);
@@ -79,24 +82,24 @@ export default function MenuScreen() {
           <Text style={styles.title}>The Fine Drink</Text>
 
           <Text style={styles.subtitle}>
-            {players.length} players · {roundLimit} rounds · Teams{" "}
+            {players.length} {t.playerslabel} · {roundLimit} {t.roundLabel} · {t.TeamsButtonText}{" "}
             {teamsEnabled ? "On" : "Off"}
           </Text>
 
           <View style={styles.gameModes}>
-            <Text style={styles.sectionLabel}>Game Modes</Text>
+            <Text style={styles.sectionLabel}>{t.gamemodeslabel}</Text>
 
             <Pressable style={styles.primaryModeButton} onPress={startGame}>
-              <Text style={styles.primaryModeText}>Standard Play</Text>
+              <Text style={styles.primaryModeText}>{t.standardGamemodeLabel}</Text>
               <Text style={styles.modeDescription}>
-                Default chaos. No questions asked.
+                {t.standardGamemodedescriptionlabel}
               </Text>
             </Pressable>
 
             <Pressable style={styles.modeButton} onPress={startCustomMode}>
-              <Text style={styles.modeText}>Custom Play</Text>
+              <Text style={styles.modeText}>{t.customamemodeLabel}</Text>
               <Text style={styles.modeDescription}>
-                Use custom challenges and toggle the list.
+                {t.customamemodedescriptionLabel}
               </Text>
             </Pressable>
           </View>
@@ -106,7 +109,7 @@ export default function MenuScreen() {
           style={styles.editPlayersButton}
           onPress={() => router.back()}
         >
-          <Text style={styles.editPlayersText}>Edit Players</Text>
+          <Text style={styles.editPlayersText}>{t.BackText}</Text>
         </Pressable>
       </View>
     </ImageBackground>

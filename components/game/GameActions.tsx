@@ -1,9 +1,11 @@
+import { text } from "@/locales/text";
 import {
   GamePalette,
   radius,
   sharedStyles,
   spacing
 } from "@/style/theme";
+import { useLanguageStore } from "@/utils/languageStore";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 type GameActionsProps = {
@@ -23,6 +25,8 @@ export default function GameActions({
   feedbackUsed,
   palette,
 }: GameActionsProps) {
+  const { language, toggleLanguage } = useLanguageStore();
+  const t = text[language];
   return (
     <View style={styles.container}>
       <View style={styles.feedbackRow}>
@@ -61,7 +65,7 @@ export default function GameActions({
           onPress={onSkip}
         >
           <Text style={[sharedStyles.buttonText, { color: palette.text }]}>
-            Skip
+            {t.skipLbl}
           </Text>
         </Pressable>
 
@@ -70,7 +74,7 @@ export default function GameActions({
           onPress={onDone}
         >
           <Text style={[sharedStyles.buttonText, { color: palette.text }]}>
-            Done
+            {t.donelabel}
           </Text>
         </Pressable>
       </View>

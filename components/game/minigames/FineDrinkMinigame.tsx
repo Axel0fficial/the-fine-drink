@@ -1,8 +1,9 @@
-import { useState } from "react";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
-
+import { text } from "@/locales/text";
 import { colors, radius, spacing } from "@/style/theme";
 import { PlayerStatus } from "@/types/game";
+import { useLanguageStore } from "@/utils/languageStore";
+import { useState } from "react";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
 type ResolvedFineDrinkData = {
   offerStatus: PlayerStatus;
@@ -23,6 +24,8 @@ export default function FineDrinkMinigame({
   onAccept,
 }: FineDrinkMinigameProps) {
   const [accepted, setAccepted] = useState(false);
+  const { language, toggleLanguage } = useLanguageStore();
+  const t = text[language];
 
   function handleAccept() {
     setAccepted(true);

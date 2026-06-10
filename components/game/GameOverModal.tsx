@@ -1,4 +1,5 @@
 import { winnerRewards } from "@/data/winnerRewards";
+import { text } from "@/locales/text";
 import {
   colors,
   GamePalette,
@@ -7,6 +8,7 @@ import {
   spacing,
 } from "@/style/theme";
 import { Player } from "@/types/game";
+import { useLanguageStore } from "@/utils/languageStore";
 import { router } from "expo-router";
 import { useMemo } from "react";
 import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
@@ -27,23 +29,23 @@ export default function GameOverModal({
 }: GameOverModalProps) {
   const leaderboard = [...players].sort((a, b) => b.score - a.score);
   const winner = leaderboard[0];
+  const { language, toggleLanguage } = useLanguageStore();
+  const t = text[language];
   const winnerReward = useMemo(() => randomFromArray(winnerRewards), []);
 
   return (
     <Modal visible={visible} transparent animationType="fade">
       <View style={styles.overlay}>
         <View style={[styles.modalBox, { borderColor: palette.primary }]}>
-          <Text style={[styles.title, { color: palette.text }]}>Game Over</Text>
-
           {winner && (
             <Text style={styles.winner}>
-              Winner: {winner.name} with {winner.score} points
+              {t.WinnerIsLbl}: {winner.name} {t.withlbl} {winner.score} {t.pointlbl}
             </Text>
           )}
           {winner && (
             <View style={[styles.rewardBox, { borderColor: palette.primary }]}>
               <Text style={[styles.rewardTitle, { color: palette.accent }]}>
-                Winner Reward
+                {t.WinnerRewardLbl}
               </Text>
 
               <Text style={[styles.rewardText, { color: palette.text }]}>
@@ -69,7 +71,7 @@ export default function GameOverModal({
             ]}
             onPress={() => router.replace("/players")}
           >
-            <Text style={sharedStyles.buttonText}>Back to Players</Text>
+            <Text style={sharedStyles.buttonText}>{t.LeaveGameLbl}</Text>
           </Pressable>
         </View>
       </View>

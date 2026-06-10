@@ -46,7 +46,7 @@ export default function SettingsScreen() {
         <View style={styles.settingTextBox}>
           <Text style={styles.settingTitle}>Drinky</Text>
           <Text style={styles.settingSubtitle}>
-            Enable or disable Drinky appearances.
+            {t.Drinkyavailability}
           </Text>
         </View>
 
@@ -61,20 +61,20 @@ export default function SettingsScreen() {
         style={styles.dangerButton}
         onPress={() => setConfirmVisible(true)}
       >
-        <Text style={styles.dangerText}>Erase Saved Players</Text>
+        <Text style={styles.dangerText}>{t.PlayerErasure}</Text>
       </Pressable>
 
       <Pressable style={styles.backButton} onPress={() => router.back()}>
-        <Text style={styles.backText}>Back</Text>
+        <Text style={styles.backText}>{t.BackText}</Text>
       </Pressable>
 
       <Modal visible={confirmVisible} transparent animationType="fade">
         <View style={styles.overlay}>
           <View style={styles.modalBox}>
-            <Text style={styles.modalTitle}>Erase saved players?</Text>
+            <Text style={styles.modalTitle}>{t.PlayerErasureConfirmation}</Text>
 
             <Text style={styles.modalText}>
-              This will remove all remembered player names and preferences.
+              {t.PlayerErasureWarning}
             </Text>
 
             <View style={styles.actions}>
@@ -82,14 +82,14 @@ export default function SettingsScreen() {
                 style={styles.cancelButton}
                 onPress={() => setConfirmVisible(false)}
               >
-                <Text style={sharedStyles.buttonText}>Cancel</Text>
+                <Text style={sharedStyles.buttonText}>{t.CancelText}</Text>
               </Pressable>
 
               <Pressable
                 style={styles.confirmButton}
                 onPress={handleErasePlayers}
               >
-                <Text style={sharedStyles.buttonText}>Erase</Text>
+                <Text style={sharedStyles.buttonText}>{t.EraseButtonSettings}</Text>
               </Pressable>
             </View>
           </View>

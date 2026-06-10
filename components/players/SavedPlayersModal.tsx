@@ -1,3 +1,5 @@
+import { text } from "@/locales/text";
+import { useLanguageStore } from "@/utils/languageStore";
 import { useState } from "react";
 import {
   FlatList,
@@ -32,6 +34,8 @@ export default function SavedPlayersModal({
   onUpdatePlayer,
   onDeletePlayer,
 }: SavedPlayersModalProps) {
+  const { language, toggleLanguage } = useLanguageStore();
+  const t = text[language];
   const [mode, setMode] = useState<"select" | "edit">("select");
   const [editingPlayer, setEditingPlayer] = useState<SavedPlayer | null>(null);
   const [editingName, setEditingName] = useState("");
@@ -90,7 +94,7 @@ export default function SavedPlayersModal({
                 data={savedPlayers}
                 keyExtractor={(item) => item.id}
                 ListEmptyComponent={
-                  <Text style={styles.emptyText}>No saved players yet.</Text>
+                  <Text style={styles.emptyText}>{t.emptyplayerLabel}</Text>
                 }
                 renderItem={({ item }) => {
                   const selected = selectedPlayerIds.includes(item.id);
@@ -120,7 +124,7 @@ export default function SavedPlayersModal({
                         style={styles.editSmallButton}
                         onPress={() => startEdit(item)}
                       >
-                        <Text style={styles.editSmallText}>Edit</Text>
+                        <Text style={styles.editSmallText}>{t.editlabel}</Text>
                       </Pressable>
                     </View>
                   );
@@ -129,7 +133,7 @@ export default function SavedPlayersModal({
 
               <View style={styles.actions}>
                 <Pressable style={styles.primaryButton} onPress={onClose}>
-                  <Text style={sharedStyles.buttonText}>Done</Text>
+                  <Text style={sharedStyles.buttonText}>{t.donelabel}</Text>
                 </Pressable>
               </View>
             </>
@@ -139,7 +143,7 @@ export default function SavedPlayersModal({
             <>
               <TextInput
                 style={sharedStyles.input}
-                placeholder="Player name"
+                placeholder={t.placeholderText2}
                 placeholderTextColor={colors.darkMutedText}
                 value={editingName}
                 onChangeText={setEditingName}
@@ -147,9 +151,9 @@ export default function SavedPlayersModal({
 
               <View style={styles.preferenceRow}>
                 <View style={styles.preferenceTextBox}>
-                  <Text style={styles.preferenceTitle}>Non-drinker</Text>
+                  <Text style={styles.preferenceTitle}>{t.nondrinkerlabel}</Text>
                   <Text style={styles.preferenceSubtitle}>
-                    Avoid drinking challenges for this player.
+                    {t.avoidDrinkerlabel}
                   </Text>
                 </View>
 
@@ -161,19 +165,19 @@ export default function SavedPlayersModal({
 
               <View style={styles.actions}>
                 <Pressable style={styles.secondaryButton} onPress={cancelEdit}>
-                  <Text style={sharedStyles.buttonText}>Cancel</Text>
+                  <Text style={sharedStyles.buttonText}>{t.CancelText}</Text>
                 </Pressable>
 
                 <Pressable
                   style={styles.primaryButton}
                   onPress={handleSaveEdit}
                 >
-                  <Text style={sharedStyles.buttonText}>Save</Text>
+                  <Text style={sharedStyles.buttonText}>{t.savelabel}</Text>
                 </Pressable>
               </View>
 
               <Pressable style={styles.deleteButton} onPress={handleDelete}>
-                <Text style={styles.deleteText}>Delete Player</Text>
+                <Text style={styles.deleteText}>{t.deletePLayerLabel}</Text>
               </Pressable>
             </>
           )}

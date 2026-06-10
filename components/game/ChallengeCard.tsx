@@ -1,5 +1,7 @@
+import { text } from "@/locales/text";
 import { colors, radius, spacing } from "@/style/theme";
 import { Challenge } from "@/types/game";
+import { useLanguageStore } from "@/utils/languageStore";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 type ChallengeCardProps = {
@@ -17,6 +19,8 @@ export default function ChallengeCard({
   onToggleFavorite,
   palette,
 }: ChallengeCardProps) {
+  const { language, toggleLanguage } = useLanguageStore();
+  const t = text[language];
   return (
     <View
       style={[

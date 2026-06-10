@@ -1,11 +1,13 @@
+import { text } from "@/locales/text";
+import { useLanguageStore } from "@/utils/languageStore";
 import { useState } from "react";
 import {
-    Modal,
-    Pressable,
-    StyleSheet,
-    Text,
-    TextInput,
-    View,
+  Modal,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from "react-native";
 
 import { colors, radius, sharedStyles, spacing } from "@/style/theme";
@@ -26,6 +28,8 @@ export default function CustomChallengeModal({
   onClose,
   onSave,
 }: CustomChallengeModalProps) {
+  const { language, toggleLanguage } = useLanguageStore();
+  const t = text[language];
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [difficulty, setDifficulty] = useState<Difficulty>("easy");
@@ -79,7 +83,7 @@ export default function CustomChallengeModal({
     <Modal visible={visible} transparent animationType="fade">
       <View style={styles.overlay}>
         <View style={styles.modalBox}>
-          <Text style={styles.title}>Create Challenge</Text>
+          <Text style={styles.title}>{t.CreateLbl} {t.challengeLbl}</Text>
 
           <TextInput
             style={sharedStyles.input}
@@ -98,7 +102,7 @@ export default function CustomChallengeModal({
             multiline
           />
 
-          <Text style={styles.sectionTitle}>Difficulty</Text>
+          <Text style={styles.sectionTitle}>{t.DifficultyLbl}</Text>
 
           <View style={styles.optionRow}>
             {difficulties.map((item) => (
@@ -134,11 +138,11 @@ export default function CustomChallengeModal({
 
           <View style={styles.actions}>
             <Pressable style={styles.secondaryButton} onPress={onClose}>
-              <Text style={sharedStyles.buttonText}>Cancel</Text>
+              <Text style={sharedStyles.buttonText}>{t.CancelText}</Text>
             </Pressable>
 
             <Pressable style={styles.primaryButton} onPress={handleSave}>
-              <Text style={sharedStyles.buttonText}>Save</Text>
+              <Text style={sharedStyles.buttonText}>{t.savelabel}</Text>
             </Pressable>
           </View>
         </View>

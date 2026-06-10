@@ -1,3 +1,4 @@
+import { text } from "@/locales/text";
 import {
   GamePalette,
   colors,
@@ -6,6 +7,7 @@ import {
   spacing,
 } from "@/style/theme";
 import { PlayerStatus } from "@/types/game";
+import { useLanguageStore } from "@/utils/languageStore";
 import { useState } from "react";
 import {
   Modal,
@@ -23,6 +25,8 @@ type StatusBarProps = {
 
 export default function StatusBar({ statuses, palette }: StatusBarProps) {
   const [visible, setVisible] = useState(false);
+  const { language, toggleLanguage } = useLanguageStore();
+  const t = text[language];
 
   return (
     <>
@@ -31,7 +35,7 @@ export default function StatusBar({ statuses, palette }: StatusBarProps) {
         onPress={() => setVisible(true)}
       >
         <Text style={[styles.statusButtonText, { color: palette.text }]}>
-          Statuses ({statuses.length})
+          {t.statuseslabel} ({statuses.length})
         </Text>
       </Pressable>
 
@@ -44,12 +48,12 @@ export default function StatusBar({ statuses, palette }: StatusBarProps) {
         <View style={styles.overlay}>
           <View style={[styles.modalBox, { borderColor: palette.primary }]}>
             <Text style={[styles.title, { color: palette.text }]}>
-              Current Statuses
+              {t.currentStatuseslabel}
             </Text>
 
             <ScrollView style={styles.list}>
               {statuses.length === 0 ? (
-                <Text style={styles.emptyText}>No active statuses.</Text>
+                <Text style={styles.emptyText}>{t.noActiveStsLbl}</Text>
               ) : (
                 statuses.map((status) => (
                   <View key={status.id} style={styles.statusCard}>
@@ -60,7 +64,7 @@ export default function StatusBar({ statuses, palette }: StatusBarProps) {
                     </Text>
 
                     <Text style={styles.statusRounds}>
-                      Remaining rounds: {status.remainingRounds}
+                      {t.remainingRoundsLbl} {status.remainingRounds}
                     </Text>
                   </View>
                 ))
@@ -74,7 +78,7 @@ export default function StatusBar({ statuses, palette }: StatusBarProps) {
               ]}
               onPress={() => setVisible(false)}
             >
-              <Text style={sharedStyles.buttonText}>Close</Text>
+              <Text style={sharedStyles.buttonText}>{t.closeLbl}</Text>
             </Pressable>
           </View>
         </View>

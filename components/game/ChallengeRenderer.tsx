@@ -1,4 +1,6 @@
+import { text } from "@/locales/text";
 import { resolveFineDrinkStatuses } from "@/utils/fineDrinkResolver";
+import { useLanguageStore } from "@/utils/languageStore";
 import { useMemo } from "react";
 import ChallengeCard from "./ChallengeCard";
 import FineDrinkMinigame from "./minigames/FineDrinkMinigame";
@@ -29,6 +31,8 @@ export default function ChallengeRenderer({
   palette,
   currentPlayerName,
 }: ChallengeRendererProps) {
+  const { language, toggleLanguage } = useLanguageStore();
+  const t = text[language];
   if (challenge.type === "minigame") {
     if (challenge.minigameType === "quickChoice" && challenge.quickChoiceData) {
       return (

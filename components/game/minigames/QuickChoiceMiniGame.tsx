@@ -1,10 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
-
 import { quickChoiceQuestions } from "@/data/quickChoiceData";
-
+import { text } from "@/locales/text";
 import { colors, radius, spacing } from "@/style/theme";
 import { QuickChoiceData, QuickChoiceQuestion } from "@/types/game";
+import { useLanguageStore } from "@/utils/languageStore";
+import { useEffect, useMemo, useState } from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
 type QuickChoiceMinigameProps = {
   data: QuickChoiceData;
@@ -27,7 +27,8 @@ export default function QuickChoiceMinigame({
 }: QuickChoiceMinigameProps) {
   const questions = useMemo(() => shuffle(quickChoiceQuestions), []);
   const [correctIsTop, setCorrectIsTop] = useState(() => Math.random() < 0.5);
-
+  const { language, toggleLanguage } = useLanguageStore();
+  const t = text[language];
   const [timeLeft, setTimeLeft] = useState(data.durationSeconds);
   const [index, setIndex] = useState(0);
   const [right, setRight] = useState(0);
@@ -108,10 +109,10 @@ export default function QuickChoiceMinigame({
   if (finished) {
     return (
       <View style={styles.container}>
-        <Text style={styles.title}>Time!</Text>
+        <Text style={styles.title}>{t.timeexclLbl}</Text>
 
         <Text style={styles.score}>
-          {right} right · {wrong} wrong
+          {right} {t.rightlbl} · {wrong} {t.wronglbl}
         </Text>
 
         <View style={styles.resultBox}>
@@ -119,7 +120,7 @@ export default function QuickChoiceMinigame({
         </View>
 
         <View style={styles.answersBox}>
-          <Text style={styles.answersTitle}>Correct Answers</Text>
+          <Text style={styles.answersTitle}>{t.correctansLbl} </Text>
 
           {answers.map((answer, answerIndex) => (
             <Text
@@ -133,7 +134,7 @@ export default function QuickChoiceMinigame({
         </View>
 
         <Pressable style={styles.continueButton} onPress={onFinish}>
-          <Text style={styles.continueText}>Continue</Text>
+          <Text style={styles.continueText}>{t.continueLabel}</Text>
         </Pressable>
       </View>
     );
@@ -153,7 +154,7 @@ export default function QuickChoiceMinigame({
 
       <Text style={styles.player}>{playerName}</Text>
 
-      <Text style={styles.title}>What is it?</Text>
+      <Text style={styles.title}>{t.whatislbl}</Text>
 
       <View style={styles.wordBox}>
         <Text style={styles.word}>{currentQuestion?.word}</Text>
@@ -176,7 +177,7 @@ export default function QuickChoiceMinigame({
       </View>
 
       <Text style={styles.score}>
-        {right} right · {wrong} wrong
+        {right} {t.rightlbl} · {wrong} {t.wronglbl}
       </Text>
     </View>
   );
