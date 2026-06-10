@@ -2,6 +2,7 @@ import { resolveFineDrinkStatuses } from "@/utils/fineDrinkResolver";
 import { useMemo } from "react";
 import ChallengeCard from "./ChallengeCard";
 import FineDrinkMinigame from "./minigames/FineDrinkMinigame";
+import QuickChoiceMinigame from "./minigames/QuickChoiceMiniGame";
 
 import { Challenge, PlayerStatus } from "@/types/game";
 
@@ -29,6 +30,15 @@ export default function ChallengeRenderer({
   currentPlayerName,
 }: ChallengeRendererProps) {
   if (challenge.type === "minigame") {
+    if (challenge.minigameType === "quickChoice" && challenge.quickChoiceData) {
+      return (
+        <QuickChoiceMinigame
+          data={challenge.quickChoiceData}
+          playerName={currentPlayerName ?? "Player"}
+          onFinish={onFinishMinigame ?? (() => {})}
+        />
+      );
+    }
     if (challenge.minigameType === "fineDrink" && challenge.fineDrinkData) {
       const resolvedFineDrinkData = useMemo(
         () => resolveFineDrinkStatuses(challenge.fineDrinkData!),

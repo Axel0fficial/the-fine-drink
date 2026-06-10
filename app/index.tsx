@@ -1,3 +1,5 @@
+import { text } from "@/locales/text";
+import { useLanguageStore } from "@/utils/languageStore";
 import { router } from "expo-router";
 import { useEffect } from "react";
 import {
@@ -11,6 +13,8 @@ import {
 
 export default function WelcomeScreen() {
   const { width, height } = useWindowDimensions();
+  const { language } = useLanguageStore();
+  const t = text[language];
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -27,8 +31,8 @@ export default function WelcomeScreen() {
       resizeMode="cover"
     >
       <View style={styles.overlay}>
-        <Text style={styles.title}>The Fine Drink</Text>
-        <Text style={styles.subtitle}>Preparing bad decisions...</Text>
+        <Text style={styles.title}>{t.welcomeTitle}</Text>
+        <Text style={styles.subtitle}>{t.subtitleButton}</Text>
 
         <ActivityIndicator size="large" color="#EDE7FF" />
       </View>

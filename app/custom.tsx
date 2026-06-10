@@ -33,6 +33,12 @@ export default function CustomScreen() {
   );
 
   const allChallenges = [...defaultWithSettings, ...customChallenges];
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
+    simple: true,
+    status: false,
+    minigame: false,
+    custom: false,
+  });
 
   useEffect(() => {
     async function loadData() {
@@ -53,6 +59,36 @@ export default function CustomScreen() {
     saveCustomChallenges(customChallenges);
     saveChallengeEnabledSettings(defaultChallengeSettings);
   }, [customChallenges, defaultChallengeSettings, loaded]);
+  const challengeTypes = ["simple", "status", "minigame", "custom"] as const;
+
+  function toggleGroup(type: string) {
+    setOpenGroups((current) => ({
+      ...current,
+      [type]: !current[type],
+    }));
+  }
+
+  function getChallengesByType(type: string) {
+    return allChallenges.filter((challenge) => challenge.type === type);
+  }
+
+  function setGroupEnabled(type: string, enabled: boolean) {
+    const challengesInGroup = getChallengesByType(type);
+
+    challengesInGroup.forEach((challenge) => {
+      if (challenge.enabled !== enabled) {
+        toggleChallenge(challenge);
+      }
+    });
+  }
+
+  function groupIsEnabled(type: string) {
+    const challengesInGroup = getChallengesByType(type);
+
+    if (challengesInGroup.length === 0) return false;
+
+    return challengesInGroup.every((challenge) => challenge.enabled);
+  }
 
   function startCustomGame() {
     router.push({
@@ -124,63 +160,97 @@ export default function CustomScreen() {
     <View style={[sharedStyles.screen, styles.container]}>
       <Text style={sharedStyles.title}>Custom Mode</Text>
 
-      <Pressable
-        style={[sharedStyles.primaryButton, styles.startButton]}
-        onPress={startCustomGame}
-      >
-        <Text style={sharedStyles.buttonText}>Start Custom Game</Text>
-      </Pressable>
+      <View style={styles.topActions}>
+        <Pressable
+          style={[sharedStyles.primaryButton, styles.topButton]}
+          onPress={startCustomGame}
+        >
+          <Text style={sharedStyles.buttonText}>Start</Text>
+        </Pressable>
 
-      <Pressable
-        style={[sharedStyles.secondaryButton, styles.createButton]}
-        onPress={() => setModalVisible(true)}
-      >
-        <Text style={sharedStyles.buttonText}>Create Challenge</Text>
-      </Pressable>
+        <Pressable
+          style={[sharedStyles.secondaryButton, styles.topButton]}
+          onPress={() => setModalVisible(true)}
+        >
+          <Text style={sharedStyles.buttonText}>Create</Text>
+        </Pressable>
+      </View>
 
       <FlatList
         style={styles.list}
-        data={allChallenges}
-        keyExtractor={(item) => item.id}
-        ListEmptyComponent={
-          <Text style={styles.emptyText}>No challenges available.</Text>
-        }
-        renderItem={({ item }) => {
-          const isCustom = item.tags.includes("custom");
+        data={challengeTypes}
+        keyExtractor={(item) => item}
+        renderItem={({ item: type }) => {
+          const challengesInGroup = getChallengesByType(type);
+          const isOpen = openGroups[type];
+          const allEnabled = groupIsEnabled(type);
 
           return (
-            <View style={styles.card}>
-              <View style={styles.cardHeader}>
-                <Text style={styles.challengeTitle}>{item.title}</Text>
+            <View style={styles.groupBox}>
+              <View style={styles.groupHeader}>
+                <Pressable
+                  style={styles.groupTitleButton}
+                  onPress={() => toggleGroup(type)}
+                >
+                  <Text style={styles.groupTitle}>
+                    {isOpen ? "▼" : "▶"} {type.toUpperCase()} (
+                    {challengesInGroup.length})
+                  </Text>
+                </Pressable>
 
                 <Pressable
                   style={[
-                    styles.enabledPill,
-                    !item.enabled && styles.disabledPill,
+                    styles.groupToggle,
+                    allEnabled ? styles.groupToggleOn : styles.groupToggleOff,
                   ]}
-                  onPress={() => toggleChallenge(item)}
+                  onPress={() => setGroupEnabled(type, !allEnabled)}
                 >
-                  <Text style={styles.pillText}>
-                    {item.enabled ? "Enabled" : "Disabled"}
+                  <Text style={styles.groupToggleText}>
+                    {allEnabled ? "Disable All" : "Enable All"}
                   </Text>
                 </Pressable>
               </View>
 
-              <Text style={styles.description}>{item.description}</Text>
+              {isOpen &&
+                challengesInGroup.map((item) => {
+                  const isCustom = item.tags.includes("custom");
 
-              <Text style={styles.meta}>
-                {isCustom ? "CUSTOM" : "DEFAULT"} ·{" "}
-                {item.difficulty.toUpperCase()} · {item.tags.join(", ")}
-              </Text>
+                  return (
+                    <View key={item.id} style={styles.card}>
+                      <View style={styles.cardHeader}>
+                        <Text style={styles.challengeTitle}>{item.title}</Text>
 
-              {isCustom && (
-                <Pressable
-                  style={styles.deleteButton}
-                  onPress={() => deleteChallenge(item)}
-                >
-                  <Text style={styles.deleteText}>Delete</Text>
-                </Pressable>
-              )}
+                        <Pressable
+                          style={[
+                            styles.enabledPill,
+                            !item.enabled && styles.disabledPill,
+                          ]}
+                          onPress={() => toggleChallenge(item)}
+                        >
+                          <Text style={styles.pillText}>
+                            {item.enabled ? "Enabled" : "Disabled"}
+                          </Text>
+                        </Pressable>
+                      </View>
+
+                      <Text style={styles.description}>{item.description}</Text>
+
+                      <Text style={styles.meta}>
+                        {isCustom ? "CUSTOM" : "DEFAULT"} ·{" "}
+                        {item.difficulty.toUpperCase()} · {item.tags.join(", ")}
+                      </Text>
+
+                      {isCustom && (
+                        <Pressable
+                          style={styles.deleteButton}
+                          onPress={() => deleteChallenge(item)}
+                        >
+                          <Text style={styles.deleteText}>Delete</Text>
+                        </Pressable>
+                      )}
+                    </View>
+                  );
+                })}
             </View>
           );
         }}
@@ -277,5 +347,59 @@ const styles = StyleSheet.create({
   backText: {
     color: colors.mutedText,
     fontWeight: "bold",
+  },
+  topActions: {
+    flexDirection: "row",
+    gap: spacing.md,
+    marginTop: spacing.xl,
+  },
+
+  topButton: {
+    flex: 1,
+  },
+
+  groupBox: {
+    marginBottom: spacing.lg,
+  },
+
+  groupHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.md,
+    backgroundColor: colors.surface,
+    borderRadius: radius.lg,
+    padding: spacing.md,
+    borderColor: colors.border,
+    borderWidth: 1,
+  },
+
+  groupTitleButton: {
+    flex: 1,
+  },
+
+  groupTitle: {
+    color: colors.text,
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+
+  groupToggle: {
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderRadius: radius.md,
+  },
+
+  groupToggleOn: {
+    backgroundColor: "#7a1f1f",
+  },
+
+  groupToggleOff: {
+    backgroundColor: colors.primary,
+  },
+
+  groupToggleText: {
+    color: colors.text,
+    fontWeight: "bold",
+    fontSize: 12,
   },
 });

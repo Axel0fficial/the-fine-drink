@@ -1,6 +1,4 @@
-import { router } from "expo-router";
-import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
-
+import { winnerRewards } from "@/data/winnerRewards";
 import {
   colors,
   GamePalette,
@@ -9,12 +7,18 @@ import {
   spacing,
 } from "@/style/theme";
 import { Player } from "@/types/game";
+import { router } from "expo-router";
+import { useMemo } from "react";
+import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
 
 type GameOverModalProps = {
   visible: boolean;
   players: Player[];
   palette: GamePalette;
 };
+function randomFromArray<T>(array: T[]): T {
+  return array[Math.floor(Math.random() * array.length)];
+}
 
 export default function GameOverModal({
   visible,
@@ -23,6 +27,7 @@ export default function GameOverModal({
 }: GameOverModalProps) {
   const leaderboard = [...players].sort((a, b) => b.score - a.score);
   const winner = leaderboard[0];
+  const winnerReward = useMemo(() => randomFromArray(winnerRewards), []);
 
   return (
     <Modal visible={visible} transparent animationType="fade">
@@ -34,6 +39,17 @@ export default function GameOverModal({
             <Text style={styles.winner}>
               Winner: {winner.name} with {winner.score} points
             </Text>
+          )}
+          {winner && (
+            <View style={[styles.rewardBox, { borderColor: palette.primary }]}>
+              <Text style={[styles.rewardTitle, { color: palette.accent }]}>
+                Winner Reward
+              </Text>
+
+              <Text style={[styles.rewardText, { color: palette.text }]}>
+                {winnerReward}
+              </Text>
+            </View>
           )}
 
           <View style={styles.list}>
@@ -67,6 +83,23 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.8)",
     justifyContent: "center",
     padding: spacing.xl,
+  },
+  rewardBox: {
+    backgroundColor: "rgba(0,0,0,0.25)",
+    borderWidth: 1,
+    borderRadius: radius.lg,
+    padding: spacing.lg,
+    marginBottom: spacing.xl,
+  },
+  rewardTitle: {
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: spacing.sm,
+  },
+  rewardText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    textAlign: "center",
   },
   modalBox: {
     backgroundColor: colors.surface,

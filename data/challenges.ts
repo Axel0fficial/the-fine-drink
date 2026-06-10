@@ -1,3 +1,8 @@
+import {
+  quickChoicePunishments,
+  quickChoiceRewards,
+  quickChoiceWrongOptionPool,
+} from "@/data/quickChoiceData";
 import { Challenge } from "@/types/game";
 
 export const challenges: Challenge[] = [
@@ -841,7 +846,8 @@ export const challenges: Challenge[] = [
     id: "44",
     type: "simple",
     title: "Mystery Shot",
-    description: "The group prepares a shot for you without telling you what is in it.",
+    description:
+      "The group prepares a shot for you without telling you what is in it.",
     difficulty: "hard",
     tags: ["drinking"],
     baseChance: 0.6,
@@ -1010,7 +1016,8 @@ export const challenges: Challenge[] = [
     type: "simple",
     title: "No Phone",
     enabled: true,
-    description: "Leave your phone on the table and do not touch it until your next turn.",
+    description:
+      "Leave your phone on the table and do not touch it until your next turn.",
     difficulty: "normal",
     tags: ["nonDrinkerSafe"],
     baseChance: 0.9,
@@ -1350,7 +1357,8 @@ export const challenges: Challenge[] = [
     id: "71",
     type: "status",
     title: "Extra Drink",
-    description: "Drink {x} sips at the start of your next turn for {rounds} rounds.",
+    description:
+      "Drink {x} sips at the start of your next turn for {rounds} rounds.",
     difficulty: "normal",
     enabled: true,
     tags: ["drinking"],
@@ -1438,7 +1446,8 @@ export const challenges: Challenge[] = [
     statusEffect: {
       id: "no-proper-names",
       name: "No Proper Names",
-      description: "Do not say proper names, like people's names or place names.",
+      description:
+        "Do not say proper names, like people's names or place names.",
       remainingRounds: 3,
       nature: "bad",
     },
@@ -1535,7 +1544,8 @@ export const challenges: Challenge[] = [
     id: "79",
     type: "status",
     title: "Assistant Duty",
-    description: "Follow reasonable requests from a chosen player for {rounds} rounds.",
+    description:
+      "Follow reasonable requests from a chosen player for {rounds} rounds.",
     difficulty: "normal",
     tags: ["drinking"],
     baseChance: 0.9,
@@ -1548,7 +1558,8 @@ export const challenges: Challenge[] = [
     statusEffect: {
       id: "obey-chosen-player",
       name: "Assistant Duty",
-      description: "Follow reasonable requests from a chosen player for {rounds} rounds.",
+      description:
+        "Follow reasonable requests from a chosen player for {rounds} rounds.",
       remainingRounds: 3,
       nature: "bad",
     },
@@ -1601,8 +1612,7 @@ export const challenges: Challenge[] = [
     id: "82",
     type: "status",
     title: "Hand on the Floor",
-    description:
-      "Keep at least one hand on the floor until your next turn.",
+    description: "Keep at least one hand on the floor until your next turn.",
     difficulty: "normal",
     enabled: true,
     tags: ["nonDrinkerSafe"],
@@ -1615,8 +1625,7 @@ export const challenges: Challenge[] = [
     statusEffect: {
       id: "one-hand-on-floor",
       name: "Hand on the Floor",
-      description:
-        "Keep at least one hand on the floor until your next turn.",
+      description: "Keep at least one hand on the floor until your next turn.",
       remainingRounds: 1,
       nature: "bad",
     },
@@ -1658,5 +1667,31 @@ export const challenges: Challenge[] = [
     isFavorite: false,
     likes: 0,
     dislikes: 0,
-  }
+  },
+  {
+    id: "85",
+    type: "minigame",
+    title: "What Is It?",
+    description: "Guess what each word belongs to before time runs out.",
+    difficulty: "normal",
+    tags: ["nonDrinkerSafe"],
+    enabled: true,
+
+    baseChance: 0.7,
+    minChance: 0.1,
+    maxChance: 1.5,
+
+    isFavorite: false,
+    likes: 0,
+    dislikes: 0,
+
+    minigameType: "quickChoice",
+    quickChoiceData: {
+      durationSeconds: 10,
+      questionSet: "default",
+      wrongOptionPool: quickChoiceWrongOptionPool,
+      rewards: quickChoiceRewards,
+      punishments: quickChoicePunishments,
+    },
+  },
 ];

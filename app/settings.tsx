@@ -1,14 +1,24 @@
-import { router } from "expo-router";
-import { useEffect, useState } from "react";
-import { Modal, Pressable, StyleSheet, Switch, Text, View } from "react-native";
-
+import { text } from "@/locales/text";
 import { colors, radius, sharedStyles, spacing } from "@/style/theme";
 import { loadDrinkyEnabled, saveDrinkyEnabled } from "@/utils/drinkyStorage";
+import { useLanguageStore } from "@/utils/languageStore";
 import { clearSavedPlayers } from "@/utils/playerStorage";
-
+import { router } from "expo-router";
+import { useEffect, useState } from "react";
+import {
+  Modal,
+  Pressable,
+  StyleSheet,
+  Switch,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 export default function SettingsScreen() {
   const [confirmVisible, setConfirmVisible] = useState(false);
   const [drinkyEnabled, setDrinkyEnabled] = useState(true);
+  const { language, toggleLanguage } = useLanguageStore();
+  const t = text[language];
   useEffect(() => {
     async function loadSettings() {
       const enabled = await loadDrinkyEnabled();
@@ -30,7 +40,7 @@ export default function SettingsScreen() {
 
   return (
     <View style={[sharedStyles.screen, styles.container]}>
-      <Text style={sharedStyles.title}>Settings</Text>
+      <Text style={sharedStyles.title}>{t.settingsTitle}</Text>
 
       <View style={styles.settingRow}>
         <View style={styles.settingTextBox}>
@@ -42,7 +52,11 @@ export default function SettingsScreen() {
 
         <Switch value={drinkyEnabled} onValueChange={toggleDrinky} />
       </View>
-
+      <TouchableOpacity onPress={toggleLanguage} style={styles.languageButton}>
+        <Text style={styles.languageButtonText}>
+          🌎 {t.languageButton}: {language.toUpperCase()}
+        </Text>
+      </TouchableOpacity>
       <Pressable
         style={styles.dangerButton}
         onPress={() => setConfirmVisible(true)}
@@ -98,6 +112,23 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
     marginTop: spacing.xl,
     gap: spacing.md,
+  },
+  languageButton: {
+    backgroundColor: "#6d00b6",
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+    marginTop: 20,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 2,
+    borderColor: "#ffffff20",
+  },
+
+  languageButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
   },
   settingTextBox: {
     flex: 1,

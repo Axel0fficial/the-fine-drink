@@ -13,9 +13,11 @@ import SavedPlayersModal from "@/components/players/SavedPlayersModal";
 import { colors, sharedStyles, spacing } from "@/style/theme";
 import { Player, SavedPlayer, TeamColor } from "@/types/game";
 import {
+  loadLastSessionPlayerIds,
   loadSavedPlayers,
-  saveSavedPlayers,
   savedPlayerToSessionPlayer,
+  saveLastSessionPlayerIds,
+  saveSavedPlayers,
 } from "@/utils/playerStorage";
 
 export default function PlayersScreen() {
@@ -37,7 +39,16 @@ export default function PlayersScreen() {
   useEffect(() => {
     async function loadPlayers() {
       const loadedPlayers = await loadSavedPlayers();
+      const lastPlayerIds = await loadLastSessionPlayerIds();
+
       setSavedPlayers(loadedPlayers);
+
+      const lastPlayers = loadedPlayers
+        .filter((savedPlayer) => lastPlayerIds.includes(savedPlayer.id))
+        .map(savedPlayerToSessionPlayer);
+
+      setPlayers(lastPlayers);
+
       setSavedPlayersLoaded(true);
     }
 
@@ -179,7 +190,9 @@ export default function PlayersScreen() {
     );
   }
 
-  function continueToMenu() {
+  async function continueToMenu() {
+    await saveLastSessionPlayerIds(players.map((player) => player.id));
+
     router.push({
       pathname: "/menu",
       params: {

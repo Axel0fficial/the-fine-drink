@@ -1,6 +1,7 @@
 import { PoolKey } from "@/data/pools";
 export type Difficulty = "easy" | "normal" | "hard" | "brutal";
-export type MinigameType = "fineDrink";
+
+export type MinigameType = "fineDrink" | "quickChoice";
 
 export type PlayerPreference = {
   nonDrinker: boolean;
@@ -62,8 +63,21 @@ export type Challenge = {
 
   minigameType?: MinigameType;
   fineDrinkData?: FineDrinkData;
+  quickChoiceData?: QuickChoiceData;
 };
 
+export type QuickChoiceQuestion = {
+  word: string;
+  correctOptions: string[];
+};
+
+export type QuickChoiceData = {
+  durationSeconds: number;
+  questionSet: "default";
+  wrongOptionPool: string[];
+  rewards: string[];
+  punishments: string[];
+};
 export type GameMode = "standard" | "custom";
 
 export type ChallengeVariable =
