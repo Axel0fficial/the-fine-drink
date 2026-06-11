@@ -5,27 +5,22 @@ import GameHeader from "@/components/game/GameHeader";
 import GameOverModal from "@/components/game/GameOverModal";
 import GameSettingsModal from "@/components/game/GameSettingsModal";
 import StatusBar from "@/components/game/StatusBar";
+
 import { challenges as defaultChallenges } from "@/data/challenges";
 import { colors, difficultyPalettes, sharedStyles } from "@/style/theme";
 import {
   Challenge,
   DrinkyEvent,
   GameMode,
+  GameModifierId,
   Player,
   PlayerStatus,
+  SessionDifficulty,
 } from "@/types/game";
 import {
   applyChallengeEnabledSettings,
   loadChallengeEnabledSettings,
 } from "@/utils/challengeEnabledStorage";
-import { loadCustomChallenges } from "@/utils/customChallengeStorage";
-import { pickDrinkyEvent } from "@/utils/drinkyPicker";
-import { loadDrinkyEnabled } from "@/utils/drinkyStorage";
-import { tickPlayerStatuses } from "@/utils/statusUtils";
-import { useLocalSearchParams } from "expo-router";
-import { useEffect, useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
-
 import { getAvailableChallengesForPlayer } from "@/utils/challengeFilters";
 import { pickWeightedChallenge } from "@/utils/challengePicker";
 import { resolveChallenge } from "@/utils/challengeResolver";
@@ -34,7 +29,14 @@ import {
   loadChallengePreferences,
   saveChallengePreferences,
 } from "@/utils/challengeStorage";
-import { getChallengeScore } from "@/utils/scoreUtils";
+import { loadCustomChallenges } from "@/utils/customChallengeStorage";
+import { pickDrinkyEvent } from "@/utils/drinkyPicker";
+import { loadDrinkyEnabled } from "@/utils/drinkyStorage";
+import { getChallengeScore, getScoreWithModifiers } from "@/utils/scoreUtils";
+import { tickPlayerStatuses } from "@/utils/statusUtils";
+import { useLocalSearchParams } from "expo-router";
+import { useEffect, useState } from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
 export default function GameScreen() {
   const params = useLocalSearchParams();
@@ -53,6 +55,8 @@ export default function GameScreen() {
 
   const teamsEnabled = JSON.parse((params.teamsEnabled as string) || "false");
   const roundLimit = Number(params.roundLimit || 10);
+  const sessionDifficulty = ((params.sessionDifficulty as string) ||
+    "normal") as SessionDifficulty;
 
   const [players, setPlayers] = useState<Player[]>(initialPlayers);
   const [challenges, setChallenges] = useState<Challenge[]>(defaultChallenges);
@@ -76,10 +80,15 @@ export default function GameScreen() {
   const [drinkyHidden, setDrinkyHidden] = useState(false);
   const [drinkyAppearances, setDrinkyAppearances] = useState(0);
   const activePalette = difficultyPalettes[challenge.difficulty];
+  const enabledGameModifiers: GameModifierId[] = JSON.parse(
+    (params.gameModifiers as string) || "[]",
+  );
 
   useEffect(() => {
     async function loadSavedData() {
       const savedPreferences = await loadChallengePreferences();
+      const sessionDifficulty = ((params.sessionDifficulty as string) ||
+        "normal") as SessionDifficulty;
 
       let playableChallenges = defaultChallenges;
 
@@ -247,7 +256,12 @@ export default function GameScreen() {
   function addScoreToCurrentPlayer() {
     if (!currentPlayer) return;
 
-    const points = getChallengeScore(challenge);
+    const points = getScoreWithModifiers(
+      challenge,
+      currentPlayer,
+      players,
+      enabledGameModifiers,
+    );
 
     setPlayers((currentPlayers) =>
       currentPlayers.map((player) =>
@@ -264,7 +278,12 @@ export default function GameScreen() {
   function handleFineDrinkAccept(statuses: PlayerStatus[]) {
     if (!currentPlayer) return;
 
-    const points = getChallengeScore(challenge);
+    const points = getScoreWithModifiers(
+      challenge,
+      currentPlayer,
+      players,
+      enabledGameModifiers,
+    );
 
     setPlayers((currentPlayers) =>
       currentPlayers.map((player) => {
@@ -371,7 +390,13 @@ export default function GameScreen() {
     console.log("Teams enabled:", teamsEnabled);
     console.log("Available challenges:", availableChallenges.length);
 
-    const pickedChallenge = pickWeightedChallenge(availableChallenges);
+    const pickedChallenge = pickWeightedChallenge(
+      availableChallenges,
+      nextPlayer,
+      players,
+      sessionDifficulty,
+      enabledGameModifiers,
+    );
 
     if (!pickedChallenge) {
       const fallback = resolveChallenge(getFallbackChallenge(), players);

@@ -1,12 +1,32 @@
-import { Challenge } from "@/types/game";
+import {
+  Challenge,
+  GameModifierId,
+  Player,
+  SessionDifficulty,
+} from "@/types/game";
+import { getDifficultyAdjustedWeight } from "@/utils/DifficultyUtils";
 import { getChallengeOdds } from "@/utils/oddsUtils";
 
-export function pickWeightedChallenge(challenges: Challenge[]) {
+export function pickWeightedChallenge(
+  challenges: Challenge[],
+  player: Player,
+  players: Player[],
+  sessionDifficulty: SessionDifficulty,
+  enabledGameModifiers: GameModifierId[],
+) {
   if (challenges.length === 0) return null;
 
   const weightedChallenges = challenges.map((challenge) => ({
     challenge,
-    weight: getChallengeOdds(challenge),
+    weight:
+      getChallengeOdds(challenge) *
+      getDifficultyAdjustedWeight(
+        challenge,
+        player,
+        players,
+        sessionDifficulty,
+        enabledGameModifiers,
+      ),
   }));
 
   const totalWeight = weightedChallenges.reduce(

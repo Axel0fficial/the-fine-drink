@@ -1,11 +1,9 @@
-import { router, useLocalSearchParams } from "expo-router";
-import { useEffect, useState } from "react";
-import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
-
 import CustomChallengeModal from "@/components/custom/CustomChallengeModal";
+import GameModifiersModal from "@/components/custom/GameModifiersModal";
 import { challenges as defaultChallenges } from "@/data/challenges";
+import { text } from "@/locales/text";
 import { colors, radius, sharedStyles, spacing } from "@/style/theme";
-import { Challenge } from "@/types/game";
+import { Challenge, GameModifierId } from "@/types/game";
 import {
   applyChallengeEnabledSettings,
   ChallengeEnabledSetting,
@@ -16,9 +14,23 @@ import {
   loadCustomChallenges,
   saveCustomChallenges,
 } from "@/utils/customChallengeStorage";
+import {
+  loadEnabledGameModifiers,
+  saveEnabledGameModifiers,
+} from "@/utils/gameModifierStorage";
+import { useLanguageStore } from "@/utils/languageStore";
+import { router, useLocalSearchParams } from "expo-router";
+import { useEffect, useState } from "react";
+import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 
 export default function CustomScreen() {
+  const { language, toggleLanguage } = useLanguageStore();
+  const t = text[language];
   const params = useLocalSearchParams();
+  const [modifierModalVisible, setModifierModalVisible] = useState(false);
+  const [enabledModifierIds, setEnabledModifierIds] = useState<
+    GameModifierId[]
+  >([]);
 
   const [customChallenges, setCustomChallenges] = useState<Challenge[]>([]);
   const [defaultChallengeSettings, setDefaultChallengeSettings] = useState<
@@ -44,6 +56,8 @@ export default function CustomScreen() {
     async function loadData() {
       const loadedCustomChallenges = await loadCustomChallenges();
       const loadedEnabledSettings = await loadChallengeEnabledSettings();
+      const loadedModifiers = await loadEnabledGameModifiers();
+      setEnabledModifierIds(loadedModifiers);
 
       setCustomChallenges(loadedCustomChallenges);
       setDefaultChallengeSettings(loadedEnabledSettings);
@@ -55,6 +69,7 @@ export default function CustomScreen() {
 
   useEffect(() => {
     if (!loaded) return;
+    saveEnabledGameModifiers(enabledModifierIds);
 
     saveCustomChallenges(customChallenges);
     saveChallengeEnabledSettings(defaultChallengeSettings);
@@ -66,6 +81,15 @@ export default function CustomScreen() {
       ...current,
       [type]: !current[type],
     }));
+  }
+  function toggleModifier(modifierId: GameModifierId) {
+    setEnabledModifierIds((current) => {
+      if (current.includes(modifierId)) {
+        return current.filter((id) => id !== modifierId);
+      }
+
+      return [...current, modifierId];
+    });
   }
 
   function getChallengesByType(type: string) {
@@ -98,6 +122,8 @@ export default function CustomScreen() {
         teamsEnabled: params.teamsEnabled as string,
         roundLimit: params.roundLimit as string,
         gameMode: "custom",
+        sessionDifficulty: params.sessionDifficulty as string,
+        gameModifiers: JSON.stringify(enabledModifierIds),
       },
     });
   }
@@ -161,6 +187,12 @@ export default function CustomScreen() {
       <Text style={sharedStyles.title}>Custom Mode</Text>
 
       <View style={styles.topActions}>
+        <Pressable
+          style={[sharedStyles.secondaryButton, styles.topButton]}
+          onPress={() => setModifierModalVisible(true)}
+        >
+          <Text style={sharedStyles.buttonText}>Modifiers</Text>
+        </Pressable>
         <Pressable
           style={[sharedStyles.primaryButton, styles.topButton]}
           onPress={startCustomGame}
@@ -259,6 +291,13 @@ export default function CustomScreen() {
       <Pressable style={styles.backButton} onPress={() => router.back()}>
         <Text style={styles.backText}>Back</Text>
       </Pressable>
+
+      <GameModifiersModal
+        visible={modifierModalVisible}
+        enabledModifierIds={enabledModifierIds}
+        onClose={() => setModifierModalVisible(false)}
+        onToggle={toggleModifier}
+      />
 
       <CustomChallengeModal
         visible={modalVisible}

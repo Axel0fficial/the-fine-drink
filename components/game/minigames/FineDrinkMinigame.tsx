@@ -53,7 +53,7 @@ export default function FineDrinkMinigame({
         </Text>
 
         <Text style={styles.rounds}>
-          Lasts {data.offerStatus.remainingRounds} rounds
+          Lasts {data.offerStatus.remainingRounds} {t.roundLbl}
         </Text>
 
         {accepted && (

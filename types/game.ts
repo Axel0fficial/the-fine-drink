@@ -15,6 +15,15 @@ export type SavedPlayer = {
   preferences: PlayerPreference;
 };
 
+export type GameModifierId = "kingOfTheHill" | "rocketRicky";
+
+export type GameModifier = {
+  id: GameModifierId;
+  name: string;
+  description: string;
+  enabled: boolean;
+};
+
 export type Player = {
   id: string;
   name: string;
@@ -23,7 +32,7 @@ export type Player = {
   preferences: PlayerPreference;
   team: TeamColor;
 };
-
+export type SessionDifficulty = "chill" | "normal" | "spicy" | "chaos";
 export type PlayerStatus = {
   id: string;
   name: string;
@@ -31,8 +40,8 @@ export type PlayerStatus = {
   remainingRounds: number;
   sourceChallengeId?: string;
   nature?: "good" | "bad";
+  difficultyModifier?: number;
 };
-
 export type ChallengeType = "simple" | "status" | "minigame" | "custom";
 
 export type FineDrinkData = {

@@ -55,8 +55,13 @@ export function pickDrinkyEvent(
       challenge.type !== "minigame" && challenge.id !== currentChallenge.id,
   );
 
-  const extraChallenge = pickWeightedChallenge(availableExtraChallenges);
-
+  const extraChallenge = pickWeightedChallenge(
+    availableExtraChallenges,
+    currentPlayer,
+    allPlayers,
+    "normal",
+    [],
+  );
   if (!extraChallenge) return selectedEvent;
 
   return {

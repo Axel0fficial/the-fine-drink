@@ -1,4 +1,6 @@
+import DifficultyModal from "@/components/menu/DifficultyModal";
 import { text } from "@/locales/text";
+import { SessionDifficulty } from "@/types/game";
 import { useLanguageStore } from "@/utils/languageStore";
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { useCallback, useState } from "react";
@@ -21,6 +23,10 @@ export default function MenuScreen() {
   const players: Player[] = JSON.parse((params.players as string) || "[]");
   const teamsEnabled = JSON.parse((params.teamsEnabled as string) || "false");
   const roundLimit = Number(params.roundLimit || 10);
+  const [difficultyVisible, setDifficultyVisible] = useState(false);
+  const [pendingMode, setPendingMode] = useState<"standard" | "custom" | null>(
+    null,
+  );
 
   const [drinkyEnabled, setDrinkyEnabled] = useState(true);
 
@@ -45,6 +51,36 @@ export default function MenuScreen() {
         gameMode: "standard",
       },
     });
+  }
+  function handleDifficultySelect(sessionDifficulty: SessionDifficulty) {
+    setDifficultyVisible(false);
+
+    if (pendingMode === "standard") {
+      router.push({
+        pathname: "/game",
+        params: {
+          players: JSON.stringify(players),
+          teamsEnabled: JSON.stringify(teamsEnabled),
+          roundLimit: String(roundLimit),
+          gameMode: "standard",
+          sessionDifficulty,
+        },
+      });
+
+      return;
+    }
+
+    if (pendingMode === "custom") {
+      router.push({
+        pathname: "/custom",
+        params: {
+          players: JSON.stringify(players),
+          teamsEnabled: JSON.stringify(teamsEnabled),
+          roundLimit: String(roundLimit),
+          sessionDifficulty,
+        },
+      });
+    }
   }
 
   function startCustomMode() {
@@ -82,24 +118,36 @@ export default function MenuScreen() {
           <Text style={styles.title}>The Fine Drink</Text>
 
           <Text style={styles.subtitle}>
-            {players.length} {t.playerslabel} · {roundLimit} {t.roundLabel} · {t.TeamsButtonText}{" "}
-            {teamsEnabled ? "On" : "Off"}
+            {players.length} {t.playerslabel} · {roundLimit} {t.roundLabel} ·{" "}
+            {t.TeamsButtonText} {teamsEnabled ? "On" : "Off"}
           </Text>
 
           <View style={styles.gameModes}>
             <Text style={styles.sectionLabel}>{t.gamemodeslabel}</Text>
 
-            <Pressable style={styles.primaryModeButton} onPress={startGame}>
-              <Text style={styles.primaryModeText}>{t.standardGamemodeLabel}</Text>
+            <Pressable
+              style={styles.primaryModeButton}
+              onPress={() => {
+                setPendingMode("standard");
+                setDifficultyVisible(true);
+              }}
+            >
+              <Text style={styles.primaryModeText}>Standard Play</Text>
               <Text style={styles.modeDescription}>
-                {t.standardGamemodedescriptionlabel}
+                Default chaos. No questions asked.
               </Text>
             </Pressable>
 
-            <Pressable style={styles.modeButton} onPress={startCustomMode}>
-              <Text style={styles.modeText}>{t.customamemodeLabel}</Text>
+            <Pressable
+              style={styles.modeButton}
+              onPress={() => {
+                setPendingMode("custom");
+                setDifficultyVisible(true);
+              }}
+            >
+              <Text style={styles.modeText}>Custom Play</Text>
               <Text style={styles.modeDescription}>
-                {t.customamemodedescriptionLabel}
+                Use custom challenges and toggle the list.
               </Text>
             </Pressable>
           </View>
@@ -111,6 +159,11 @@ export default function MenuScreen() {
         >
           <Text style={styles.editPlayersText}>{t.BackText}</Text>
         </Pressable>
+        <DifficultyModal
+          visible={difficultyVisible}
+          onClose={() => setDifficultyVisible(false)}
+          onSelect={handleDifficultySelect}
+        />
       </View>
     </ImageBackground>
   );
