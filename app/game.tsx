@@ -356,8 +356,17 @@ export default function GameScreen() {
     return {
       id: "fallback",
       type: "simple",
-      title: "Configuration Error",
-      description: "No enabled challenge matched the current game settings.",
+
+      title: {
+        en: "Configuration Error",
+        es: "Error de configuración",
+      },
+
+      description: {
+        en: "No enabled challenge matched the current game settings.",
+        es: "Ningún desafío habilitado coincide con la configuración actual del juego.",
+      },
+
       difficulty: "easy",
       tags: ["nonDrinkerSafe"],
       enabled: true,
@@ -488,6 +497,9 @@ export default function GameScreen() {
         statusAction={
           <StatusBar
             statuses={currentPlayer?.statuses ?? []}
+            currentPlayer={currentPlayer}
+            players={players}
+            enabledGameModifiers={enabledGameModifiers}
             palette={activePalette}
           />
         }

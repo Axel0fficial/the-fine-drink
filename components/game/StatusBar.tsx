@@ -6,8 +6,12 @@ import {
   sharedStyles,
   spacing,
 } from "@/style/theme";
-import { PlayerStatus } from "@/types/game";
+import { GameModifierId, Player, PlayerStatus } from "@/types/game";
 import { useLanguageStore } from "@/utils/languageStore";
+import {
+  playerIsInFirstPlace,
+  playerIsInLastPlace,
+} from "@/utils/playerRankingUtils";
 import { useState } from "react";
 import {
   Modal,
@@ -20,13 +24,53 @@ import {
 
 type StatusBarProps = {
   statuses: PlayerStatus[];
+  currentPlayer?: Player;
+  players: Player[];
+  enabledGameModifiers: GameModifierId[];
   palette: GamePalette;
 };
-
-export default function StatusBar({ statuses, palette }: StatusBarProps) {
+export default function StatusBar({
+  players,
+  statuses,
+  palette,
+  currentPlayer,
+  enabledGameModifiers,
+}: StatusBarProps) {
   const [visible, setVisible] = useState(false);
   const { language, toggleLanguage } = useLanguageStore();
   const t = text[language];
+  const modifierStatuses: PlayerStatus[] = [];
+
+  if (
+    currentPlayer &&
+    enabledGameModifiers.includes("kingOfTheHill") &&
+    playerIsInFirstPlace(currentPlayer, players)
+  ) {
+    modifierStatuses.push({
+      id: "modifier-king-of-the-hill",
+      name: "King of the Hill",
+      description: "Session modifier: harder challenges while in first place.",
+      remainingRounds: 999,
+      nature: "bad",
+    });
+  }
+
+  if (
+    currentPlayer &&
+    enabledGameModifiers.includes("rocketRicky") &&
+    playerIsInLastPlace(currentPlayer, players)
+  ) {
+    modifierStatuses.push({
+      id: "modifier-rocket-ricky",
+      name: "Rocket Ricky",
+      description:
+        "Session modifier: easier challenges and +1 point while in last place.",
+      remainingRounds: 999,
+      nature: "good",
+    });
+  }
+
+  const displayedStatuses = [...modifierStatuses, ...statuses];
 
   return (
     <>
@@ -35,7 +79,7 @@ export default function StatusBar({ statuses, palette }: StatusBarProps) {
         onPress={() => setVisible(true)}
       >
         <Text style={[styles.statusButtonText, { color: palette.text }]}>
-          {t.statuseslabel} ({statuses.length})
+          {t.statuseslabel} ({displayedStatuses.length})
         </Text>
       </Pressable>
 
@@ -52,10 +96,10 @@ export default function StatusBar({ statuses, palette }: StatusBarProps) {
             </Text>
 
             <ScrollView style={styles.list}>
-              {statuses.length === 0 ? (
+              {displayedStatuses.length === 0 ? (
                 <Text style={styles.emptyText}>{t.noActiveStsLbl}</Text>
               ) : (
-                statuses.map((status) => (
+                displayedStatuses.map((status) => (
                   <View key={status.id} style={styles.statusCard}>
                     <Text style={styles.statusName}>{status.name}</Text>
 

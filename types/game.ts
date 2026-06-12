@@ -52,8 +52,8 @@ export type ChallengeTag = "drinking" | "nonDrinkerSafe" | "teams" | "custom";
 export type Challenge = {
   id: string;
   type: ChallengeType;
-  title: string;
-  description: string;
+  title: LocalizedText;
+  description: LocalizedText;
   difficulty: Difficulty;
 
   tags: ChallengeTag[];
@@ -73,6 +73,11 @@ export type Challenge = {
   minigameType?: MinigameType;
   fineDrinkData?: FineDrinkData;
   quickChoiceData?: QuickChoiceData;
+};
+
+export type LocalizedText = {
+  en: string;
+  es: string;
 };
 
 export type QuickChoiceQuestion = {

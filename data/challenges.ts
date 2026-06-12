@@ -9,8 +9,15 @@ export const challenges: Challenge[] = [
   {
     id: "1",
     type: "simple",
-    title: "Truth Time",
-    description: "Tell an embarrassing story or take 3 sips.",
+    title: {
+      en: "Truth or Sip",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "{player}, answer honestly or take 2 sips.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "easy",
     tags: ["drinking"],
     baseChance: 1,
@@ -24,8 +31,14 @@ export const challenges: Challenge[] = [
   {
     id: "2",
     type: "simple",
-    title: "Dare",
-    description: "Let the group choose a dare for you.",
+    title: {
+      en: "Sip or Dare",
+      es: "Trago o Reto",
+    },
+    description: {
+      en: "{player}, complete a dare or take 2 sips.",
+      es: "{player}, haz un reto o toma 2.",
+    },
     difficulty: "normal",
     tags: ["nonDrinkerSafe"],
     baseChance: 1,
@@ -39,8 +52,15 @@ export const challenges: Challenge[] = [
   {
     id: "3",
     type: "simple",
-    title: "Exercise Tax",
-    description: "Do {x} {y} or drink {z} sips.",
+    title: {
+      en: "Exercise Tax",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Do {x} {y} or drink {z} sips.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "easy",
     enabled: true,
     tags: ["drinking"],
@@ -59,8 +79,15 @@ export const challenges: Challenge[] = [
   {
     id: "4",
     type: "status",
-    title: "Double Trouble",
-    description: "For 2 rounds, your punishments are doubled.",
+    title: {
+      en: "Double Trouble",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "For 2 rounds, your punishments are doubled.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "hard",
     tags: ["drinking"],
     enabled: true,
@@ -81,8 +108,15 @@ export const challenges: Challenge[] = [
   {
     id: "5",
     type: "status",
-    title: "Silent Curse",
-    description: "You cannot talk for 3 rounds. If you do, drink.",
+    title: {
+      en: "Silent Curse",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "You cannot talk for 3 rounds. If you do, drink.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     enabled: true,
     tags: ["drinking"],
@@ -103,9 +137,15 @@ export const challenges: Challenge[] = [
   {
     id: "6",
     type: "status",
-    title: "Forever Suspicious",
-    description:
-      "For the rest of the session, everyone may question your choices.",
+    title: {
+      en: "Forever Suspicious",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "For the rest of the session, everyone may question your choices.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "brutal",
     tags: ["nonDrinkerSafe"],
     enabled: true,
@@ -127,8 +167,15 @@ export const challenges: Challenge[] = [
   {
     id: "7",
     type: "simple",
-    title: "FMK",
-    description: "Fuck, Marry, Kill: {x}, {y}, {z}.",
+    title: {
+      en: "FMK",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Fuck, Marry, Kill: {x}, {y}, {z}.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     tags: ["nonDrinkerSafe"],
     enabled: true,
@@ -150,8 +197,15 @@ export const challenges: Challenge[] = [
   {
     id: "8",
     type: "minigame",
-    title: "The Fine Drink",
-    description: "A mysterious offer appears.",
+    title: {
+      en: "The Fine Drink",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "A mysterious offer appears.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "brutal",
     enabled: true,
     tags: ["nonDrinkerSafe"],
@@ -169,9 +223,15 @@ export const challenges: Challenge[] = [
   {
     id: "9",
     type: "simple",
-    title: "Human Tower",
-    description:
-      "{team} must make a human pyramid or everyone in that team drinks 2 sips.",
+    title: {
+      en: "Human Tower",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "{team} must make a human pyramid or everyone in that team drinks 2 sips.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     tags: ["teams", "drinking"],
     baseChance: 0.8,
@@ -186,8 +246,15 @@ export const challenges: Challenge[] = [
   {
     id: "10",
     type: "simple",
-    title: "Team Pose",
-    description: "{team} must recreate a movie poster.",
+    title: {
+      en: "Team Pose",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "{team} must recreate a movie poster.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "easy",
     tags: ["teams", "nonDrinkerSafe"],
     baseChance: 1,
@@ -202,8 +269,15 @@ export const challenges: Challenge[] = [
   {
     id: "11",
     type: "simple",
-    title: "Confession Booth",
-    description: "Reveal an unpopular opinion or drink 2 sips.",
+    title: {
+      en: "Confession Booth",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Reveal an unpopular opinion or drink 2 sips.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "easy",
     tags: ["drinking"],
     enabled: true,
@@ -217,8 +291,15 @@ export const challenges: Challenge[] = [
   {
     id: "12",
     type: "simple",
-    title: "Celebrity Impression",
-    description: "Do your best impression of {x}.",
+    title: {
+      en: "Celebrity Impression",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Do your best impression of {x}.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "easy",
     enabled: true,
     tags: ["nonDrinkerSafe"],
@@ -239,9 +320,15 @@ export const challenges: Challenge[] = [
   {
     id: "13",
     type: "simple",
-    title: "Trivia Duel",
-    description:
-      "Challenge another player to a trivia question. Loser drinks 2 sips.",
+    title: {
+      en: "Trivia Duel",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Challenge another player to a trivia question. Loser drinks 2 sips.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     tags: ["drinking"],
     baseChance: 0.9,
@@ -255,8 +342,15 @@ export const challenges: Challenge[] = [
   {
     id: "14",
     type: "simple",
-    title: "Rapid Fire",
-    description: "Name {x} {y} in 10 seconds.",
+    title: {
+      en: "Rapid Fire",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Name {x} {y} in 10 seconds.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     tags: ["nonDrinkerSafe"],
     baseChance: 1,
@@ -274,8 +368,15 @@ export const challenges: Challenge[] = [
   {
     id: "15",
     type: "status",
-    title: "Pirate Accent",
-    description: "For 3 rounds, speak with a pirate accent.",
+    title: {
+      en: "Pirate Accent",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "For 3 rounds, speak with a pirate accent.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     tags: ["nonDrinkerSafe"],
     baseChance: 0.8,
@@ -296,8 +397,15 @@ export const challenges: Challenge[] = [
   {
     id: "16",
     type: "status",
-    title: "Lucky Bastard",
-    description: "Your next punishment is cancelled.",
+    title: {
+      en: "Lucky Bastard",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Your next punishment is cancelled.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "hard",
     tags: ["drinking"],
     baseChance: 0.5,
@@ -318,8 +426,15 @@ export const challenges: Challenge[] = [
   {
     id: "17",
     type: "status",
-    title: "Question Master",
-    description: "For 4 rounds, if someone answers your question they drink.",
+    title: {
+      en: "Question Master",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "For 4 rounds, if someone answers your question they drink.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "hard",
     tags: ["drinking"],
     enabled: true,
@@ -340,8 +455,15 @@ export const challenges: Challenge[] = [
   {
     id: "18",
     type: "simple",
-    title: "Would You Rather",
-    description: "Would you rather {x} or {y}?",
+    title: {
+      en: "Would You Rather",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Would you rather {x} or {y}?",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "easy",
     tags: ["nonDrinkerSafe"],
     baseChance: 1,
@@ -363,8 +485,15 @@ export const challenges: Challenge[] = [
   {
     id: "19",
     type: "simple",
-    title: "Gift of Suffering",
-    description: "Give {x} sips to any player.",
+    title: {
+      en: "Gift of Suffering",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Give {x} sips to any player.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "easy",
     tags: ["drinking"],
     baseChance: 1,
@@ -379,9 +508,15 @@ export const challenges: Challenge[] = [
   {
     id: "20",
     type: "simple",
-    title: "Reverse Uno",
-    description:
-      "Choose another player. They must complete your challenge instead.",
+    title: {
+      en: "Reverse Uno",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Choose another player. They must complete your challenge instead.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "hard",
     tags: ["nonDrinkerSafe"],
     enabled: true,
@@ -395,8 +530,15 @@ export const challenges: Challenge[] = [
   {
     id: "21",
     type: "simple",
-    title: "Animal Kingdom",
-    description: "Imitate a {x} until someone guesses correctly.",
+    title: {
+      en: "Animal Kingdom",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Imitate a {x} until someone guesses correctly.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "easy",
     tags: ["nonDrinkerSafe"],
     baseChance: 1,
@@ -417,9 +559,15 @@ export const challenges: Challenge[] = [
   {
     id: "22",
     type: "simple",
-    title: "Movie Quote",
-    description:
-      "Act out a famous movie scene. The group decides if you succeed.",
+    title: {
+      en: "Movie Quote",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Act out a famous movie scene. The group decides if you succeed.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     tags: ["nonDrinkerSafe"],
     enabled: true,
@@ -433,8 +581,15 @@ export const challenges: Challenge[] = [
   {
     id: "23",
     type: "simple",
-    title: "Sacrifice",
-    description: "Take {x} sips so the entire group can avoid drinking.",
+    title: {
+      en: "Sacrifice",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Take {x} sips so the entire group can avoid drinking.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     tags: ["drinking"],
     baseChance: 0.8,
@@ -449,8 +604,15 @@ export const challenges: Challenge[] = [
   {
     id: "24",
     type: "simple",
-    title: "Team Chant",
-    description: "{team} must invent and perform a battle cry.",
+    title: {
+      en: "Team Chant",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "{team} must invent and perform a battle cry.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "easy",
     enabled: true,
     tags: ["teams", "nonDrinkerSafe"],
@@ -465,8 +627,15 @@ export const challenges: Challenge[] = [
   {
     id: "25",
     type: "simple",
-    title: "Team Sacrifice",
-    description: "{team} chooses one representative to drink 4 sips.",
+    title: {
+      en: "Team Sacrifice",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "{team} chooses one representative to drink 4 sips.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     tags: ["teams", "drinking"],
     baseChance: 0.8,
@@ -481,9 +650,15 @@ export const challenges: Challenge[] = [
   {
     id: "26",
     type: "status",
-    title: "Tiny Hands",
-    description:
-      "For 3 rounds, you must perform actions using only your pinkies.",
+    title: {
+      en: "Tiny Hands",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "For 3 rounds, you must perform actions using only your pinkies.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "hard",
     tags: ["nonDrinkerSafe"],
     baseChance: 0.5,
@@ -504,8 +679,15 @@ export const challenges: Challenge[] = [
   {
     id: "27",
     type: "status",
-    title: "Royal Decree",
-    description: "For 3 rounds, everyone must address you as Your Majesty.",
+    title: {
+      en: "Royal Decree",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "For 3 rounds, everyone must address you as Your Majesty.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "hard",
     tags: ["nonDrinkerSafe"],
     baseChance: 0.5,
@@ -526,8 +708,15 @@ export const challenges: Challenge[] = [
   {
     id: "28",
     type: "simple",
-    title: "Fact or Fiction",
-    description: "Tell three facts about yourself. One must be false.",
+    title: {
+      en: "Fact or Fiction",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Tell three facts about yourself. One must be false.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     tags: ["nonDrinkerSafe"],
     baseChance: 1,
@@ -541,9 +730,15 @@ export const challenges: Challenge[] = [
   {
     id: "29",
     type: "simple",
-    title: "Risky Investment",
-    description:
-      "Take 1 sip now. Roll a die. On 1-3 nothing happens. On 4-6 take {x} more.",
+    title: {
+      en: "Risky Investment",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Take 1 sip now. Roll a die. On 1-3 nothing happens. On 4-6 take {x} more.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "hard",
     tags: ["drinking"],
     baseChance: 0.7,
@@ -558,8 +753,15 @@ export const challenges: Challenge[] = [
   {
     id: "30",
     type: "simple",
-    title: "Ultimate Choice",
-    description: "Choose: drink {x} sips or perform {y} jumping jacks.",
+    title: {
+      en: "Ultimate Choice",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Choose: drink {x} sips or perform {y} jumping jacks.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     tags: ["drinking"],
     baseChance: 0.9,
@@ -577,8 +779,15 @@ export const challenges: Challenge[] = [
   {
     id: "31",
     type: "simple",
-    title: "Take a Sip",
-    description: "Take {x} sips.",
+    title: {
+      en: "Take a Sip",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Take {x} sips.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "easy",
     tags: ["drinking"],
     baseChance: 1,
@@ -600,8 +809,15 @@ export const challenges: Challenge[] = [
   {
     id: "32",
     type: "status",
-    title: "Speak in Questions",
-    description: "You can only speak in questions for {rounds} rounds.",
+    title: {
+      en: "Speak in Questions",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "You can only speak in questions for {rounds} rounds.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "hard",
     tags: ["nonDrinkerSafe"],
     baseChance: 0.6,
@@ -622,8 +838,15 @@ export const challenges: Challenge[] = [
   {
     id: "33",
     type: "simple",
-    title: "Pick Someone",
-    description: "Choose someone to drink {x} sips.",
+    title: {
+      en: "Pick Someone",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Choose someone to drink {x} sips.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "easy",
     tags: ["drinking"],
     baseChance: 1,
@@ -645,8 +868,15 @@ export const challenges: Challenge[] = [
   {
     id: "34",
     type: "simple",
-    title: "Last to React",
-    description: "Last person to raise their hand drinks.",
+    title: {
+      en: "Last to React",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Last person to raise their hand drinks.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     tags: ["nonDrinkerSafe"],
     baseChance: 0.9,
@@ -660,8 +890,15 @@ export const challenges: Challenge[] = [
   {
     id: "35",
     type: "simple",
-    title: "Finish Your Drink",
-    description: "Finish your drink in {seconds} seconds.",
+    title: {
+      en: "Finish Your Drink",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Finish your drink in {seconds} seconds.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "brutal",
     tags: ["drinking"],
     baseChance: 0.35,
@@ -683,8 +920,15 @@ export const challenges: Challenge[] = [
   {
     id: "36",
     type: "status",
-    title: "Double Points",
-    description: "Next challenge is worth double points.",
+    title: {
+      en: "Double Points",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Next challenge is worth double points.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "hard",
     tags: ["nonDrinkerSafe"],
     baseChance: 0.6,
@@ -705,8 +949,15 @@ export const challenges: Challenge[] = [
   {
     id: "37",
     type: "simple",
-    title: "Truth or Drink",
-    description: "Answer honestly or take {x} sips.",
+    title: {
+      en: "Truth or Drink",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Answer honestly or take {x} sips.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     enabled: true,
     tags: ["drinking"],
@@ -728,8 +979,15 @@ export const challenges: Challenge[] = [
   {
     id: "38",
     type: "simple",
-    title: "Charades",
-    description: "Act like {0} while {1}.",
+    title: {
+      en: "Charades",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Act like {0} while {1}.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     enabled: true,
     tags: ["nonDrinkerSafe"],
@@ -755,8 +1013,15 @@ export const challenges: Challenge[] = [
   {
     id: "39",
     type: "simple",
-    title: "Choose Your Consequence",
-    description: "Your penalty is: {0}.",
+    title: {
+      en: "Choose Your Consequence",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Your penalty is: {0}.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     enabled: true,
     tags: ["nonDrinkerSafe"],
@@ -777,8 +1042,15 @@ export const challenges: Challenge[] = [
   {
     id: "40",
     type: "simple",
-    title: "Romantic Would You Rather",
-    description: "Would you rather date {0}?",
+    title: {
+      en: "Romantic Would You Rather",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Would you rather date {0}?",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "easy",
     enabled: true,
     tags: ["nonDrinkerSafe"],
@@ -799,8 +1071,15 @@ export const challenges: Challenge[] = [
   {
     id: "41",
     type: "simple",
-    title: "Spicy Spoon",
-    description: "Take a small spoonful of hot sauce.",
+    title: {
+      en: "Spicy Spoon",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Take a small spoonful of hot sauce.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "brutal",
     tags: ["nonDrinkerSafe"],
     enabled: true,
@@ -814,8 +1093,15 @@ export const challenges: Challenge[] = [
   {
     id: "42",
     type: "simple",
-    title: "Condiment Challenge",
-    description: "Take a spoonful of vinegar or oil.",
+    title: {
+      en: "Condiment Challenge",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Take a spoonful of vinegar or oil.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "brutal",
     tags: ["drinking"],
     baseChance: 0.35,
@@ -829,9 +1115,15 @@ export const challenges: Challenge[] = [
   {
     id: "43",
     type: "simple",
-    title: "Bartender Shot",
-    description:
-      "The player on your right prepares a shot with 3 ingredients. You must drink it.",
+    title: {
+      en: "Bartender Shot",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "The player on your right prepares a shot with 3 ingredients. You must drink it.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "hard",
     tags: ["drinking"],
     baseChance: 0.6,
@@ -845,9 +1137,15 @@ export const challenges: Challenge[] = [
   {
     id: "44",
     type: "simple",
-    title: "Mystery Shot",
-    description:
-      "The group prepares a shot for you without telling you what is in it.",
+    title: {
+      en: "Mystery Shot",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "The group prepares a shot for you without telling you what is in it.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "hard",
     tags: ["drinking"],
     baseChance: 0.6,
@@ -861,9 +1159,15 @@ export const challenges: Challenge[] = [
   {
     id: "45",
     type: "simple",
-    title: "Shot Buddy",
-    description:
-      "Find a drinking buddy for a shot. If nobody accepts, take 2 shots alone.",
+    title: {
+      en: "Shot Buddy",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Find a drinking buddy for a shot. If nobody accepts, take 2 shots alone.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     enabled: true,
     tags: ["drinking"],
@@ -877,8 +1181,15 @@ export const challenges: Challenge[] = [
   {
     id: "46",
     type: "simple",
-    title: "Salesperson",
-    description: "Sell any product to the group. Make it convincing.",
+    title: {
+      en: "Salesperson",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Sell any product to the group. Make it convincing.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     tags: ["nonDrinkerSafe"],
     baseChance: 0.9,
@@ -892,8 +1203,15 @@ export const challenges: Challenge[] = [
   {
     id: "47",
     type: "simple",
-    title: "Beach Time",
-    description: "Drink a glass of salty water.",
+    title: {
+      en: "Beach Time",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Drink a glass of salty water.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     tags: ["drinking"],
     enabled: true,
@@ -907,9 +1225,15 @@ export const challenges: Challenge[] = [
   {
     id: "48",
     type: "simple",
-    title: "Marriage Proposal",
-    description:
-      "Get on one knee and romantically propose to the second-oldest player.",
+    title: {
+      en: "Marriage Proposal",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Get on one knee and romantically propose to the second-oldest player.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     tags: ["nonDrinkerSafe"],
     enabled: true,
@@ -923,8 +1247,15 @@ export const challenges: Challenge[] = [
   {
     id: "49",
     type: "simple",
-    title: "Cheers!",
-    description: "Make a toast. Everyone drinks.",
+    title: {
+      en: "Cheers!",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Make a toast. Everyone drinks.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     tags: ["drinking"],
     baseChance: 0.9,
@@ -938,8 +1269,15 @@ export const challenges: Challenge[] = [
   {
     id: "50",
     type: "simple",
-    title: "Poet",
-    description: "Say something nice about the player on your left.",
+    title: {
+      en: "Poet",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Say something nice about the player on your left.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "hard",
     enabled: true,
     tags: ["nonDrinkerSafe"],
@@ -953,8 +1291,15 @@ export const challenges: Challenge[] = [
   {
     id: "51",
     type: "simple",
-    title: "Toast to Someone",
-    description: "Make a toast dedicated to someone at the table.",
+    title: {
+      en: "Toast to Someone",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Make a toast dedicated to someone at the table.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     tags: ["nonDrinkerSafe"],
     baseChance: 0.9,
@@ -968,8 +1313,15 @@ export const challenges: Challenge[] = [
   {
     id: "52",
     type: "simple",
-    title: "High Card",
-    description: "Draw or reveal a card. Highest card wins.",
+    title: {
+      en: "High Card",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Draw or reveal a card. Highest card wins.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     tags: ["drinking"],
     baseChance: 0.9,
@@ -983,8 +1335,15 @@ export const challenges: Challenge[] = [
   {
     id: "53",
     type: "simple",
-    title: "King's Cup",
-    description: "King's Cup: whoever fills the cup has to drink it.",
+    title: {
+      en: "King's Cup",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "King's Cup: whoever fills the cup has to drink it.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     tags: ["drinking"],
     enabled: true,
@@ -998,10 +1357,16 @@ export const challenges: Challenge[] = [
   {
     id: "54",
     type: "simple",
-    title: "Waterfall",
     enabled: true,
-    description:
-      "Waterfall: start drinking in a chain. Nobody can stop until the previous person stops.",
+    title: {
+      en: "Waterfall",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Waterfall: start drinking in a chain. Nobody can stop until the previous person stops.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "brutal",
     tags: ["drinking"],
     baseChance: 0.35,
@@ -1014,10 +1379,16 @@ export const challenges: Challenge[] = [
   {
     id: "55",
     type: "simple",
-    title: "No Phone",
     enabled: true,
-    description:
-      "Leave your phone on the table and do not touch it until your next turn.",
+    title: {
+      en: "No Phone",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Leave your phone on the table and do not touch it until your next turn.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     tags: ["nonDrinkerSafe"],
     baseChance: 0.9,
@@ -1030,9 +1401,15 @@ export const challenges: Challenge[] = [
   {
     id: "56",
     type: "simple",
-    title: "Right-Side Dare",
-    description:
-      "The player on your right may give you any dare. If you refuse, the group chooses your punishment.",
+    title: {
+      en: "Right-Side Dare",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "The player on your right may give you any dare. If you refuse, the group chooses your punishment.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     enabled: true,
     tags: ["nonDrinkerSafe"],
@@ -1046,9 +1423,15 @@ export const challenges: Challenge[] = [
   {
     id: "57",
     type: "simple",
-    title: "Prayer Time",
-    description:
-      "Kneel dramatically while another player gives you a shot from 25 cm away.",
+    title: {
+      en: "Prayer Time",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Kneel dramatically while another player gives you a shot from 25 cm away.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "brutal",
     enabled: true,
     tags: ["drinking"],
@@ -1062,8 +1445,15 @@ export const challenges: Challenge[] = [
   {
     id: "58",
     type: "simple",
-    title: "Lawyer",
-    description: "Defend your beliefs and give a speech about {0}.",
+    title: {
+      en: "Lawyer",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Defend your beliefs and give a speech about {0}.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     tags: ["nonDrinkerSafe"],
     baseChance: 0.9,
@@ -1084,9 +1474,15 @@ export const challenges: Challenge[] = [
   {
     id: "59",
     type: "simple",
-    title: "Job Interview",
-    description:
-      "The player in front of you interviews you for the job of {0}.",
+    title: {
+      en: "Job Interview",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "The player in front of you interviews you for the job of {0}.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     tags: ["nonDrinkerSafe"],
     baseChance: 0.9,
@@ -1108,8 +1504,15 @@ export const challenges: Challenge[] = [
     id: "60",
     type: "simple",
     enabled: true,
-    title: "Gift Sips",
-    description: "Give {x} sips to another player.",
+    title: {
+      en: "Gift Sips",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Give {x} sips to another player.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     tags: ["nonDrinkerSafe"],
     baseChance: 0.9,
@@ -1130,8 +1533,15 @@ export const challenges: Challenge[] = [
   {
     id: "61",
     type: "simple",
-    title: "Everyone Drinks",
-    description: "Everyone drinks {x} sips.",
+    title: {
+      en: "Everyone Drinks",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Everyone drinks {x} sips.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     tags: ["drinking"],
     baseChance: 0.9,
@@ -1153,8 +1563,15 @@ export const challenges: Challenge[] = [
   {
     id: "62",
     type: "simple",
-    title: "Everyone Gives",
-    description: "Everyone gives {x} sips.",
+    title: {
+      en: "Everyone Gives",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Everyone gives {x} sips.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     tags: ["nonDrinkerSafe"],
     baseChance: 0.9,
@@ -1176,8 +1593,15 @@ export const challenges: Challenge[] = [
   {
     id: "63",
     type: "simple",
-    title: "Spoonful of Liquor",
-    description: "Drink {x} spoonfuls of liquor from a spoon.",
+    title: {
+      en: "Spoonful of Liquor",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Drink {x} spoonfuls of liquor from a spoon.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "hard",
     enabled: true,
     tags: ["drinking"],
@@ -1199,8 +1623,15 @@ export const challenges: Challenge[] = [
   {
     id: "64",
     type: "simple",
-    title: "Hands-Free Shot",
-    description: "Take a shot without using your hands or take {x} shots.",
+    title: {
+      en: "Hands-Free Shot",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Take a shot without using your hands or take {x} shots.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "hard",
     tags: ["drinking"],
     baseChance: 0.6,
@@ -1223,9 +1654,15 @@ export const challenges: Challenge[] = [
     id: "65",
     type: "simple",
     enabled: true,
-    title: "Imitate Someone",
-    description:
-      "Imitate someone at the table. If nobody guesses who it is, drink {x} sips.",
+    title: {
+      en: "Imitate Someone",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Imitate someone at the table. If nobody guesses who it is, drink {x} sips.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     tags: ["drinking"],
     baseChance: 0.9,
@@ -1246,8 +1683,15 @@ export const challenges: Challenge[] = [
   {
     id: "66",
     type: "simple",
-    title: "Yes or No",
-    description: "Answer {x} questions using only yes or no.",
+    title: {
+      en: "Yes or No",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Answer {x} questions using only yes or no.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     tags: ["nonDrinkerSafe"],
     enabled: true,
@@ -1269,9 +1713,15 @@ export const challenges: Challenge[] = [
   {
     id: "67",
     type: "simple",
-    title: "Got Talent",
-    description:
-      "Show a talent. If you cannot, drink {x} sips. The player on your right is the judge.",
+    title: {
+      en: "Got Talent",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Show a talent. If you cannot, drink {x} sips. The player on your right is the judge.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     tags: ["drinking"],
     enabled: true,
@@ -1293,10 +1743,16 @@ export const challenges: Challenge[] = [
   {
     id: "68",
     type: "simple",
-    title: "Most Likely To",
     enabled: true,
-    description:
-      "Who is most likely to...? Everyone points. The most-voted player drinks {x} sips.",
+    title: {
+      en: "Most Likely To",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Who is most likely to...? Everyone points. The most-voted player drinks {x} sips.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     tags: ["drinking"],
     baseChance: 0.9,
@@ -1317,8 +1773,15 @@ export const challenges: Challenge[] = [
   {
     id: "69",
     type: "simple",
-    title: "Snail Race",
-    description: "Snail race: choose your snail and run the race.",
+    title: {
+      en: "Snail Race",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Snail race: choose your snail and run the race.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     tags: ["drinking"],
     baseChance: 0.9,
@@ -1332,9 +1795,15 @@ export const challenges: Challenge[] = [
   {
     id: "70",
     type: "simple",
-    title: "Drinking Culture Demands",
-    description:
-      "The drinking culture demands a category. Anyone who refuses or cannot answer drinks {x} sips.",
+    title: {
+      en: "Drinking Culture Demands",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "The drinking culture demands a category. Anyone who refuses or cannot answer drinks {x} sips.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     tags: ["drinking"],
     baseChance: 0.9,
@@ -1356,9 +1825,15 @@ export const challenges: Challenge[] = [
   {
     id: "71",
     type: "status",
-    title: "Extra Drink",
-    description:
-      "Drink {x} sips at the start of your next turn for {rounds} rounds.",
+    title: {
+      en: "Extra Drink",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Drink {x} sips at the start of your next turn for {rounds} rounds.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     enabled: true,
     tags: ["drinking"],
@@ -1388,8 +1863,15 @@ export const challenges: Challenge[] = [
   {
     id: "72",
     type: "status",
-    title: "Opposite Hand",
-    description: "Use your opposite hand for {rounds} rounds.",
+    title: {
+      en: "Opposite Hand",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Use your opposite hand for {rounds} rounds.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     tags: ["nonDrinkerSafe"],
     enabled: true,
@@ -1410,8 +1892,15 @@ export const challenges: Challenge[] = [
   {
     id: "73",
     type: "status",
-    title: "No Pronouns",
-    description: "Do not say pronouns, like he, they, you, I, or this.",
+    title: {
+      en: "No Pronouns",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Do not say pronouns, like he, they, you, I, or this.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     tags: ["nonDrinkerSafe"],
     baseChance: 0.9,
@@ -1432,8 +1921,15 @@ export const challenges: Challenge[] = [
   {
     id: "74",
     type: "status",
-    title: "No Proper Names",
-    description: "Do not say proper names, like people's names or place names.",
+    title: {
+      en: "No Proper Names",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Do not say proper names, like people's names or place names.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     tags: ["nonDrinkerSafe"],
     baseChance: 0.9,
@@ -1455,9 +1951,16 @@ export const challenges: Challenge[] = [
   {
     id: "75",
     type: "status",
-    title: "No Yes or No",
     enabled: true,
-    description: "Do not say yes or no.",
+    title: {
+      en: "No Yes or No",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Do not say yes or no.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     tags: ["nonDrinkerSafe"],
     baseChance: 0.9,
@@ -1477,8 +1980,15 @@ export const challenges: Challenge[] = [
   {
     id: "76",
     type: "status",
-    title: "Exaggerated Accent",
-    description: "Speak with an exaggerated accent.",
+    title: {
+      en: "Exaggerated Accent",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Speak with an exaggerated accent.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     enabled: true,
     tags: ["nonDrinkerSafe"],
@@ -1499,8 +2009,15 @@ export const challenges: Challenge[] = [
   {
     id: "77",
     type: "status",
-    title: "Neanderthal",
-    description: "Speak only using one-syllable words.",
+    title: {
+      en: "Neanderthal",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Speak only using one-syllable words.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     tags: ["nonDrinkerSafe"],
     baseChance: 0.9,
@@ -1521,8 +2038,15 @@ export const challenges: Challenge[] = [
   {
     id: "78",
     type: "status",
-    title: "No Pointing",
-    description: "Do not point with your finger. Use only your eyes.",
+    title: {
+      en: "No Pointing",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Do not point with your finger. Use only your eyes.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     tags: ["nonDrinkerSafe"],
     baseChance: 0.9,
@@ -1543,9 +2067,15 @@ export const challenges: Challenge[] = [
   {
     id: "79",
     type: "status",
-    title: "Assistant Duty",
-    description:
-      "Follow reasonable requests from a chosen player for {rounds} rounds.",
+    title: {
+      en: "Assistant Duty",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Follow reasonable requests from a chosen player for {rounds} rounds.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     tags: ["drinking"],
     baseChance: 0.9,
@@ -1567,8 +2097,15 @@ export const challenges: Challenge[] = [
   {
     id: "80",
     type: "status",
-    title: "Global Rule",
-    description: "Create a rule that everyone must follow.",
+    title: {
+      en: "Global Rule",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Create a rule that everyone must follow.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     tags: ["nonDrinkerSafe"],
     baseChance: 0.9,
@@ -1589,8 +2126,15 @@ export const challenges: Challenge[] = [
   {
     id: "81",
     type: "status",
-    title: "Rule Virus",
-    description: "Give one player a rule they must follow.",
+    title: {
+      en: "Rule Virus",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Give one player a rule they must follow.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     enabled: true,
     tags: ["nonDrinkerSafe"],
@@ -1611,8 +2155,15 @@ export const challenges: Challenge[] = [
   {
     id: "82",
     type: "status",
-    title: "Hand on the Floor",
-    description: "Keep at least one hand on the floor until your next turn.",
+    title: {
+      en: "Hand on the Floor",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Keep at least one hand on the floor until your next turn.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     enabled: true,
     tags: ["nonDrinkerSafe"],
@@ -1633,8 +2184,15 @@ export const challenges: Challenge[] = [
   {
     id: "83",
     type: "status",
-    title: "Shirt Off",
-    description: "Take your shirt off until your next turn.",
+    title: {
+      en: "Shirt Off",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Take your shirt off until your next turn.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     tags: ["nonDrinkerSafe"],
     enabled: true,
@@ -1655,10 +2213,16 @@ export const challenges: Challenge[] = [
   {
     id: "84",
     type: "simple",
-    title: "Last to Arrive",
     enabled: true,
-    description:
-      "The last person to arrive takes a shot and a small extra sip to catch up with the group.",
+    title: {
+      en: "Last to Arrive",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "The last person to arrive takes a shot and a small extra sip to catch up with the group.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     tags: ["drinking"],
     baseChance: 0.9,
@@ -1671,8 +2235,15 @@ export const challenges: Challenge[] = [
   {
     id: "85",
     type: "minigame",
-    title: "What Is It?",
-    description: "Guess what each word belongs to before time runs out.",
+    title: {
+      en: "What Is It?",
+      es: "Verdad o Trago",
+    },
+
+    description: {
+      en: "Guess what each word belongs to before time runs out.",
+      es: "{player}, responde con honestidad o toma 2.",
+    },
     difficulty: "normal",
     tags: ["nonDrinkerSafe"],
     enabled: true,

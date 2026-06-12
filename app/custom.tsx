@@ -250,7 +250,13 @@ export default function CustomScreen() {
                   return (
                     <View key={item.id} style={styles.card}>
                       <View style={styles.cardHeader}>
-                        <Text style={styles.challengeTitle}>{item.title}</Text>
+                        {customChallenges.map((challenge) => (
+                          <View key={challenge.id}>
+                            <Text style={styles.challengeTitle}>
+                              {challenge.title[language]}
+                            </Text>
+                          </View>
+                        ))}
 
                         <Pressable
                           style={[
@@ -265,7 +271,13 @@ export default function CustomScreen() {
                         </Pressable>
                       </View>
 
-                      <Text style={styles.description}>{item.description}</Text>
+                      {customChallenges.map((challenge) => (
+                        <View key={challenge.id}>
+                          <Text style={styles.description}>
+                            {challenge.description[language]}
+                          </Text>
+                        </View>
+                      ))}
 
                       <Text style={styles.meta}>
                         {isCustom ? "CUSTOM" : "DEFAULT"} ·{" "}
