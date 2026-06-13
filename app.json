@@ -4,7 +4,7 @@
     "slug": "the-fine-drink",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/DrinkyIcon.png",
+    "icon": "./assets/images/DrinkyIcon.PNG",
     "scheme": "thefinedrink",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -14,7 +14,7 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/DrinkyIcon.png",
+        "foregroundImage": "./assets/images/DrinkyIcon.PNG",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
