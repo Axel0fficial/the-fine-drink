@@ -1,22 +1,28 @@
 import { gameModifiers } from "@/data/gameModifiers";
 import { text } from "@/locales/text";
 import { colors, radius, sharedStyles, spacing } from "@/style/theme";
-import { GameModifierId } from "@/types/game";
+import { GameModifierId, GameModifierSettings, Player } from "@/types/game";
 import { useLanguageStore } from "@/utils/languageStore";
 import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
 
 type GameModifiersModalProps = {
   visible: boolean;
   enabledModifierIds: GameModifierId[];
+  players: Player[];
+  modifierSettings: GameModifierSettings;
   onClose: () => void;
   onToggle: (modifierId: GameModifierId) => void;
+  onToggleRiggedPlayer: (playerId: string) => void;
 };
 
 export default function GameModifiersModal({
   visible,
   enabledModifierIds,
+  players,
+  modifierSettings,
   onClose,
   onToggle,
+  onToggleRiggedPlayer,
 }: GameModifiersModalProps) {
   const { language, toggleLanguage } = useLanguageStore();
   const t = text[language];
@@ -49,6 +55,36 @@ export default function GameModifiersModal({
                 <Text style={styles.modifierDescription}>
                   {modifier.description}
                 </Text>
+
+                {modifier.id === "riggedForYou" && enabled && (
+                  <View style={styles.playerList}>
+                    {players.map((player) => {
+                      const selected =
+                        modifierSettings.riggedForYouPlayerIds?.includes(
+                          player.id,
+                        ) ?? false;
+
+                      return (
+                        <Pressable
+                          key={player.id}
+                          style={[
+                            styles.playerPill,
+                            selected && styles.playerPillSelected,
+                          ]}
+                          onPress={(event) => {
+                            event.stopPropagation();
+                            onToggleRiggedPlayer(player.id);
+                          }}
+                        >
+                          <Text style={styles.playerPillText}>
+                            {selected ? "✓ " : ""}
+                            {player.name}
+                          </Text>
+                        </Pressable>
+                      );
+                    })}
+                  </View>
+                )}
               </Pressable>
             );
           })}
@@ -63,6 +99,32 @@ export default function GameModifiersModal({
 }
 
 const styles = StyleSheet.create({
+  playerList: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: spacing.sm,
+    marginTop: spacing.md,
+  },
+
+  playerPill: {
+    backgroundColor: "rgba(0,0,0,0.25)",
+    borderRadius: radius.md,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+
+  playerPillSelected: {
+    backgroundColor: colors.primaryLight,
+    borderColor: colors.text,
+  },
+
+  playerPillText: {
+    color: colors.text,
+    fontWeight: "bold",
+    fontSize: 12,
+  },
   overlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.75)",

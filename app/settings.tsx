@@ -3,6 +3,10 @@ import { colors, radius, sharedStyles, spacing } from "@/style/theme";
 import { loadDrinkyEnabled, saveDrinkyEnabled } from "@/utils/drinkyStorage";
 import { useLanguageStore } from "@/utils/languageStore";
 import { clearSavedPlayers } from "@/utils/playerStorage";
+import {
+  loadResponsibleWarningEnabled,
+  saveResponsibleWarningEnabled,
+} from "@/utils/responsibleWarningStorage";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import {
@@ -18,7 +22,17 @@ export default function SettingsScreen() {
   const [confirmVisible, setConfirmVisible] = useState(false);
   const [drinkyEnabled, setDrinkyEnabled] = useState(true);
   const { language, toggleLanguage } = useLanguageStore();
+  const [responsibleWarningEnabled, setResponsibleWarningEnabled] =
+    useState(true);
   const t = text[language];
+  useEffect(() => {
+    async function loadSettings() {
+      const warningEnabled = await loadResponsibleWarningEnabled();
+      setResponsibleWarningEnabled(warningEnabled);
+    }
+
+    loadSettings();
+  }, []);
   useEffect(() => {
     async function loadSettings() {
       const enabled = await loadDrinkyEnabled();
@@ -37,6 +51,10 @@ export default function SettingsScreen() {
     await clearSavedPlayers();
     setConfirmVisible(false);
   }
+  async function toggleResponsibleWarning(value: boolean) {
+    setResponsibleWarningEnabled(value);
+    await saveResponsibleWarningEnabled(value);
+  }
 
   return (
     <View style={[sharedStyles.screen, styles.container]}>
@@ -45,13 +63,27 @@ export default function SettingsScreen() {
       <View style={styles.settingRow}>
         <View style={styles.settingTextBox}>
           <Text style={styles.settingTitle}>Drinky</Text>
-          <Text style={styles.settingSubtitle}>
-            {t.Drinkyavailability}
-          </Text>
+          <Text style={styles.settingSubtitle}>{t.Drinkyavailability}</Text>
         </View>
 
         <Switch value={drinkyEnabled} onValueChange={toggleDrinky} />
       </View>
+
+      <View style={styles.settingRow}>
+        <View style={styles.settingTextBox}>
+          <Text style={styles.settingTitle}>Responsible Play Warning</Text>
+          <Text style={styles.settingSubtitle}>
+            Show the drinking responsibility message when entering the player
+            screen.
+          </Text>
+        </View>
+
+        <Switch
+          value={responsibleWarningEnabled}
+          onValueChange={toggleResponsibleWarning}
+        />
+      </View>
+
       <TouchableOpacity onPress={toggleLanguage} style={styles.languageButton}>
         <Text style={styles.languageButtonText}>
           🌎 {t.languageButton}: {language.toUpperCase()}
@@ -73,9 +105,7 @@ export default function SettingsScreen() {
           <View style={styles.modalBox}>
             <Text style={styles.modalTitle}>{t.PlayerErasureConfirmation}</Text>
 
-            <Text style={styles.modalText}>
-              {t.PlayerErasureWarning}
-            </Text>
+            <Text style={styles.modalText}>{t.PlayerErasureWarning}</Text>
 
             <View style={styles.actions}>
               <Pressable
@@ -89,7 +119,9 @@ export default function SettingsScreen() {
                 style={styles.confirmButton}
                 onPress={handleErasePlayers}
               >
-                <Text style={sharedStyles.buttonText}>{t.EraseButtonSettings}</Text>
+                <Text style={sharedStyles.buttonText}>
+                  {t.EraseButtonSettings}
+                </Text>
               </Pressable>
             </View>
           </View>

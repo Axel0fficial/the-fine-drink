@@ -14,4 +14,10 @@ export const gameModifiers: GameModifier[] = [
       "The player in last place gets easier challenges and bonus points.",
     enabled: false,
   },
+  {
+    id: "riggedForYou",
+    name: "Rigged For You",
+    description: "Secretly choose players to receive much harder challenges.",
+    enabled: false,
+  },
 ];

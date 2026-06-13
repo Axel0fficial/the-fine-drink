@@ -2,10 +2,10 @@ import {
   Challenge,
   Difficulty,
   GameModifierId,
+  GameModifierSettings,
   Player,
   SessionDifficulty,
 } from "@/types/game";
-
 const difficultyRank: Record<Difficulty, number> = {
   easy: 1,
   normal: 2,
@@ -49,6 +49,7 @@ export function getGameModifierDifficultyModifier(
   player: Player,
   players: Player[],
   enabledGameModifiers: GameModifierId[],
+  gameModifierSettings: GameModifierSettings,
 ) {
   let modifier = 0;
 
@@ -66,6 +67,13 @@ export function getGameModifierDifficultyModifier(
     modifier -= 1;
   }
 
+  if (
+    enabledGameModifiers.includes("riggedForYou") &&
+    gameModifierSettings.riggedForYouPlayerIds?.includes(player.id)
+  ) {
+    modifier += 2;
+  }
+
   return modifier;
 }
 
@@ -75,11 +83,17 @@ export function getDifficultyAdjustedWeight(
   players: Player[],
   sessionDifficulty: SessionDifficulty,
   enabledGameModifiers: GameModifierId[],
+  gameModifierSettings: GameModifierSettings,
 ) {
   const rawTarget =
     sessionDifficultyTarget[sessionDifficulty] +
     getPlayerDifficultyModifier(player) +
-    getGameModifierDifficultyModifier(player, players, enabledGameModifiers);
+    getGameModifierDifficultyModifier(
+      player,
+      players,
+      enabledGameModifiers,
+      gameModifierSettings,
+    );
 
   const target = Math.max(1, Math.min(rawTarget, 4));
 

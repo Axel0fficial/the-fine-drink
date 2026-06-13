@@ -3,7 +3,12 @@ import GameModifiersModal from "@/components/custom/GameModifiersModal";
 import { challenges as defaultChallenges } from "@/data/challenges";
 import { text } from "@/locales/text";
 import { colors, radius, sharedStyles, spacing } from "@/style/theme";
-import { Challenge, GameModifierId } from "@/types/game";
+import {
+  Challenge,
+  GameModifierId,
+  GameModifierSettings,
+  Player,
+} from "@/types/game";
 import {
   applyChallengeEnabledSettings,
   ChallengeEnabledSetting,
@@ -16,7 +21,9 @@ import {
 } from "@/utils/customChallengeStorage";
 import {
   loadEnabledGameModifiers,
+  loadGameModifierSettings,
   saveEnabledGameModifiers,
+  saveGameModifierSettings,
 } from "@/utils/gameModifierStorage";
 import { useLanguageStore } from "@/utils/languageStore";
 import { router, useLocalSearchParams } from "expo-router";
@@ -27,6 +34,9 @@ export default function CustomScreen() {
   const { language, toggleLanguage } = useLanguageStore();
   const t = text[language];
   const params = useLocalSearchParams();
+  const players: Player[] = JSON.parse((params.players as string) || "[]");
+  const [modifierSettings, setModifierSettings] =
+    useState<GameModifierSettings>({});
   const [modifierModalVisible, setModifierModalVisible] = useState(false);
   const [enabledModifierIds, setEnabledModifierIds] = useState<
     GameModifierId[]
@@ -57,6 +67,8 @@ export default function CustomScreen() {
       const loadedCustomChallenges = await loadCustomChallenges();
       const loadedEnabledSettings = await loadChallengeEnabledSettings();
       const loadedModifiers = await loadEnabledGameModifiers();
+      const loadedModifierSettings = await loadGameModifierSettings();
+      setModifierSettings(loadedModifierSettings);
       setEnabledModifierIds(loadedModifiers);
 
       setCustomChallenges(loadedCustomChallenges);
@@ -70,11 +82,32 @@ export default function CustomScreen() {
   useEffect(() => {
     if (!loaded) return;
     saveEnabledGameModifiers(enabledModifierIds);
+    saveGameModifierSettings(modifierSettings);
 
     saveCustomChallenges(customChallenges);
     saveChallengeEnabledSettings(defaultChallengeSettings);
-  }, [customChallenges, defaultChallengeSettings, loaded]);
+  }, [
+    customChallenges,
+    defaultChallengeSettings,
+    enabledModifierIds,
+    modifierSettings,
+    loaded,
+  ]);
   const challengeTypes = ["simple", "status", "minigame", "custom"] as const;
+  function toggleRiggedPlayer(playerId: string) {
+    setModifierSettings((current) => {
+      const currentIds = current.riggedForYouPlayerIds ?? [];
+
+      const nextIds = currentIds.includes(playerId)
+        ? currentIds.filter((id) => id !== playerId)
+        : [...currentIds, playerId];
+
+      return {
+        ...current,
+        riggedForYouPlayerIds: nextIds,
+      };
+    });
+  }
 
   function toggleGroup(type: string) {
     setOpenGroups((current) => ({
@@ -124,6 +157,7 @@ export default function CustomScreen() {
         gameMode: "custom",
         sessionDifficulty: params.sessionDifficulty as string,
         gameModifiers: JSON.stringify(enabledModifierIds),
+        gameModifierSettings: JSON.stringify(modifierSettings),
       },
     });
   }
@@ -300,8 +334,11 @@ export default function CustomScreen() {
       <GameModifiersModal
         visible={modifierModalVisible}
         enabledModifierIds={enabledModifierIds}
+        players={players}
+        modifierSettings={modifierSettings}
         onClose={() => setModifierModalVisible(false)}
         onToggle={toggleModifier}
+        onToggleRiggedPlayer={toggleRiggedPlayer}
       />
 
       <CustomChallengeModal

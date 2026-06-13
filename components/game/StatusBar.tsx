@@ -6,7 +6,12 @@ import {
   sharedStyles,
   spacing,
 } from "@/style/theme";
-import { GameModifierId, Player, PlayerStatus } from "@/types/game";
+import {
+  GameModifierId,
+  GameModifierSettings,
+  Player,
+  PlayerStatus,
+} from "@/types/game";
 import { useLanguageStore } from "@/utils/languageStore";
 import {
   playerIsInFirstPlace,
@@ -28,6 +33,7 @@ type StatusBarProps = {
   players: Player[];
   enabledGameModifiers: GameModifierId[];
   palette: GamePalette;
+  gameModifierSettings: GameModifierSettings;
 };
 export default function StatusBar({
   players,
@@ -35,6 +41,7 @@ export default function StatusBar({
   palette,
   currentPlayer,
   enabledGameModifiers,
+  gameModifierSettings,
 }: StatusBarProps) {
   const [visible, setVisible] = useState(false);
   const { language, toggleLanguage } = useLanguageStore();
@@ -48,8 +55,14 @@ export default function StatusBar({
   ) {
     modifierStatuses.push({
       id: "modifier-king-of-the-hill",
-      name: "King of the Hill",
-      description: "Session modifier: harder challenges while in first place.",
+      name: {
+        en: "King of the Hill",
+        es: "Rey de la Colina",
+      },
+      description: {
+        en: "Session modifier: harder challenges while in first place.",
+        es: "Modificador de sesión: desafíos más difíciles mientras vas en primer lugar.",
+      },
       remainingRounds: 999,
       nature: "bad",
     });
@@ -62,11 +75,32 @@ export default function StatusBar({
   ) {
     modifierStatuses.push({
       id: "modifier-rocket-ricky",
-      name: "Rocket Ricky",
-      description:
-        "Session modifier: easier challenges and +1 point while in last place.",
+      name: {
+        en: "Rocket Ricky",
+        es: "Rocket Ricky",
+      },
+      description: {
+        en: "Session modifier: easier challenges and +1 point while in last place.",
+        es: "Modificador de sesión: desafíos más fáciles y +1 punto mientras vas en último lugar.",
+      },
       remainingRounds: 999,
       nature: "good",
+    });
+  }
+  if (
+    currentPlayer &&
+    enabledGameModifiers.includes("riggedForYou") &&
+    gameModifierSettings.riggedForYouPlayerIds?.includes(currentPlayer.id)
+  ) {
+    modifierStatuses.push({
+      id: "modifier-rigged-for-you",
+      name: { en: "Rigged For You", es: "Arreglado contra ti" },
+      description: {
+        en: "Session modifier: this player is getting much harder challenges.",
+        es: "Modificador de sesión: este jugador recibe desafios mucho mas dificiles",
+      },
+      remainingRounds: 999,
+      nature: "bad",
     });
   }
 
@@ -101,10 +135,12 @@ export default function StatusBar({
               ) : (
                 displayedStatuses.map((status) => (
                   <View key={status.id} style={styles.statusCard}>
-                    <Text style={styles.statusName}>{status.name}</Text>
+                    <Text style={styles.statusName}>
+                      {status.name[language]}
+                    </Text>
 
                     <Text style={styles.statusDescription}>
-                      {status.description}
+                      {status.description[language]}
                     </Text>
 
                     <Text style={styles.statusRounds}>

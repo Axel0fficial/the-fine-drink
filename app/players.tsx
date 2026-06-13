@@ -21,6 +21,11 @@ import {
   saveLastSessionPlayerIds,
   saveSavedPlayers,
 } from "@/utils/playerStorage";
+import { useFocusEffect } from "expo-router";
+import { useCallback } from "react";
+
+import ResponsibleWarningModal from "@/components/players/ResponsibleWarningModal";
+import { loadResponsibleWarningEnabled } from "@/utils/responsibleWarningStorage";
 
 export default function PlayersScreen() {
   const { language, toggleLanguage } = useLanguageStore();
@@ -40,6 +45,17 @@ export default function PlayersScreen() {
   ];
   const [teamsEnabled, setTeamsEnabled] = useState(false);
   const [roundLimit, setRoundLimit] = useState("10");
+  const [warningVisible, setWarningVisible] = useState(false);
+  useFocusEffect(
+    useCallback(() => {
+      async function loadWarningSetting() {
+        const enabled = await loadResponsibleWarningEnabled();
+        setWarningVisible(enabled);
+      }
+
+      loadWarningSetting();
+    }, []),
+  );
   useEffect(() => {
     async function loadPlayers() {
       const loadedPlayers = await loadSavedPlayers();
@@ -232,7 +248,9 @@ export default function PlayersScreen() {
           style={[sharedStyles.secondaryButton, styles.rowButton]}
           onPress={() => setModalVisible(true)}
         >
-          <Text style={sharedStyles.buttonText}>{t.SavedPLayersButtonText}</Text>
+          <Text style={sharedStyles.buttonText}>
+            {t.SavedPLayersButtonText}
+          </Text>
         </Pressable>
       </View>
       <View style={styles.settingsRow}>
@@ -306,6 +324,10 @@ export default function PlayersScreen() {
         onToggleSelect={toggleSavedPlayer}
         onUpdatePlayer={updateSavedPlayer}
         onDeletePlayer={deleteSavedPlayer}
+      />
+      <ResponsibleWarningModal
+        visible={warningVisible}
+        onClose={() => setWarningVisible(false)}
       />
     </View>
   );

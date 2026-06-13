@@ -78,9 +78,14 @@ export const drinkyEvents: DrinkyEvent[] = [
     image: gifts,
     statusEffect: {
       id: "drinky-spotlight",
-      name: "Drinky Spotlight",
-      description:
-        "For 2 turns, the group may ask you one extra question before your challenge.",
+      name: {
+        en: "Drinky Spotlight",
+        es: "Foco de Drinky",
+      },
+      description: {
+        en: "For 2 turns, the group may ask you one extra question before your challenge.",
+        es: "Durante 2 turnos, el grupo puede hacerte una pregunta extra antes de tu desafío.",
+      },
       remainingRounds: 2,
       nature: "bad",
     },
@@ -96,9 +101,14 @@ export const drinkyEvents: DrinkyEvent[] = [
     image: gifts,
     statusEffect: {
       id: "drinky-favor",
-      name: "Drinky Favor",
-      description:
-        "For 2 turns, you may reduce one non-drinking punishment by half.",
+      name: {
+        en: "Drinky Favor",
+        es: "Favor de Drinky",
+      },
+      description: {
+        en: "For 2 turns, you may reduce one non-drinking punishment by half.",
+        es: "Durante 2 turnos, puedes reducir a la mitad un castigo que no sea de bebida.",
+      },
       remainingRounds: 2,
       nature: "good",
     },

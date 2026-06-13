@@ -1,6 +1,7 @@
 import {
   Challenge,
   GameModifierId,
+  GameModifierSettings,
   Player,
   SessionDifficulty,
 } from "@/types/game";
@@ -13,6 +14,7 @@ export function pickWeightedChallenge(
   players: Player[],
   sessionDifficulty: SessionDifficulty,
   enabledGameModifiers: GameModifierId[],
+  gameModifierSettings: GameModifierSettings = {},
 ) {
   if (challenges.length === 0) return null;
 
@@ -26,6 +28,7 @@ export function pickWeightedChallenge(
         players,
         sessionDifficulty,
         enabledGameModifiers,
+        gameModifierSettings,
       ),
   }));
 

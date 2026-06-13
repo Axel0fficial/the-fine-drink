@@ -96,8 +96,14 @@ export const challenges: Challenge[] = [
     dislikes: 0,
     statusEffect: {
       id: "double-trouble",
-      name: "Doble Problema",
-      description: "Tus castigos se duplican.",
+      name: {
+        en: "Double Trouble",
+        es: "Doble Problema",
+      },
+      description: {
+        en: "Your punishments are doubled.",
+        es: "Tus castigos se duplican.",
+      },
       remainingRounds: 2,
       nature: "bad",
     },
@@ -124,8 +130,14 @@ export const challenges: Challenge[] = [
     dislikes: 0,
     statusEffect: {
       id: "silent-curse",
-      name: "Maldición del Silencio",
-      description: "No puedes hablar. Si hablas, bebe.",
+      name: {
+        en: "Silent Curse",
+        es: "Maldición del Silencio",
+      },
+      description: {
+        en: "You cannot talk. If you talk, drink.",
+        es: "No puedes hablar. Si hablas, bebe.",
+      },
       remainingRounds: 3,
       nature: "bad",
     },
@@ -152,9 +164,14 @@ export const challenges: Challenge[] = [
     dislikes: 0,
     statusEffect: {
       id: "forever-suspicious",
-      name: "Siempre Sospechoso",
-      description:
-        "Todos pueden cuestionar tus decisiones por el resto de la sesión.",
+      name: {
+        en: "Forever Suspicious",
+        es: "Siempre Sospechoso",
+      },
+      description: {
+        en: "Everyone may question your choices for the rest of the session.",
+        es: "Todos pueden cuestionar tus decisiones por el resto de la sesión.",
+      },
       remainingRounds: 99,
       nature: "bad",
     },
@@ -374,8 +391,14 @@ export const challenges: Challenge[] = [
     dislikes: 0,
     statusEffect: {
       id: "pirate-accent",
-      name: "Acento Pirata",
-      description: "Habla con acento de pirata.",
+      name: {
+        en: "Pirate Accent",
+        es: "Acento Pirata",
+      },
+      description: {
+        en: "Speak with a pirate accent.",
+        es: "Habla con acento de pirata.",
+      },
       remainingRounds: 3,
       nature: "bad",
     },
@@ -402,8 +425,14 @@ export const challenges: Challenge[] = [
     dislikes: 0,
     statusEffect: {
       id: "lucky-bastard",
-      name: "Suertudo",
-      description: "Ignora tu próximo castigo.",
+      name: {
+        en: "Lucky Bastard",
+        es: "Suertudo",
+      },
+      description: {
+        en: "Ignore your next punishment.",
+        es: "Ignora tu próximo castigo.",
+      },
       remainingRounds: 99,
       nature: "good",
     },
@@ -430,8 +459,14 @@ export const challenges: Challenge[] = [
     dislikes: 0,
     statusEffect: {
       id: "question-master",
-      name: "Maestro de Preguntas",
-      description: "Los jugadores que respondan tus preguntas son penalizados.",
+      name: {
+        en: "Question Master",
+        es: "Maestro de Preguntas",
+      },
+      description: {
+        en: "Players who answer your questions are punished.",
+        es: "Los jugadores que respondan tus preguntas son penalizados.",
+      },
       remainingRounds: 4,
       nature: "good",
     },
@@ -645,8 +680,14 @@ export const challenges: Challenge[] = [
     dislikes: 0,
     statusEffect: {
       id: "tiny-hands",
-      name: "Manos Pequeñas",
-      description: "Usa solo los meñiques.",
+      name: {
+        en: "Tiny Hands",
+        es: "Manos Pequeñas",
+      },
+      description: {
+        en: "Only use your pinkies.",
+        es: "Usa solo los meñiques.",
+      },
       remainingRounds: 3,
       nature: "bad",
     },
@@ -673,8 +714,14 @@ export const challenges: Challenge[] = [
     dislikes: 0,
     statusEffect: {
       id: "royal-decree",
-      name: "Decreto Real",
-      description: "Los jugadores deben dirigirse a ti como Su Majestad.",
+      name: {
+        en: "Royal Decree",
+        es: "Decreto Real",
+      },
+      description: {
+        en: "Players must address you as Your Majesty.",
+        es: "Los jugadores deben dirigirse a ti como Su Majestad.",
+      },
       remainingRounds: 3,
       nature: "good",
     },
@@ -798,9 +845,14 @@ export const challenges: Challenge[] = [
     dislikes: 0,
     statusEffect: {
       id: "questions-only",
-      name: "Habla en Preguntas",
-      description:
-        "Solo puedes hablar en forma de pregunta durante {rounds} rondas.",
+      name: {
+        en: "Speak in Questions",
+        es: "Habla en Preguntas",
+      },
+      description: {
+        en: "You can only speak in questions for {rounds} rounds.",
+        es: "Solo puedes hablar en forma de pregunta durante {rounds} rondas.",
+      },
       remainingRounds: 3,
       nature: "bad",
     },
@@ -906,8 +958,14 @@ export const challenges: Challenge[] = [
     dislikes: 0,
     statusEffect: {
       id: "double-points-next",
-      name: "Puntos Dobles",
-      description: "El próximo reto vale el doble de puntos.",
+      name: {
+        en: "Double Points",
+        es: "Puntos Dobles",
+      },
+      description: {
+        en: "Next challenge is worth double points.",
+        es: "El próximo reto vale el doble de puntos.",
+      },
       remainingRounds: 1,
       nature: "good",
     },
@@ -1776,9 +1834,14 @@ export const challenges: Challenge[] = [
     dislikes: 0,
     statusEffect: {
       id: "extra-drink-next-turn",
-      name: "Trago Extra",
-      description:
-        "Toma {x} tragos al inicio de tu turno durante {rounds} rondas.",
+      name: {
+        en: "Extra Drink",
+        es: "Trago Extra",
+      },
+      description: {
+        en: "Drink {x} sips at the start of your next turn for {rounds} rounds.",
+        es: "Toma {x} tragos al inicio de tu turno durante {rounds} rondas.",
+      },
       remainingRounds: 3,
       nature: "bad",
     },
@@ -1814,11 +1877,18 @@ export const challenges: Challenge[] = [
     dislikes: 0,
     statusEffect: {
       id: "use-opposite-hand",
-      name: "Mano Contraria",
-      description: "Usa tu mano contraria durante {rounds} rondas.",
+      name: {
+        en: "Opposite Hand",
+        es: "Mano Contraria",
+      },
+      description: {
+        en: "Use your opposite hand for {rounds} rounds.",
+        es: "Usa tu mano contraria durante {rounds} rondas.",
+      },
       remainingRounds: 3,
       nature: "bad",
     },
+
     variables: [{ type: "number", key: "rounds", min: 2, max: 4 }],
   },
   {
@@ -1843,8 +1913,14 @@ export const challenges: Challenge[] = [
     dislikes: 0,
     statusEffect: {
       id: "no-pronouns",
-      name: "Sin Pronombres",
-      description: "No puedes decir pronombres como él, ellos, tú, yo o esto.",
+      name: {
+        en: "No Pronouns",
+        es: "Sin Pronombres",
+      },
+      description: {
+        en: "Do not say pronouns, like he, they, you, I, or this.",
+        es: "No puedes decir pronombres como él, ellos, tú, yo o esto.",
+      },
       remainingRounds: 3,
       nature: "bad",
     },
@@ -1871,9 +1947,14 @@ export const challenges: Challenge[] = [
     dislikes: 0,
     statusEffect: {
       id: "no-proper-names",
-      name: "Sin Nombres Propios",
-      description:
-        "No puedes decir nombres propios, como nombres de personas o lugares.",
+      name: {
+        en: "No Proper Names",
+        es: "Sin Nombres Propios",
+      },
+      description: {
+        en: "Do not say proper names, like people's names or place names.",
+        es: "No puedes decir nombres propios, como nombres de personas o lugares.",
+      },
       remainingRounds: 3,
       nature: "bad",
     },
@@ -1900,8 +1981,14 @@ export const challenges: Challenge[] = [
     dislikes: 0,
     statusEffect: {
       id: "no-yes-no",
-      name: "Sin Sí ni No",
-      description: "No puedes decir sí ni no.",
+      name: {
+        en: "No Yes or No",
+        es: "Sin Sí ni No",
+      },
+      description: {
+        en: "Do not say yes or no.",
+        es: "No puedes decir sí ni no.",
+      },
       remainingRounds: 3,
       nature: "bad",
     },
@@ -1928,8 +2015,14 @@ export const challenges: Challenge[] = [
     dislikes: 0,
     statusEffect: {
       id: "exaggerated-accent",
-      name: "Acento Exagerado",
-      description: "Habla con un acento exagerado.",
+      name: {
+        en: "Exaggerated Accent",
+        es: "Acento Exagerado",
+      },
+      description: {
+        en: "Speak with an exaggerated accent.",
+        es: "Habla con un acento exagerado.",
+      },
       remainingRounds: 2,
       nature: "bad",
     },
@@ -1956,8 +2049,14 @@ export const challenges: Challenge[] = [
     dislikes: 0,
     statusEffect: {
       id: "monosyllables-only",
-      name: "Neanderthal",
-      description: "Habla solo usando palabras de una sílaba.",
+      name: {
+        en: "Neanderthal",
+        es: "Neanderthal",
+      },
+      description: {
+        en: "Speak only using one-syllable words.",
+        es: "Habla solo usando palabras de una sílaba.",
+      },
       remainingRounds: 3,
       nature: "bad",
     },
@@ -1984,8 +2083,14 @@ export const challenges: Challenge[] = [
     dislikes: 0,
     statusEffect: {
       id: "no-pointing",
-      name: "Sin Señalar",
-      description: "No puedes señalar con el dedo. Usa solo la mirada.",
+      name: {
+        en: "No Pointing",
+        es: "Sin Señalar",
+      },
+      description: {
+        en: "Do not point with your finger. Use only your eyes.",
+        es: "No puedes señalar con el dedo. Usa solo la mirada.",
+      },
       remainingRounds: 3,
       nature: "bad",
     },
@@ -2012,13 +2117,17 @@ export const challenges: Challenge[] = [
     dislikes: 0,
     statusEffect: {
       id: "obey-chosen-player",
-      name: "Asistente Personal",
-      description:
-        "Sigue las peticiones razonables de un jugador elegido durante {rounds} rondas.",
+      name: {
+        en: "Assistant Duty",
+        es: "Asistente Personal",
+      },
+      description: {
+        en: "Follow reasonable requests from a chosen player for {rounds} rounds.",
+        es: "Sigue las peticiones razonables de un jugador elegido durante {rounds} rondas.",
+      },
       remainingRounds: 3,
       nature: "bad",
     },
-    variables: [{ type: "number", key: "rounds", min: 2, max: 4 }],
   },
   {
     id: "80",
@@ -2042,8 +2151,14 @@ export const challenges: Challenge[] = [
     dislikes: 0,
     statusEffect: {
       id: "custom-global-rule",
-      name: "Regla Global",
-      description: "Crea una regla que todos deben cumplir.",
+      name: {
+        en: "Global Rule",
+        es: "Regla Global",
+      },
+      description: {
+        en: "Create a rule that everyone must follow.",
+        es: "Crea una regla que todos deben cumplir.",
+      },
       remainingRounds: 3,
       nature: "bad",
     },
@@ -2070,8 +2185,14 @@ export const challenges: Challenge[] = [
     dislikes: 0,
     statusEffect: {
       id: "virus-rule",
-      name: "Virus de Regla",
-      description: "Dale a un jugador una regla que debe cumplir.",
+      name: {
+        en: "Rule Virus",
+        es: "Virus de Regla",
+      },
+      description: {
+        en: "Give one player a rule they must follow.",
+        es: "Dale a un jugador una regla que debe cumplir.",
+      },
       remainingRounds: 2,
       nature: "bad",
     },
@@ -2098,9 +2219,14 @@ export const challenges: Challenge[] = [
     dislikes: 0,
     statusEffect: {
       id: "one-hand-on-floor",
-      name: "Mano en el Suelo",
-      description:
-        "Mantén al menos una mano en el suelo hasta tu próximo turno.",
+      name: {
+        en: "Hand on the Floor",
+        es: "Mano en el Suelo",
+      },
+      description: {
+        en: "Keep at least one hand on the floor until your next turn.",
+        es: "Mantén al menos una mano en el suelo hasta tu próximo turno.",
+      },
       remainingRounds: 1,
       nature: "bad",
     },
@@ -2127,8 +2253,14 @@ export const challenges: Challenge[] = [
     dislikes: 0,
     statusEffect: {
       id: "no-shirt",
-      name: "Sin Camiseta",
-      description: "Quítate la camiseta hasta tu próximo turno.",
+      name: {
+        en: "Shirt Off",
+        es: "Sin Camiseta",
+      },
+      description: {
+        en: "Take your shirt off until your next turn.",
+        es: "Quítate la camiseta hasta tu próximo turno.",
+      },
       remainingRounds: 1,
       nature: "bad",
     },

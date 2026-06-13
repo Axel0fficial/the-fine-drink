@@ -15,7 +15,11 @@ export type SavedPlayer = {
   preferences: PlayerPreference;
 };
 
-export type GameModifierId = "kingOfTheHill" | "rocketRicky";
+export type GameModifierId = "kingOfTheHill" | "rocketRicky" | "riggedForYou";
+
+export type GameModifierSettings = {
+  riggedForYouPlayerIds?: string[];
+};
 
 export type GameModifier = {
   id: GameModifierId;
@@ -33,15 +37,17 @@ export type Player = {
   team: TeamColor;
 };
 export type SessionDifficulty = "chill" | "normal" | "spicy" | "chaos";
+
 export type PlayerStatus = {
   id: string;
-  name: string;
-  description: string;
+  name: LocalizedText;
+  description: LocalizedText;
   remainingRounds: number;
+  nature: "good" | "bad";
   sourceChallengeId?: string;
-  nature?: "good" | "bad";
   difficultyModifier?: number;
 };
+
 export type ChallengeType = "simple" | "status" | "minigame" | "custom";
 
 export type FineDrinkData = {

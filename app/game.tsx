@@ -13,6 +13,7 @@ import {
   DrinkyEvent,
   GameMode,
   GameModifierId,
+  GameModifierSettings,
   Player,
   PlayerStatus,
   SessionDifficulty,
@@ -82,6 +83,9 @@ export default function GameScreen() {
   const activePalette = difficultyPalettes[challenge.difficulty];
   const enabledGameModifiers: GameModifierId[] = JSON.parse(
     (params.gameModifiers as string) || "[]",
+  );
+  const gameModifierSettings: GameModifierSettings = JSON.parse(
+    (params.gameModifierSettings as string) || "{}",
   );
 
   useEffect(() => {
@@ -413,6 +417,7 @@ export default function GameScreen() {
       players,
       sessionDifficulty,
       enabledGameModifiers,
+      gameModifierSettings,
     );
 
     if (!pickedChallenge) {
@@ -512,6 +517,7 @@ export default function GameScreen() {
             players={players}
             enabledGameModifiers={enabledGameModifiers}
             palette={activePalette}
+            gameModifierSettings={gameModifierSettings}
           />
         }
       />

@@ -46,10 +46,10 @@ export default function FineDrinkMinigame({
       <View style={styles.offerBox}>
         <Text style={styles.offerIntro}>{playerName}, I offer you:</Text>
 
-        <Text style={styles.offerTitle}>{data.offerStatus.name}</Text>
+        <Text style={styles.offerTitle}>{data.offerStatus.name[language]}</Text>
 
         <Text style={styles.offerDescription}>
-          {data.offerStatus.description}
+          {data.offerStatus.description[language]}
         </Text>
 
         <Text style={styles.rounds}>
@@ -60,10 +60,12 @@ export default function FineDrinkMinigame({
           <View style={styles.revealBox}>
             <Text style={styles.revealLabel}>But also...</Text>
 
-            <Text style={styles.hiddenTitle}>{data.hiddenStatus.name}</Text>
+            <Text style={styles.hiddenTitle}>
+              {data.hiddenStatus.name[language]}
+            </Text>
 
             <Text style={styles.offerDescription}>
-              {data.hiddenStatus.description}
+              {data.hiddenStatus.description[language]}
             </Text>
 
             <Text style={styles.rounds}>
