@@ -116,7 +116,11 @@ export default function GameScreen() {
 
       const initialChallenge =
         updatedChallenges.length > 0
-          ? resolveChallenge(updatedChallenges[0], initialPlayers)
+          ? resolveChallenge(
+              updatedChallenges[0],
+              initialPlayers,
+              initialPlayers[0],
+            )
           : resolveChallenge(getFallbackChallenge(), initialPlayers);
 
       setChallenge(initialChallenge);
@@ -383,7 +387,11 @@ export default function GameScreen() {
     const nextPlayer = players[nextTurnValue % players.length];
 
     if (!nextPlayer) {
-      const fallback = resolveChallenge(getFallbackChallenge(), players);
+      const fallback = resolveChallenge(
+        getFallbackChallenge(),
+        players,
+        nextPlayer,
+      );
       setChallenge(fallback);
       return;
     }
@@ -413,8 +421,11 @@ export default function GameScreen() {
       maybeShowDrinky(nextPlayer, fallback);
       return;
     }
-
-    const resolvedChallenge = resolveChallenge(pickedChallenge, players);
+    const resolvedChallenge = resolveChallenge(
+      pickedChallenge,
+      players,
+      nextPlayer,
+    );
 
     setChallenge(resolvedChallenge);
     maybeShowDrinky(nextPlayer, resolvedChallenge);

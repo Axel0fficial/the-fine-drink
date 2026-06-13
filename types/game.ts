@@ -130,7 +130,10 @@ export type DrinkyEventType =
 export type DrinkyEvent = {
   id: string;
   type: DrinkyEventType;
-  text: string;
+  text: {
+    en: string;
+    es: string;
+  };
   tags: ChallengeTag[];
   image: any;
 

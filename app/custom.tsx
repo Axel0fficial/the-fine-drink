@@ -193,6 +193,7 @@ export default function CustomScreen() {
         >
           <Text style={sharedStyles.buttonText}>Modifiers</Text>
         </Pressable>
+
         <Pressable
           style={[sharedStyles.primaryButton, styles.topButton]}
           onPress={startCustomGame}
@@ -250,13 +251,9 @@ export default function CustomScreen() {
                   return (
                     <View key={item.id} style={styles.card}>
                       <View style={styles.cardHeader}>
-                        {customChallenges.map((challenge) => (
-                          <View key={challenge.id}>
-                            <Text style={styles.challengeTitle}>
-                              {challenge.title[language]}
-                            </Text>
-                          </View>
-                        ))}
+                        <Text style={styles.challengeTitle}>
+                          {item.title[language]}
+                        </Text>
 
                         <Pressable
                           style={[
@@ -271,13 +268,9 @@ export default function CustomScreen() {
                         </Pressable>
                       </View>
 
-                      {customChallenges.map((challenge) => (
-                        <View key={challenge.id}>
-                          <Text style={styles.description}>
-                            {challenge.description[language]}
-                          </Text>
-                        </View>
-                      ))}
+                      <Text style={styles.description}>
+                        {item.description[language]}
+                      </Text>
 
                       <Text style={styles.meta}>
                         {isCustom ? "CUSTOM" : "DEFAULT"} ·{" "}

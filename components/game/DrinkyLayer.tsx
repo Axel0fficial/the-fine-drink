@@ -47,16 +47,16 @@ export default function DrinkyLayer({
           resizeMode="contain"
         >
           <View style={styles.textBox}>
-            <Text style={styles.text}>{event.text}</Text>
+            <Text style={styles.text}>{event.text[language]}</Text>
 
             {event.extraChallenge && (
               <View style={styles.extraChallengeBox}>
                 <Text style={styles.extraChallengeTitle}>
-                  {event.extraChallenge.title}
+                  {event.extraChallenge.title[language]}
                 </Text>
 
                 <Text style={styles.extraChallengeText}>
-                  {event.extraChallenge.description}
+                  {event.extraChallenge.description[language]}
                 </Text>
               </View>
             )}

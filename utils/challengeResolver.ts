@@ -1,6 +1,9 @@
 import { PoolKey, variablePools } from "@/data/pools";
 import { Challenge, ChallengeVariable, Player, TeamColor } from "@/types/game";
 
+type Language = "en" | "es";
+type PoolValue = string | { en: string; es: string };
+
 function randomNumber(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
@@ -14,14 +17,23 @@ function replaceVariable(text: string, key: string, value: string) {
   return text.replaceAll(`{${key}}`, value);
 }
 
-function pickFromPool(pool: PoolKey) {
-  return randomFromArray(variablePools[pool]);
+function localizePoolValue(value: PoolValue, language: Language) {
+  return typeof value === "string" ? value : value[language];
 }
 
-function pickFromAllowedPools(pools: PoolKey[]) {
+function getPoolValues(pool: PoolKey): readonly PoolValue[] {
+  return variablePools[pool] as readonly PoolValue[];
+}
+
+function pickFromPool(pool: PoolKey): PoolValue {
+  return randomFromArray(getPoolValues(pool));
+}
+
+function pickFromAllowedPools(pools: PoolKey[]): PoolValue {
   const selectedPool = randomFromArray(pools);
   return pickFromPool(selectedPool);
 }
+
 function getActiveTeams(players: Player[]): TeamColor[] {
   const teams = players
     .map((player) => player.team)
@@ -30,18 +42,21 @@ function getActiveTeams(players: Player[]): TeamColor[] {
   return Array.from(new Set(teams));
 }
 
-function formatTeamName(team: TeamColor) {
-  return `${team.charAt(0).toUpperCase()}${team.slice(1)} Team`;
+function formatTeamName(team: TeamColor, language: Language) {
+  const formattedTeam = `${team.charAt(0).toUpperCase()}${team.slice(1)}`;
+
+  return language === "es"
+    ? `Equipo ${formattedTeam}`
+    : `${formattedTeam} Team`;
 }
 
 function pickMultipleFromSamePool(
   pool: PoolKey,
   amount: number,
   allowRepeats = false,
-) {
-  const options = [...variablePools[pool]];
-
-  const results: string[] = [];
+): PoolValue[] {
+  const options = [...getPoolValues(pool)];
+  const results: PoolValue[] = [];
 
   for (let i = 0; i < amount; i++) {
     if (options.length === 0) break;
@@ -62,27 +77,60 @@ function pickMultipleFromSamePool(
 export function resolveChallenge(
   challenge: Challenge,
   players: Player[] = [],
+  currentPlayer?: Player,
 ): Challenge {
-  let resolvedDescription = challenge.description;
+  const resolvedDescription = {
+    ...challenge.description,
+  };
+
+  const playerName = currentPlayer?.name ?? "Player";
+
+  resolvedDescription.en = replaceVariable(
+    resolvedDescription.en,
+    "player",
+    playerName,
+  );
+
+  resolvedDescription.es = replaceVariable(
+    resolvedDescription.es,
+    "player",
+    playerName,
+  );
 
   challenge.variables?.forEach((variable: ChallengeVariable) => {
     if (variable.type === "number") {
       const value = randomNumber(variable.min, variable.max).toString();
-      resolvedDescription = replaceVariable(
-        resolvedDescription,
+
+      resolvedDescription.en = replaceVariable(
+        resolvedDescription.en,
         variable.key,
         value,
       );
+
+      resolvedDescription.es = replaceVariable(
+        resolvedDescription.es,
+        variable.key,
+        value,
+      );
+
       return;
     }
 
     if (variable.type === "pool") {
       const value = pickFromAllowedPools(variable.pools);
-      resolvedDescription = replaceVariable(
-        resolvedDescription,
+
+      resolvedDescription.en = replaceVariable(
+        resolvedDescription.en,
         variable.key,
-        value,
+        localizePoolValue(value, "en"),
       );
+
+      resolvedDescription.es = replaceVariable(
+        resolvedDescription.es,
+        variable.key,
+        localizePoolValue(value, "es"),
+      );
+
       return;
     }
 
@@ -96,10 +144,18 @@ export function resolveChallenge(
       );
 
       variable.keys.forEach((key, index) => {
-        resolvedDescription = replaceVariable(
-          resolvedDescription,
+        const value = values[index];
+
+        resolvedDescription.en = replaceVariable(
+          resolvedDescription.en,
           key,
-          values[index] ?? "???",
+          value ? localizePoolValue(value, "en") : "???",
+        );
+
+        resolvedDescription.es = replaceVariable(
+          resolvedDescription.es,
+          key,
+          value ? localizePoolValue(value, "es") : "???",
         );
       });
 
@@ -111,10 +167,20 @@ export function resolveChallenge(
       const selectedTeam =
         activeTeams.length > 0 ? randomFromArray(activeTeams) : "none";
 
-      resolvedDescription = replaceVariable(
-        resolvedDescription,
+      resolvedDescription.en = replaceVariable(
+        resolvedDescription.en,
         variable.key,
-        selectedTeam === "none" ? "No Team" : formatTeamName(selectedTeam),
+        selectedTeam === "none"
+          ? "No Team"
+          : formatTeamName(selectedTeam, "en"),
+      );
+
+      resolvedDescription.es = replaceVariable(
+        resolvedDescription.es,
+        variable.key,
+        selectedTeam === "none"
+          ? "Sin equipo"
+          : formatTeamName(selectedTeam, "es"),
       );
     }
   });

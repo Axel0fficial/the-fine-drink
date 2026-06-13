@@ -39,14 +39,13 @@ export default function ChallengeCard({
         </Text>
       </Pressable>
       <Text style={[styles.title, palette && { color: palette.text }]}>
-        {challenge.title}
+        {challenge.title[language]}
       </Text>
 
       <Text style={[styles.difficulty, palette && { color: palette.accent }]}>
         {challenge.difficulty.toUpperCase()}
       </Text>
-
-      <Text style={styles.description}>{challenge.description}</Text>
+      <Text style={styles.description}>{challenge.description[language]}</Text>
     </View>
   );
 }
