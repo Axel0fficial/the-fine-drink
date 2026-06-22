@@ -1,0 +1,54 @@
+import { loadChallengePreferences } from "@/utils/challengeStorage";
+import { loadCustomChallenges } from "@/utils/customChallengeStorage";
+
+const ERROR_REPORT_ENDPOINT =
+  "https://axel0fficial.tech/wp-json/the-fine-drink/v1/reports";
+
+export type ErrorReportInput = {
+  name: string;
+  message: string;
+  email?: string;
+};
+
+export async function sendErrorReport(input: ErrorReportInput) {
+  const challengePreferences = await loadChallengePreferences();
+  const customChallenges = await loadCustomChallenges();
+
+  const payload = {
+    sentAt: new Date().toISOString(),
+    app: "The Fine Drink",
+    version: "1.0.0",
+
+    reporter: {
+      name: input.name,
+      email: input.email || null,
+    },
+
+    message: input.message,
+
+    challengePreferences: challengePreferences.map((challenge) => ({
+      id: challenge.id,
+      isFavorite: challenge.isFavorite,
+      likes: challenge.likes,
+      dislikes: challenge.dislikes,
+    })),
+
+    customChallenges,
+    customChallengeCount: customChallenges.length,
+  };
+
+  const response = await fetch(ERROR_REPORT_ENDPOINT, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-tfd-api-key": "CHANGE_THIS_TO_A_LONG_SECRET_KEY",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to send error report. Status: ${response.status}`);
+  }
+
+  return payload;
+}

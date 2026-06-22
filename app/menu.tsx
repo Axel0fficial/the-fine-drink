@@ -2,6 +2,7 @@ import DifficultyModal from "@/components/menu/DifficultyModal";
 import { text } from "@/locales/text";
 import { SessionDifficulty } from "@/types/game";
 import { useLanguageStore } from "@/utils/languageStore";
+import { saveResponsibleWarningEnabled } from "@/utils/responsibleWarningStorage";
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { useCallback, useState } from "react";
 import {
@@ -29,6 +30,9 @@ export default function MenuScreen() {
   );
 
   const [drinkyEnabled, setDrinkyEnabled] = useState(true);
+  const hasNonDrinkers = players.some(
+    (player) => player.preferences?.nonDrinker,
+  );
 
   useFocusEffect(
     useCallback(() => {
@@ -49,6 +53,22 @@ export default function MenuScreen() {
         teamsEnabled: JSON.stringify(teamsEnabled),
         roundLimit: String(roundLimit),
         gameMode: "standard",
+      },
+    });
+  }
+  async function startBlackoutMode() {
+    if (hasNonDrinkers) return;
+
+    await saveResponsibleWarningEnabled(true);
+
+    router.push({
+      pathname: "/game",
+      params: {
+        players: JSON.stringify(players),
+        teamsEnabled: JSON.stringify(teamsEnabled),
+        roundLimit: String(roundLimit),
+        gameMode: "blackout",
+        sessionDifficulty: "chaos",
       },
     });
   }
@@ -150,6 +170,25 @@ export default function MenuScreen() {
                 Use custom challenges and toggle the list.
               </Text>
             </Pressable>
+            <Pressable
+              style={[
+                styles.modeButton,
+                hasNonDrinkers && styles.disabledModeButton,
+              ]}
+              disabled={hasNonDrinkers}
+              onPress={startBlackoutMode}
+            >
+              <Text style={styles.modeText}>Blackout</Text>
+              <Text style={styles.modeDescription}>
+                Drinking-only chaos. No non-drinkers allowed.
+              </Text>
+
+              {hasNonDrinkers && (
+                <Text style={styles.disabledReason}>
+                  Disabled because a non-drinker is in the session.
+                </Text>
+              )}
+            </Pressable>
           </View>
         </View>
 
@@ -223,6 +262,16 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
     textTransform: "uppercase",
     letterSpacing: 1,
+  },
+  disabledModeButton: {
+    opacity: 0.45,
+  },
+
+  disabledReason: {
+    color: "#ff9f9f",
+    marginTop: 6,
+    fontSize: 12,
+    fontWeight: "bold",
   },
   primaryModeButton: {
     width: "78%",

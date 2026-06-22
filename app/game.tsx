@@ -6,6 +6,7 @@ import GameOverModal from "@/components/game/GameOverModal";
 import GameSettingsModal from "@/components/game/GameSettingsModal";
 import StatusBar from "@/components/game/StatusBar";
 
+import { blackoutChallengeIds } from "@/data/blackoutchallengeIds";
 import { challenges as defaultChallenges } from "@/data/challenges";
 import { colors, difficultyPalettes, sharedStyles } from "@/style/theme";
 import {
@@ -109,6 +110,12 @@ export default function GameScreen() {
           ...defaultWithSettings,
           ...customChallenges,
         ].filter((challenge) => challenge.enabled);
+      }
+
+      if (gameMode === "blackout") {
+        playableChallenges = defaultChallenges.filter((challenge) =>
+          blackoutChallengeIds.includes(challenge.id),
+        );
       }
 
       const updatedChallenges = applyChallengePreferences(

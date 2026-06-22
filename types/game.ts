@@ -98,7 +98,7 @@ export type QuickChoiceData = {
   rewards: string[];
   punishments: string[];
 };
-export type GameMode = "standard" | "custom";
+export type GameMode = "standard" | "custom" | "blackout";
 
 export type ChallengeVariable =
   | {

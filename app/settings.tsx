@@ -1,6 +1,8 @@
+import ErrorReportModal from "@/components/settings/ErrorReprtModal";
 import { text } from "@/locales/text";
 import { colors, radius, sharedStyles, spacing } from "@/style/theme";
 import { loadDrinkyEnabled, saveDrinkyEnabled } from "@/utils/drinkyStorage";
+import { sendGameDataExport } from "@/utils/gameDataExport";
 import { useLanguageStore } from "@/utils/languageStore";
 import { clearSavedPlayers } from "@/utils/playerStorage";
 import {
@@ -10,6 +12,7 @@ import {
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import {
+  Alert,
   Modal,
   Pressable,
   StyleSheet,
@@ -25,6 +28,8 @@ export default function SettingsScreen() {
   const [responsibleWarningEnabled, setResponsibleWarningEnabled] =
     useState(true);
   const t = text[language];
+  const [sendingGameData, setSendingGameData] = useState(false);
+  const [errorReportVisible, setErrorReportVisible] = useState(false);
   useEffect(() => {
     async function loadSettings() {
       const warningEnabled = await loadResponsibleWarningEnabled();
@@ -50,6 +55,44 @@ export default function SettingsScreen() {
   async function handleErasePlayers() {
     await clearSavedPlayers();
     setConfirmVisible(false);
+  }
+  async function handleSendGameData() {
+    if (sendingGameData) return;
+
+    Alert.alert(
+      "Send Game Data?",
+      "This will send anonymous challenge preference data: challenge IDs, favorites, likes, dislikes, and the number of custom challenges created. It will not send player names or game sessions.",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Send",
+          onPress: async () => {
+            try {
+              setSendingGameData(true);
+
+              const payload = await sendGameDataExport();
+
+              Alert.alert(
+                "Data Sent",
+                `Thanks! Sent ${payload.challenges.length} challenge records and ${payload.customChallengeCount} custom challenge count.`,
+              );
+            } catch (error) {
+              Alert.alert(
+                "Send Failed",
+                "The game data could not be sent. Please check your connection or endpoint.",
+              );
+
+              console.log(error);
+            } finally {
+              setSendingGameData(false);
+            }
+          },
+        },
+      ],
+    );
   }
   async function toggleResponsibleWarning(value: boolean) {
     setResponsibleWarningEnabled(value);
@@ -83,6 +126,25 @@ export default function SettingsScreen() {
           onValueChange={toggleResponsibleWarning}
         />
       </View>
+
+      <Pressable
+        style={[
+          sharedStyles.secondaryButton,
+          sendingGameData && styles.disabledButton,
+        ]}
+        disabled={sendingGameData}
+        onPress={handleSendGameData}
+      >
+        <Text style={sharedStyles.buttonText}>
+          {sendingGameData ? "Sending..." : "Send Game Data"}
+        </Text>
+      </Pressable>
+      <Pressable
+        style={sharedStyles.secondaryButton}
+        onPress={() => setErrorReportVisible(true)}
+      >
+        <Text style={sharedStyles.buttonText}>Report Error</Text>
+      </Pressable>
 
       <TouchableOpacity onPress={toggleLanguage} style={styles.languageButton}>
         <Text style={styles.languageButtonText}>
@@ -127,6 +189,10 @@ export default function SettingsScreen() {
           </View>
         </View>
       </Modal>
+      <ErrorReportModal
+        visible={errorReportVisible}
+        onClose={() => setErrorReportVisible(false)}
+      />
     </View>
   );
 }
@@ -194,6 +260,9 @@ const styles = StyleSheet.create({
   backText: {
     color: colors.mutedText,
     fontWeight: "bold",
+  },
+  disabledButton: {
+    opacity: 0.5,
   },
   overlay: {
     flex: 1,
