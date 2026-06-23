@@ -61,8 +61,14 @@ export default function CustomChallengeModal({
     const newChallenge: Challenge = {
       id: `custom-${Date.now()}`,
       type: "custom",
-      title: cleanTitle,
-      description: cleanDescription,
+      title: {
+        en: cleanTitle,
+        es: cleanTitle,
+      },
+      description: {
+        en: cleanDescription,
+        es: cleanDescription,
+      },
       difficulty,
       tags: Array.from(new Set([...tags, "custom"])),
       enabled: true,
@@ -83,7 +89,9 @@ export default function CustomChallengeModal({
     <Modal visible={visible} transparent animationType="fade">
       <View style={styles.overlay}>
         <View style={styles.modalBox}>
-          <Text style={styles.title}>{t.CreateLbl} {t.challengeLbl}</Text>
+          <Text style={styles.title}>
+            {t.CreateLbl} {t.challengeLbl}
+          </Text>
 
           <TextInput
             style={sharedStyles.input}

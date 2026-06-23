@@ -1,6 +1,7 @@
 import { challenges as defaultChallenges } from "@/data/challenges";
 import { loadChallengePreferences } from "@/utils/challengeStorage";
 import { loadCustomChallenges } from "@/utils/customChallengeStorage";
+import { getOrCreateDeviceId } from "@/utils/deviceIdStorage";
 
 const GAME_DATA_ENDPOINT =
   "https://axel0fficial.tech/wp-json/the-fine-drink/v1/game-data";
@@ -13,16 +14,17 @@ export type ChallengeExportData = {
 };
 
 export type GameDataExportPayload = {
+  deviceId: string;
   sentAt: string;
   app: string;
   version: string;
   challenges: ChallengeExportData[];
   customChallengeCount: number;
 };
-
 export async function buildGameDataExportPayload(): Promise<GameDataExportPayload> {
   const challengePreferences = await loadChallengePreferences();
   const customChallenges = await loadCustomChallenges();
+  const deviceId = await getOrCreateDeviceId();
 
   const challenges = defaultChallenges.map((challenge) => {
     const savedPreference = challengePreferences.find(
@@ -38,6 +40,7 @@ export async function buildGameDataExportPayload(): Promise<GameDataExportPayloa
   });
 
   return {
+    deviceId,
     sentAt: new Date().toISOString(),
     app: "The Fine Drink",
     version: "1.0.0",

@@ -173,6 +173,7 @@ export default function MenuScreen() {
             <Pressable
               style={[
                 styles.modeButton,
+                styles.actionButton,
                 hasNonDrinkers && styles.disabledModeButton,
               ]}
               disabled={hasNonDrinkers}
@@ -217,6 +218,9 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.42)",
     padding: spacing.xl,
     paddingTop: 58,
+  },
+  actionButton: {
+    marginTop: spacing.lg,
   },
   topRow: {
     alignItems: "flex-end",

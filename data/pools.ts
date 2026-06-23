@@ -288,13 +288,10 @@ export const variablePools = {
     { en: "give 3 sips", es: "reparte 3 tragos" },
     { en: "everyone drinks 1 sip", es: "todos beben 1 trago" },
     { en: "do 10 squats", es: "haz 10 sentadillas" },
-    { en: "sing a song", es: "canta una canción" },
     {
-      en: "speak in an accent for 2 rounds",
-      es: "habla con acento durante 2 rondas",
+      en: "tell an embarrassing story or drink 4",
+      es: "cuenta una historia vergonzosa o toma 4",
     },
-    { en: "tell an embarrassing story", es: "cuenta una historia vergonzosa" },
-    { en: "dance for 15 seconds", es: "baila durante 15 segundos" },
   ],
 
   would_you_rather_romance: [

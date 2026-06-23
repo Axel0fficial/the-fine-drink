@@ -130,6 +130,7 @@ export default function SettingsScreen() {
       <Pressable
         style={[
           sharedStyles.secondaryButton,
+          styles.actionButton,
           sendingGameData && styles.disabledButton,
         ]}
         disabled={sendingGameData}
@@ -140,7 +141,7 @@ export default function SettingsScreen() {
         </Text>
       </Pressable>
       <Pressable
-        style={sharedStyles.secondaryButton}
+        style={[sharedStyles.secondaryButton, styles.actionButton]}
         onPress={() => setErrorReportVisible(true)}
       >
         <Text style={sharedStyles.buttonText}>Report Error</Text>
@@ -222,7 +223,9 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: "#ffffff20",
   },
-
+  actionButton: {
+    marginTop: spacing.lg,
+  },
   languageButtonText: {
     color: "#fff",
     fontSize: 16,

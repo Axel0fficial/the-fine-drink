@@ -1,13 +1,13 @@
 import { useState } from "react";
 import {
-    Alert,
-    Modal,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    View,
+  Alert,
+  Modal,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from "react-native";
 
 import { colors, radius, sharedStyles, spacing } from "@/style/theme";
@@ -161,8 +161,15 @@ export default function ErrorReportModal({
 
               <Text style={styles.privacyText}>
                 The data sent is: your name, optional email, your error message,
-                challenge preference data, and custom challenges created on this
-                device.
+                custom challenges created on this device, and an anonymous
+                device ID used to group future reports from the same
+                installation.
+              </Text>
+
+              <Text style={styles.privacyText}>
+                Challenge preference data is sent separately as anonymous game
+                data when you submit a report, using the same anonymous device
+                ID.
               </Text>
 
               <Text style={styles.privacyText}>

@@ -1,5 +1,6 @@
-import { loadChallengePreferences } from "@/utils/challengeStorage";
 import { loadCustomChallenges } from "@/utils/customChallengeStorage";
+import { getOrCreateDeviceId } from "@/utils/deviceIdStorage";
+import { sendGameDataExport } from "@/utils/gameDataExport";
 
 const ERROR_REPORT_ENDPOINT =
   "https://axel0fficial.tech/wp-json/the-fine-drink/v1/reports";
@@ -11,10 +12,11 @@ export type ErrorReportInput = {
 };
 
 export async function sendErrorReport(input: ErrorReportInput) {
-  const challengePreferences = await loadChallengePreferences();
+  const deviceId = await getOrCreateDeviceId();
   const customChallenges = await loadCustomChallenges();
 
   const payload = {
+    deviceId,
     sentAt: new Date().toISOString(),
     app: "The Fine Drink",
     version: "1.0.0",
@@ -25,14 +27,6 @@ export async function sendErrorReport(input: ErrorReportInput) {
     },
 
     message: input.message,
-
-    challengePreferences: challengePreferences.map((challenge) => ({
-      id: challenge.id,
-      isFavorite: challenge.isFavorite,
-      likes: challenge.likes,
-      dislikes: challenge.dislikes,
-    })),
-
     customChallenges,
     customChallengeCount: customChallenges.length,
   };
@@ -49,6 +43,8 @@ export async function sendErrorReport(input: ErrorReportInput) {
   if (!response.ok) {
     throw new Error(`Failed to send error report. Status: ${response.status}`);
   }
+
+  await sendGameDataExport();
 
   return payload;
 }
