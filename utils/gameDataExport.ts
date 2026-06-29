@@ -22,9 +22,9 @@ export type GameDataExportPayload = {
   customChallengeCount: number;
 };
 export async function buildGameDataExportPayload(): Promise<GameDataExportPayload> {
+  const deviceId = await getOrCreateDeviceId();
   const challengePreferences = await loadChallengePreferences();
   const customChallenges = await loadCustomChallenges();
-  const deviceId = await getOrCreateDeviceId();
 
   const challenges = defaultChallenges.map((challenge) => {
     const savedPreference = challengePreferences.find(

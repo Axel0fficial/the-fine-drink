@@ -133,3 +133,26 @@ export const sharedStyles = StyleSheet.create({
     padding: spacing.lg,
   },
 });
+
+export const runnerPalette = {
+  Purple: {
+    shirt: "#c300d1",
+    pants: "#44006b",
+    hair: "#ff66fe",
+  },
+  Yellow: {
+    shirt: "#F1C40F",
+    pants: "#ff9700",
+    hair: "#d5ff6e",
+  },
+  Red: {
+    shirt: "#ff0020",
+    pants: "#910012",
+    hair: "#ff5268",
+  },
+  Blue: {
+    shirt: "#1800ff",
+    pants: "#0f009a",
+    hair: "#8d81ff",
+  },
+} as const;

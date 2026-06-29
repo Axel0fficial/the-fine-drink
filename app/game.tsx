@@ -477,6 +477,7 @@ export default function GameScreen() {
     return (
       <>
         <ChallengeRenderer
+          key={`${challenge.id}-${turn}`}
           challenge={challenge}
           currentPlayerName={currentPlayer?.name}
           onFinishMinigame={() => finishTurn(false)}
@@ -530,6 +531,7 @@ export default function GameScreen() {
       />
 
       <ChallengeRenderer
+        key={`${challenge.id}-${turn}`}
         challenge={challenge}
         currentPlayerName={currentPlayer?.name}
         onToggleFavorite={handleToggleFavorite}

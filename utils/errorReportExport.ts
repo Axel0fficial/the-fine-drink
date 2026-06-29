@@ -5,6 +5,8 @@ import { sendGameDataExport } from "@/utils/gameDataExport";
 const ERROR_REPORT_ENDPOINT =
   "https://axel0fficial.tech/wp-json/the-fine-drink/v1/reports";
 
+const API_KEY = "CHANGE_THIS_TO_A_LONG_SECRET_KEY";
+
 export type ErrorReportInput = {
   name: string;
   message: string;
@@ -35,7 +37,7 @@ export async function sendErrorReport(input: ErrorReportInput) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "x-tfd-api-key": "CHANGE_THIS_TO_A_LONG_SECRET_KEY",
+      "x-tfd-api-key": API_KEY,
     },
     body: JSON.stringify(payload),
   });

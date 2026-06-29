@@ -1,12 +1,12 @@
-import { text } from "@/locales/text";
 import { resolveFineDrinkStatuses } from "@/utils/fineDrinkResolver";
-import { useLanguageStore } from "@/utils/languageStore";
 import { useMemo } from "react";
+
+import { Challenge, PlayerStatus } from "@/types/game";
 import ChallengeCard from "./ChallengeCard";
 import FineDrinkMinigame from "./minigames/FineDrinkMinigame";
 import QuickChoiceMinigame from "./minigames/QuickChoiceMiniGame";
-
-import { Challenge, PlayerStatus } from "@/types/game";
+import TimedButtonMinigame from "./minigames/TimedButtonMinigame";
+import HorseRaceMinigame from "./minigames/UmaRaceMinigame";
 
 type ChallengeRendererProps = {
   challenge: Challenge;
@@ -18,7 +18,6 @@ type ChallengeRendererProps = {
     background: string;
     primary: string;
     accent: string;
-
     text: string;
   };
 };
@@ -31,8 +30,14 @@ export default function ChallengeRenderer({
   palette,
   currentPlayerName,
 }: ChallengeRendererProps) {
-  const { language, toggleLanguage } = useLanguageStore();
-  const t = text[language];
+  const resolvedFineDrinkData = useMemo(() => {
+    if (challenge.minigameType !== "fineDrink" || !challenge.fineDrinkData) {
+      return null;
+    }
+
+    return resolveFineDrinkStatuses(challenge.fineDrinkData);
+  }, [challenge.id]);
+
   if (challenge.type === "minigame") {
     if (challenge.minigameType === "quickChoice" && challenge.quickChoiceData) {
       return (
@@ -43,12 +48,25 @@ export default function ChallengeRenderer({
         />
       );
     }
-    if (challenge.minigameType === "fineDrink" && challenge.fineDrinkData) {
-      const resolvedFineDrinkData = useMemo(
-        () => resolveFineDrinkStatuses(challenge.fineDrinkData!),
-        [challenge.id],
-      );
 
+    if (challenge.minigameType === "horseRace") {
+      return <HorseRaceMinigame onFinish={onFinishMinigame ?? (() => {})} />;
+    }
+    if (challenge.minigameType === "timedButton" && challenge.timedButtonData) {
+      return (
+        <TimedButtonMinigame
+          data={challenge.timedButtonData}
+          playerName={currentPlayerName ?? "Player"}
+          onFinish={onFinishMinigame ?? (() => {})}
+        />
+      );
+    }
+
+    if (
+      challenge.minigameType === "fineDrink" &&
+      challenge.fineDrinkData &&
+      resolvedFineDrinkData
+    ) {
       return (
         <FineDrinkMinigame
           data={resolvedFineDrinkData}

@@ -1,7 +1,23 @@
 import { PoolKey } from "@/data/pools";
 export type Difficulty = "easy" | "normal" | "hard" | "brutal";
 
-export type MinigameType = "fineDrink" | "quickChoice";
+export type MinigameType =
+  | "fineDrink"
+  | "quickChoice"
+  | "horseRace"
+  | "timedButton";
+
+export type TimedButtonPrompt = {
+  text: {
+    en: string;
+    es: string;
+  };
+  seconds: number;
+};
+
+export type TimedButtonData = {
+  prompts: TimedButtonPrompt[];
+};
 
 export type PlayerPreference = {
   nonDrinker: boolean;
@@ -53,7 +69,15 @@ export type ChallengeType = "simple" | "status" | "minigame" | "custom";
 export type FineDrinkData = {
   offerNature: "good" | "bad" | "random";
 };
-export type ChallengeTag = "drinking" | "nonDrinkerSafe" | "teams" | "custom";
+export type ChallengeTag =
+  | "drinking"
+  | "nonDrinkerSafe"
+  | "teams"
+  | "custom"
+  | "pools"
+  | "status"
+  | "card"
+  | "group";
 
 export type Challenge = {
   id: string;
@@ -79,6 +103,7 @@ export type Challenge = {
   minigameType?: MinigameType;
   fineDrinkData?: FineDrinkData;
   quickChoiceData?: QuickChoiceData;
+  timedButtonData?: TimedButtonData;
 };
 
 export type LocalizedText = {

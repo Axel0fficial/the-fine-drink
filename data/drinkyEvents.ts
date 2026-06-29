@@ -61,8 +61,8 @@ export const drinkyEvents: DrinkyEvent[] = [
     id: "second-challenge-1",
     type: "secondChallenge",
     text: {
-      en: "I brought you another challenge because I care. \nOr because I’m bored.",
-      es: "Traigo otro desafio porque me preocupo, \nO porque estoy aburrida ",
+      en: "I brought you another challenge because I care. Or because I’m bored.",
+      es: "Traigo otro desafio porque me preocupo, O porque estoy aburrida ",
     },
     tags: ["nonDrinkerSafe"],
     image: ignores,
@@ -95,7 +95,7 @@ export const drinkyEvents: DrinkyEvent[] = [
     type: "grantStatus",
     text: {
       en: "Fine. I'll help. Take this before I change my mind.",
-      es: "Bien. Te ayudaré.\n Toma esto antes de que cambie de opinión.",
+      es: "Bien. Te ayudaré. Toma esto antes de que cambie de opinión.",
     },
     tags: ["nonDrinkerSafe"],
     image: gifts,

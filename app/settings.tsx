@@ -1,6 +1,10 @@
 import ErrorReportModal from "@/components/settings/ErrorReprtModal";
 import { text } from "@/locales/text";
 import { colors, radius, sharedStyles, spacing } from "@/style/theme";
+import {
+  exportCustomChallenges,
+  importCustomChallenges,
+} from "@/utils/customChallengeBackup";
 import { loadDrinkyEnabled, saveDrinkyEnabled } from "@/utils/drinkyStorage";
 import { sendGameDataExport } from "@/utils/gameDataExport";
 import { useLanguageStore } from "@/utils/languageStore";
@@ -21,6 +25,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+
 export default function SettingsScreen() {
   const [confirmVisible, setConfirmVisible] = useState(false);
   const [drinkyEnabled, setDrinkyEnabled] = useState(true);
@@ -55,6 +60,38 @@ export default function SettingsScreen() {
   async function handleErasePlayers() {
     await clearSavedPlayers();
     setConfirmVisible(false);
+  }
+  async function handleExportCustomChallenges() {
+    try {
+      const count = await exportCustomChallenges();
+
+      Alert.alert(
+        "Export Complete",
+        `Exported ${count} custom challenge${count === 1 ? "" : "s"}.`,
+      );
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Export Failed", "Could not export custom challenges.");
+    }
+  }
+
+  async function handleImportCustomChallenges() {
+    try {
+      const count = await importCustomChallenges();
+
+      if (count === null) return;
+
+      Alert.alert(
+        "Import Complete",
+        `Imported ${count} custom challenge${count === 1 ? "" : "s"}.`,
+      );
+    } catch (error) {
+      console.log(error);
+      Alert.alert(
+        "Import Failed",
+        "The selected file is not a valid custom challenge backup.",
+      );
+    }
   }
   async function handleSendGameData() {
     if (sendingGameData) return;
@@ -145,6 +182,27 @@ export default function SettingsScreen() {
         onPress={() => setErrorReportVisible(true)}
       >
         <Text style={sharedStyles.buttonText}>Report Error</Text>
+      </Pressable>
+
+      <Pressable
+        style={[sharedStyles.secondaryButton, styles.settingSubtitle]}
+        onPress={handleExportCustomChallenges}
+      >
+        <Text style={sharedStyles.buttonText}>Export Challenges</Text>
+      </Pressable>
+
+      <Pressable
+        style={[sharedStyles.secondaryButton, styles.settingSubtitle]}
+        onPress={handleImportCustomChallenges}
+      >
+        <Text style={sharedStyles.buttonText}>Import Challenges</Text>
+      </Pressable>
+
+      <Pressable
+        style={sharedStyles.secondaryButton}
+        onPress={() => router.push("/how-to")}
+      >
+        <Text style={sharedStyles.buttonText}>How To</Text>
       </Pressable>
 
       <TouchableOpacity onPress={toggleLanguage} style={styles.languageButton}>
