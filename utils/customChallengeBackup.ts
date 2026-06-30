@@ -1,11 +1,12 @@
 import * as DocumentPicker from "expo-document-picker";
-import * as FileSystem from "expo-file-system";
+import { Paths } from "expo-file-system";
+import * as FileSystem from "expo-file-system/legacy";
 import * as Sharing from "expo-sharing";
 
 import { Challenge } from "@/types/game";
 import {
-    loadCustomChallenges,
-    saveCustomChallenges,
+  loadCustomChallenges,
+  saveCustomChallenges,
 } from "@/utils/customChallengeStorage";
 
 type CustomChallengeBackup = {
@@ -28,8 +29,7 @@ export async function exportCustomChallenges() {
   };
 
   const fileUri =
-    FileSystem.deleteLegacyDocumentDirectoryAndroid +
-    `the-fine-drink-custom-challenges-${Date.now()}.json`;
+    Paths.document.uri + `/the-fine-drink-custom-challenges-${Date.now()}.json`;
 
   await FileSystem.writeAsStringAsync(fileUri, JSON.stringify(backup, null, 2));
 
