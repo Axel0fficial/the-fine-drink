@@ -164,46 +164,48 @@ export default function SettingsScreen() {
         />
       </View>
 
-      <Pressable
-        style={[
-          sharedStyles.secondaryButton,
-          styles.actionButton,
-          sendingGameData && styles.disabledButton,
-        ]}
-        disabled={sendingGameData}
-        onPress={handleSendGameData}
-      >
-        <Text style={sharedStyles.buttonText}>
-          {sendingGameData ? "Sending..." : "Send Game Data"}
-        </Text>
-      </Pressable>
-      <Pressable
-        style={[sharedStyles.secondaryButton, styles.actionButton]}
-        onPress={() => setErrorReportVisible(true)}
-      >
-        <Text style={sharedStyles.buttonText}>Report Error</Text>
-      </Pressable>
+      <View style={styles.buttonStack}>
+        <Pressable
+          style={[
+            sharedStyles.secondaryButton,
+            sendingGameData && styles.disabledButton,
+          ]}
+          disabled={sendingGameData}
+          onPress={handleSendGameData}
+        >
+          <Text style={sharedStyles.buttonText}>
+            {sendingGameData ? "Sending..." : "Send Game Data"}
+          </Text>
+        </Pressable>
 
-      <Pressable
-        style={[sharedStyles.secondaryButton, styles.settingSubtitle]}
-        onPress={handleExportCustomChallenges}
-      >
-        <Text style={sharedStyles.buttonText}>Export Challenges</Text>
-      </Pressable>
+        <Pressable
+          style={sharedStyles.secondaryButton}
+          onPress={() => setErrorReportVisible(true)}
+        >
+          <Text style={sharedStyles.buttonText}>Report Error</Text>
+        </Pressable>
 
-      <Pressable
-        style={[sharedStyles.secondaryButton, styles.settingSubtitle]}
-        onPress={handleImportCustomChallenges}
-      >
-        <Text style={sharedStyles.buttonText}>Import Challenges</Text>
-      </Pressable>
+        <Pressable
+          style={sharedStyles.secondaryButton}
+          onPress={handleExportCustomChallenges}
+        >
+          <Text style={sharedStyles.buttonText}>Export Challenges</Text>
+        </Pressable>
 
-      <Pressable
-        style={sharedStyles.secondaryButton}
-        onPress={() => router.push("/how-to")}
-      >
-        <Text style={sharedStyles.buttonText}>How To</Text>
-      </Pressable>
+        <Pressable
+          style={sharedStyles.secondaryButton}
+          onPress={handleImportCustomChallenges}
+        >
+          <Text style={sharedStyles.buttonText}>Import Challenges</Text>
+        </Pressable>
+
+        <Pressable
+          style={sharedStyles.secondaryButton}
+          onPress={() => router.push("/how-to")}
+        >
+          <Text style={sharedStyles.buttonText}>How To</Text>
+        </Pressable>
+      </View>
 
       <TouchableOpacity onPress={toggleLanguage} style={styles.languageButton}>
         <Text style={styles.languageButtonText}>
@@ -267,20 +269,41 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surfaceLight,
     borderRadius: radius.md,
     padding: spacing.lg,
-    marginTop: spacing.xl,
+    marginBottom: spacing.md,
     gap: spacing.md,
   },
+
+  buttonStack: {
+    gap: spacing.md,
+    marginTop: spacing.lg,
+  },
+
   languageButton: {
     backgroundColor: "#6d00b6",
     paddingVertical: 14,
     paddingHorizontal: 20,
     borderRadius: 12,
-    marginTop: 20,
+    marginTop: spacing.md,
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 2,
     borderColor: "#ffffff20",
   },
+
+  dangerButton: {
+    backgroundColor: "#7a1f1f",
+    padding: spacing.lg,
+    borderRadius: radius.lg,
+    alignItems: "center",
+    marginTop: spacing.md,
+  },
+
+  backButton: {
+    marginTop: spacing.md,
+    alignItems: "center",
+    padding: spacing.lg,
+  },
+
   actionButton: {
     marginTop: spacing.lg,
   },
@@ -301,23 +324,13 @@ const styles = StyleSheet.create({
     color: colors.mutedText,
     marginTop: 4,
   },
-  dangerButton: {
-    backgroundColor: "#7a1f1f",
-    padding: spacing.lg,
-    borderRadius: radius.lg,
-    alignItems: "center",
-    marginTop: spacing.xl,
-  },
+
   dangerText: {
     color: colors.text,
     fontWeight: "bold",
     fontSize: 16,
   },
-  backButton: {
-    marginTop: spacing.lg,
-    alignItems: "center",
-    padding: spacing.lg,
-  },
+
   backText: {
     color: colors.mutedText,
     fontWeight: "bold",
