@@ -77,7 +77,8 @@ export type ChallengeTag =
   | "pools"
   | "status"
   | "card"
-  | "group";
+  | "group"
+  | "unique";
 
 export type Challenge = {
   id: string;
